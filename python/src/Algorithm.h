@@ -232,7 +232,7 @@ public:
 
   void fit(T4 &train_x, T1 &train_y, Eigen::VectorXd &train_weight, Eigen::VectorXi &g_index, Eigen::VectorXi &g_size, int train_n, int p, int N, Eigen::VectorXi &status, Eigen::MatrixXd sigma)
   {
-    // cout<<"Fit for sparsity = "<<this->sparsity_level<<endl;///
+    // cout<<" Fit for sparsity = "<<this->sparsity_level<<endl;///
     int T0 = this->sparsity_level;
     // this->status = status;
     this->cox_g = Eigen::VectorXd::Zero(0);
@@ -263,20 +263,21 @@ public:
       case 7: // PCA
         this->Sigma = sigma;
         break;
-      case 8: // Ising
+      case 8: // Ising (also Graph)
         this->ising_n = (long int) train_weight.sum();
+      case 9: // Graph
         this->map1 = Eigen::MatrixXi::Zero(N, 2);
         this->map2 = Eigen::MatrixXi::Zero(train_x.cols(), train_x.cols());
         int i = 0, j = 0;
         for (int k = 0; k < N; k++){
-          if (i == j) {
-            i = 0; j++;
-          }
           this->map1(k, 0) = i;
           this->map1(k, 1) = j;
           this->map2(i, j) = k;
           this->map2(j, i) = k;
           i++;
+          if (i > j) {
+            i = 0; j++;
+          }
         }
         break;
     }
@@ -303,16 +304,16 @@ public:
     // input: this->beta_init, this->coef0_init, this->A_init, this->I_init
     // for splicing get A;for the others 0;
 
-    // cout<<"==> initial screen "<<endl;///
+    // cout<<" initial screen "<<endl;///
     Eigen::VectorXi I, A = this->inital_screening(train_x, train_y, this->beta, this->coef0, this->A_init, this->I_init, this->bd, train_weight, g_index, g_size, N);
     
     // cout<<" A_init = ";///
-    // for (int i=0;i<A.size();i++) cout<<this->map1(A(i), 0)<<","<<this->map1(A(i), 1)<<endl;
+    // for (int i=0;i<A.size();i++) cout<<"("<<this->map1(A(i), 0)<<","<<this->map1(A(i), 1)<<") ";cout<<endl;///
     I = Ac(A, N);
     
     Eigen::VectorXi A_ind = find_ind(A, g_index, g_size, p, N, this->model_type);
     T4 X_A;
-    if (this->model_type == 8){
+    if (this->model_type == 8 || this->model_type == 9){
       // Eigen::VectorXi XA_ind = find_ind_graph(A_ind, this->map1, p);
       // X_A = X_seg(train_x, train_n, XA_ind);
       X_A = train_x;
@@ -345,6 +346,7 @@ public:
     int always_select_size = this->always_select.size();
     int C_max = min(min(T0 - always_select_size, this->U_size - T0 - always_select_size), this->exchange_num);
 
+    // cout<<" get_A"<<endl;///
     this->get_A(train_x, train_y, A, I, C_max, this->beta, this->coef0, this->bd, T0, train_weight, g_index, g_size, N, this->tau, this->train_loss);
 
     // final fit
@@ -370,7 +372,7 @@ public:
     this->effective_number = this->effective_number_of_parameter(train_x, X_A, train_y, train_weight, this->beta, beta_A, this->coef0);
     this->group_df = A_ind.size();
 
-    // cout<<"End Fit"<<endl;///
+    // cout<<" End Fit"<<endl;///
     return;
   };
 
@@ -408,7 +410,7 @@ public:
       {
         delete X_U;
         X_U = &X;
-        if (this->model_type == 8){
+        if (this->model_type == 8 || this->model_type == 9){
           U_ind = Eigen::VectorXi::LinSpaced(N, 0, N - 1);
         }else{
           U_ind = Eigen::VectorXi::LinSpaced(p, 0, p - 1);
@@ -423,7 +425,7 @@ public:
       else
       {
         U_ind = find_ind(U, g_index, g_size, p, N, this->model_type);
-        if (this->model_type == 8){ /// todo
+        if (this->model_type == 8 || this->model_type == 9){ /// todo
           // Eigen::VectorXi XU_ind = find_ind_graph(U_ind, this->map1, p);
           // *X_U = X_seg(X, n, XU_ind);
           *X_U = X;
@@ -432,7 +434,7 @@ public:
         }
         slice(beta, U_ind, beta_U);
 
-        if (this->model_type != 8){ // group is not supported in Ising now 
+        if (this->model_type != 8 || this->model_type != 9){ // group is not supported in Ising
           int pos = 0;
           for (int i = 0; i < this->U_size; i++)
           {
@@ -462,6 +464,13 @@ public:
         delete[] temp;
       }
 
+      // cout<<"beta_U:\n";
+      // for (int i=0;i<beta_U.size();i++){
+      //   int mi=this->map1(i, 0);
+      //   int mj=this->map1(i, 1);
+      //   cout<<" ("<<mi<<","<<mj<<") -> "<<beta_U(i)<<endl;
+      // }
+
       int num = -1;
       while (true)
       {
@@ -471,7 +480,7 @@ public:
 
         Eigen::VectorXi A_ind = find_ind(A_U, g_index_U, g_size_U, U_ind.size(), this->U_size, this->model_type);
         T4 X_A;
-        if (this->model_type == 8){ 
+        if (this->model_type == 8 || this->model_type == 9){ 
           // Eigen::VectorXi temp = Eigen::VectorXi::Zero(A_ind.size());
           // for (int i = 0; i < A_ind.size(); i++)
           //   temp(i) = U_ind(A_ind(i));
@@ -486,7 +495,7 @@ public:
 
         T5 bd_U = T5::Zero(this->U_size);
         this->sacrifice(*X_U, X_A, y, beta_U, beta_A, coef0, A_U, I_U, weights, g_index_U, g_size_U, this->U_size, A_ind, bd_U, U, U_ind, num);
-
+        
         for (int i = 0; i < always_select_U.size(); i++)
         {
           bd_U(always_select_U(i)) = DBL_MAX;
@@ -496,6 +505,8 @@ public:
         bool exchange = this->splicing(*X_U, y, A_U, I_U, C_max, beta_U, coef0, bd_U, weights,
                                        g_index_U, g_size_U, this->U_size, tau, l0);
 
+        // cout << "exchange A: ";
+        // for (int i=0;i<A_U.size();i++) cout<<"("<<this->map1(A_U(i), 0)<<","<<this->map1(A_U(i), 1)<<") ";cout<<endl;///
         // cout<<"  --> splicing num = "<<num<<endl;///
         // break;
 
@@ -506,7 +517,6 @@ public:
       }
 
       if (A_U.size() == 0 || A_U.maxCoeff() == T0 - 1){
-        // cout<<"End get A"<<endl;///
         break; // if A_U not change, stop
       }
 
@@ -541,7 +551,7 @@ public:
       // bd in full set
       Eigen::VectorXi A_ind0 = find_ind(A, g_index, g_size, p, N, this->model_type);
       T4 X_A0;
-      if (this->model_type == 8){
+      if (this->model_type == 8 || this->model_type == 9){
         // Eigen::VectorXi XA_ind0 = find_ind_graph(A_ind0, this->map1, p);
         // X_A0 = X_seg(X, n, XA_ind0);
         X_A0 = X;
@@ -551,7 +561,7 @@ public:
       T2 beta_A0;
       slice(beta, A_ind0, beta_A0);
       Eigen::VectorXi U_ind0, U0 = Eigen::VectorXi::LinSpaced(N, 0, N - 1);
-      if (model_type == 8){
+      if (model_type == 8 || model_type == 9){
         U_ind0 = Eigen::VectorXi::LinSpaced(N, 0, N - 1);
       }else{
         U_ind0 = Eigen::VectorXi::LinSpaced(p, 0, p - 1);
@@ -625,17 +635,17 @@ public:
     T2 beta_A_exchange;
     T3 coef0_A_exchange;
 
-    // cout << " | A_min_k : ";
-    // for (int i=0;i<A_min_k.size();i++) cout<<A(A_min_k(i))<<"("<<this->map1(A(A_min_k(i)), 0)<<","<<this->map1(A(A_min_k(i)), 1)<<") ";cout<<endl;
-    // cout << " | I_max_k : ";
-    // for (int i=0;i<I_max_k.size();i++) cout<<I(I_max_k(i))<<"("<<this->map1(I(I_max_k(i)), 0)<<","<<this->map1(I(I_max_k(i)), 1)<<") ";cout<<endl;
+    // cout << " | A_min_k : \n";///
+    // for (int i=0;i<A_min_k.size();i++) cout<<" | ("<<this->map1(A(A_min_k(i)), 0)<<","<<this->map1(A(A_min_k(i)), 1)<<") -> "<<bd(A(A_min_k(i)))<<endl;
+    // cout << " | I_max_k : \n";
+    // for (int i=0;i<I_max_k.size();i++) cout<<" | ("<<this->map1(I(I_max_k(i)), 0)<<","<<this->map1(I(I_max_k(i)), 1)<<") -> "<<bd(I(I_max_k(i)))<<endl;
 
     double L;
     for (int k = C_max; k >= 1;)
     {
       A_exchange = diff_union(A, s1, s2);
       A_ind_exchange = find_ind(A_exchange, g_index, g_size, p, N, this->model_type);
-      if (this->model_type == 8){
+      if (this->model_type == 8 || this->model_type == 9){
         // Eigen::VectorXi XA_ind_exchange = find_ind_graph(A_ind_exchange, this->map1, p);
         // X_A_exchange = X_seg(X, n, XA_ind_exchange);
         X_A_exchange = X;
@@ -654,15 +664,13 @@ public:
 
       if (train_loss - L > tau)
       {
+        // cout<<"   ~~> exchange k = "<<k<<endl;///
         train_loss = L;
         A = A_exchange;
         I = Ac(A_exchange, N);
         slice_restore(beta_A_exchange, A_ind_exchange, beta);
         coef0 = coef0_A_exchange;
         C_max = k;
-
-        // cout<<"   ~~> exchange k = "<<k<<endl;///
-
         return true;
       }
       else
