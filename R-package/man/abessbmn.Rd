@@ -20,7 +20,7 @@ abessbmn(
   newton.thresh = 1e-06,
   max.newton.iter = 500,
   ic.scale = 1,
-  num.threads = 1,
+  num.threads = 0,
   seed = 1,
   ...
 )
