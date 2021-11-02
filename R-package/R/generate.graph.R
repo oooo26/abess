@@ -24,22 +24,12 @@ gen_rr_adjmat <- function(n_node, degree, beta, alpha, type = c("ferro", "glass"
     adj
   }
 
-gen_4nn_cyc <-
-  function(n_node,
-           degree,
-           beta,
-           alpha,
-           type = c("ferro", "glass", "glass_weak")) {
+gen_4nn_cyc <- function(n_node, degree, beta, alpha, type = c("ferro", "glass", "glass_weak")) {
     adj <- matrix(0, n_node, n_node)
-    index_lr <-
-      (row(adj) - col(adj) == 1 & col(adj) %% sqrt(n_node) != 0)
+    index_lr <- (row(adj) - col(adj) == 1 & col(adj) %% sqrt(n_node) != 0)
     index_ud <- (row(adj) - col(adj) == sqrt(n_node))
-    cycle_lr <-
-      (col(adj) %% sqrt(n_node) == 0 &
-         col(adj) - row(adj) == sqrt(n_node) - 1)
-    cycle_ud <-
-      (col(adj) <= sqrt(n_node) &
-         row(adj) - col(adj) == sqrt(n_node) * (sqrt(n_node) - 1))
+    cycle_lr <- (col(adj) %% sqrt(n_node) == 0 & col(adj) - row(adj) == sqrt(n_node) - 1)
+    cycle_ud <- (col(adj) <= sqrt(n_node) & row(adj) - col(adj) == sqrt(n_node) * (sqrt(n_node) - 1))
     index <- index_lr | index_ud | cycle_lr | cycle_ud
     
     adj[index] <- 1
@@ -69,7 +59,8 @@ gen_4nn_cyc <-
     adj
   }
 
-sim_theta <- function(p, type = 1, seed, beta, degree, alpha) {
+sim_theta <- function(p, type = 1, graph_seed, beta, degree, alpha) {
+  set.seed(graph_seed)
   # chain structure: size = p - 1
   if (type == 1) {
     theta <- matrix(0, p, p)
@@ -210,6 +201,7 @@ sim_theta <- function(p, type = 1, seed, beta, degree, alpha) {
   if (type == 12)
     theta <- gen_4nn_cyc(p, degree, beta, alpha, type = "glass_weak")
   
+  set.seed(NULL)
   return(theta)
 }
 
@@ -239,12 +231,14 @@ generate.bmn.freq.data <-
            alpha = 0.4) {
     if (is.null(graph.seed)) {
       graph_seed <- round(runif(1 , 0, .Machine$integer.max))
+    } else {
+      graph_seed <- graph.seed
     }
     theta <-
       sim_theta(
         p,
         type = type,
-        seed = graph_seed,
+        graph_seed = graph_seed,
         beta = beta,
         degree = degree,
         alpha = alpha
@@ -255,6 +249,9 @@ generate.bmn.freq.data <-
     }
     
     data <- sample_by_conf(n = n, theta = theta, seed = seed)
+    
+    set.seed(NULL)
+    
     return(list(data = data, theta = theta))
   }
 
@@ -274,6 +271,8 @@ generate.bmn.freq.data <-
 generate.bmn.data <- function(n, p, type = 1, seed = NULL, graph.seed = NULL, beta = 0.7, degree = 3, alpha = 0.4) {
   if (is.null(graph.seed)) {
     graph_seed <- round(runif(1 , 0, .Machine$integer.max))
+  } else {
+    graph_seed <- graph.seed
   }
   theta <- sim_theta(p, type, graph_seed, beta, degree, alpha)
   Ising_Gibbs(theta, n, )

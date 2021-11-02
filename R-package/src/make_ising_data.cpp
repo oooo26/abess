@@ -56,7 +56,8 @@ Eigen::MatrixXd sample_by_conf(long long n, Eigen::MatrixXd theta, int seed) {
   // std::default_random_engine generator(seed);  // implementation-defined
   // std::default_random_engine generator(1);
 
-  std::mt19937 generator(seed);                   // 32-bit Mersenne Twister by Matsumoto and Nishimura, 1998
+  std::mt19937_64 generator;                      // 64-bit Mersenne Twister by Matsumoto and Nishimura, 2000
+  generator.seed(seed);
   std::discrete_distribution<int> distribution(std::begin(w), std::end(w));
   
   Eigen::VectorXd freq = Eigen::VectorXd::Zero(num_conf);
