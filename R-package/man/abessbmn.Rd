@@ -22,6 +22,7 @@ abessbmn(
   ic.scale = 1,
   num.threads = 0,
   seed = 1,
+  graph.threshold = 0,
   ...
 )
 }

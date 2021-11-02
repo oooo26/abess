@@ -9,11 +9,6 @@
 
 using namespace Rcpp;
 
-#ifdef RCPP_USE_GLOBAL_ROSTREAM
-Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
-Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
-#endif
-
 // abessCpp2
 List abessCpp2(Eigen::MatrixXd x, Eigen::MatrixXd y, int n, int p, int data_type, Eigen::VectorXd weight, Eigen::MatrixXd sigma, bool is_normal, int algorithm_type, int model_type, int max_iter, int exchange_num, int path_type, bool is_warm_start, int ic_type, double ic_coef, bool is_cv, int Kfold, Eigen::VectorXi status, Eigen::VectorXi sequence, Eigen::VectorXd lambda_seq, int s_min, int s_max, int K_max, double epsilon, double lambda_min, double lambda_max, int nlambda, bool is_screening, int screening_size, int powell_path, Eigen::VectorXi g_index, Eigen::VectorXi always_select, double tau, int primary_model_fit_max_iter, double primary_model_fit_epsilon, bool early_stop, bool approximate_Newton, int thread, bool covariance_update, bool sparse_matrix, int splicing_type, int sub_search, Eigen::VectorXi cv_fold_id);
 RcppExport SEXP _abess_abessCpp2(SEXP xSEXP, SEXP ySEXP, SEXP nSEXP, SEXP pSEXP, SEXP data_typeSEXP, SEXP weightSEXP, SEXP sigmaSEXP, SEXP is_normalSEXP, SEXP algorithm_typeSEXP, SEXP model_typeSEXP, SEXP max_iterSEXP, SEXP exchange_numSEXP, SEXP path_typeSEXP, SEXP is_warm_startSEXP, SEXP ic_typeSEXP, SEXP ic_coefSEXP, SEXP is_cvSEXP, SEXP KfoldSEXP, SEXP statusSEXP, SEXP sequenceSEXP, SEXP lambda_seqSEXP, SEXP s_minSEXP, SEXP s_maxSEXP, SEXP K_maxSEXP, SEXP epsilonSEXP, SEXP lambda_minSEXP, SEXP lambda_maxSEXP, SEXP nlambdaSEXP, SEXP is_screeningSEXP, SEXP screening_sizeSEXP, SEXP powell_pathSEXP, SEXP g_indexSEXP, SEXP always_selectSEXP, SEXP tauSEXP, SEXP primary_model_fit_max_iterSEXP, SEXP primary_model_fit_epsilonSEXP, SEXP early_stopSEXP, SEXP approximate_NewtonSEXP, SEXP threadSEXP, SEXP covariance_updateSEXP, SEXP sparse_matrixSEXP, SEXP splicing_typeSEXP, SEXP sub_searchSEXP, SEXP cv_fold_idSEXP) {
@@ -105,8 +100,8 @@ RcppExport SEXP _abess_sample_by_conf(SEXP nSEXP, SEXP thetaSEXP, SEXP seedSEXP)
     return rcpp_result_gen;
 }
 // Ising_Gibbs
-Eigen::MatrixXd Ising_Gibbs(Eigen::MatrixXd theta, int n_sample, int burn, int skip, Eigen::VectorXd value, bool using_seed, int set_seed);
-static SEXP _abess_Ising_Gibbs_try(SEXP thetaSEXP, SEXP n_sampleSEXP, SEXP burnSEXP, SEXP skipSEXP, SEXP valueSEXP, SEXP using_seedSEXP, SEXP set_seedSEXP) {
+Eigen::MatrixXd Ising_Gibbs(Eigen::MatrixXd theta, int n_sample, int burn, int skip, Eigen::VectorXd value, bool using_seed, int seed);
+static SEXP _abess_Ising_Gibbs_try(SEXP thetaSEXP, SEXP n_sampleSEXP, SEXP burnSEXP, SEXP skipSEXP, SEXP valueSEXP, SEXP using_seedSEXP, SEXP seedSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< Eigen::MatrixXd >::type theta(thetaSEXP);
@@ -115,16 +110,16 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type skip(skipSEXP);
     Rcpp::traits::input_parameter< Eigen::VectorXd >::type value(valueSEXP);
     Rcpp::traits::input_parameter< bool >::type using_seed(using_seedSEXP);
-    Rcpp::traits::input_parameter< int >::type set_seed(set_seedSEXP);
-    rcpp_result_gen = Rcpp::wrap(Ising_Gibbs(theta, n_sample, burn, skip, value, using_seed, set_seed));
+    Rcpp::traits::input_parameter< int >::type seed(seedSEXP);
+    rcpp_result_gen = Rcpp::wrap(Ising_Gibbs(theta, n_sample, burn, skip, value, using_seed, seed));
     return rcpp_result_gen;
 END_RCPP_RETURN_ERROR
 }
-RcppExport SEXP _abess_Ising_Gibbs(SEXP thetaSEXP, SEXP n_sampleSEXP, SEXP burnSEXP, SEXP skipSEXP, SEXP valueSEXP, SEXP using_seedSEXP, SEXP set_seedSEXP) {
+RcppExport SEXP _abess_Ising_Gibbs(SEXP thetaSEXP, SEXP n_sampleSEXP, SEXP burnSEXP, SEXP skipSEXP, SEXP valueSEXP, SEXP using_seedSEXP, SEXP seedSEXP) {
     SEXP rcpp_result_gen;
     {
         Rcpp::RNGScope rcpp_rngScope_gen;
-        rcpp_result_gen = PROTECT(_abess_Ising_Gibbs_try(thetaSEXP, n_sampleSEXP, burnSEXP, skipSEXP, valueSEXP, using_seedSEXP, set_seedSEXP));
+        rcpp_result_gen = PROTECT(_abess_Ising_Gibbs_try(thetaSEXP, n_sampleSEXP, burnSEXP, skipSEXP, valueSEXP, using_seedSEXP, seedSEXP));
     }
     Rboolean rcpp_isInterrupt_gen = Rf_inherits(rcpp_result_gen, "interrupted-error");
     if (rcpp_isInterrupt_gen) {

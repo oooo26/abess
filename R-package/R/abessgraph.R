@@ -7,6 +7,17 @@
 #'
 #' @examples
 #' library(abess)
+#' p <- 16
+#' n <- 1e4
+#' train <- generate.bmn.freq.data(n, p, type = 10, graph.seed = 1, seed = 1, beta = 0.4)
+#' valid <- generate.bmn.freq.data(n, p, type = 10, graph.seed = 1, seed = 2, beta = 0.4)
+#' pool_data <- rbind(train[["data"]], valid[["data"]])
+#' res <- abessbmn(pool_data[, -1], weight = pool_data[, 1], support.size = 27:37, tune.type = "cv", nfolds = 2, foldid = rep(1:2, each = nrow(pool_data) / 2), graph.threshold = 0.2)
+#' all((res[["omega"]][, , which.min(res[["tune.value"]])] != 0) == (train[["theta"]] != 0))
+#' 
+#' res <- abessbmn(pool_data[, -1], weight = pool_data[, 1], tune.type = "gic", support.size = 32, c.max = round(2 * p / 3))
+#' all((res[["omega"]][, , 1] != 0) == (train[["theta"]] != 0))
+#' 
 abessbmn <- function(x,
                      tune.type = c("gic", "bic", "cv", "ebic", "aic"),
                      weight = NULL,
@@ -24,6 +35,7 @@ abessbmn <- function(x,
                      ic.scale = 1.0,
                      num.threads = 0,
                      seed = 1,
+                     graph.threshold = 0.0, 
                      ...)
 {
   early.stop <- FALSE
@@ -172,14 +184,29 @@ abessbmn <- function(x,
     names(result)[which(names(result) == "ic_all")] <- "tune.value"
     result[["test_loss_all"]] <- NULL
   }
+  result[["tune.value"]] <- as.vector(result[["tune.value"]])
   
-  return(list(omega = omega, 
-              support.size = support_size, 
-              pseudo.loglik = result[["train_loss_all"]], 
-              tune.value = result[["tune.value"]], 
-              nobs = nobs, 
-              nvars = nvars, 
-              tune.type = tune.type))
+  names(result)[which(names(result) == "train_loss_all")] <- "pseudo.loglik"
+  result[["pseudo.loglik"]] <- as.vector(result[["pseudo.loglik"]])
+  
+  optimal_omega <- omega[, , which.min(result[["tune.value"]])]
+  if (graph.threshold > 0.0 && length(support_size) > 1) {
+    optimal_omega <- thres_bmn_est(optimal_omega, graph.threshold)
+  }
+  
+  res_out <- list(
+    omega = omega,
+    support.size = support_size,
+    pseudo.loglik = result[["pseudo.loglik"]],
+    tune.value = result[["tune.value"]],
+    nobs = nobs,
+    nvars = nvars,
+    tune.type = tune.type, 
+    optimal.omega = optimal_omega
+  )
+  class(res_out) <- "abessbmn"
+  
+  return(res_out)
 }
 
 recovery_adjacent_matrix <- function(x, p) {
@@ -198,4 +225,94 @@ recovery_adjacent_matrix <- function(x, p) {
     i <- i + 1
   }
   zero_mat
+}
+
+
+#' 
+#' Nodewise logistic regression for inverse Ising problem
+#' 
+#' @inheritParams abess.default
+#'
+#' @param max.support.size 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#' p <- 16
+#' n <- 1e5 / 2
+#' library(abess)
+#' train <- generate.bmn.freq.data(n, p, type = 10, graph.seed = 1, seed = 1)
+#' res <- nodewise_L0(train[["data"]], tune.type = "gic", 
+#'                    max.support.size = 4, support.size = rep(4, p))
+#' all((res[[1]] != 0) == (train[["theta"]] != 0))
+#' 
+#' valid <- generate.bmn.freq.data(n, p, type = 10, graph.seed = 1, seed = 2)
+#' all(train[["theta"]] == valid[["theta"]])
+#' x <- rbind(train[["data"]], valid[["data"]])
+#' res <- nodewise_L0(x, tune.type = "cv")
+#' all((res[[1]] != 0) == (train[["theta"]] != 0))
+#' 
+nodewise_L0 <- function(x,
+                        max.support.size = NULL,
+                        tune.type = "cv",
+                        foldid = NULL, 
+                        support.size = NULL, 
+                        graph.threshold = 0.0) 
+{
+  p <- ncol(x) - 1
+  if (is.null(max.support.size)) {
+    max.support.size <- min(c(p - 2, 100))
+  }
+  if (is.null(foldid)) {
+    foldid <- rep(c(1, 2), each = nrow(x) / 2)
+  }
+  nfolds <- length(unique(foldid))
+  
+  theta <- matrix(0, p, p)
+  for (node in 1:p) {
+    model_node <-
+      abess::abess(
+        x = x[, -c(1, node + 1)],
+        y = x[, node + 1],
+        weight = x[, 1],
+        family = "binomial",
+        tune.path = "sequence",
+        support.size = 0:max.support.size,
+        tune.type = tune.type,
+        nfolds = nfolds,
+        foldid = foldid,
+        c.max = round(max.support.size / 2),
+        max.splicing.iter = 100,
+        newton = "approx",
+        newton.thresh = 1e-10,
+        max.newton.iter = 100,
+        num.threads = nfolds, 
+        seed = 1
+      )
+    if (is.null(support.size)) {
+      est_theta_node <- as.vector(extract(model_node)[["beta"]]) / 2
+    } else {
+      est_theta_node <- as.vector(extract(model_node, support.size = support.size[node])[["beta"]]) / 2
+    }
+    theta[node, -node] <- est_theta_node
+  }
+  
+  if (is.null(support.size)) {
+    theta <- thres_bmn_est(theta, graph.threshold)
+  }
+  
+  res <- list(`1` = theta)
+  res
+}
+
+
+thres_bmn_est <- function(theta, thres) {
+  if (thres > 0) {
+    theta[abs(theta) <= thres] <- 0
+  } else if (thres < 0) {
+    theta_vec <- as.vector(theta)
+    ## TODO: use finite mixture model to cluster
+  } 
+  theta
 }
