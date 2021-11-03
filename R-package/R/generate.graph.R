@@ -1,9 +1,15 @@
-gen_rr_adjmat <- function(n_node, degree, beta, alpha, type = c("ferro", "glass")) {
+gen_rr_adjmat <- function(n_node,
+                          degree,
+                          beta,
+                          alpha,
+                          type = c("ferro", "glass"), 
+                          degree_bound = TRUE) 
+{
     g <- igraph::sample_k_regular(n_node, degree)
     adj <- as.matrix(igraph::as_adjacency_matrix(g, type = "both"))
     
     ind_nonzero <- which(adj != 0, arr.ind = TRUE)
-    ind_nonzero <- ind_nonzero[ind_nonzero[, 1] > ind_nonzero[, 2],]
+    ind_nonzero <- ind_nonzero[ind_nonzero[, 1] > ind_nonzero[, 2], ]
     num_nonzero <- nrow(ind_nonzero)
     
     if (type == "ferro") {
@@ -15,6 +21,9 @@ gen_rr_adjmat <- function(n_node, degree, beta, alpha, type = c("ferro", "glass"
       value_neg <- c(-alpha, rep(-beta, len_neg - 1))
       value <- c(value_pos, value_neg)
     }
+    if (!degree_bound) {
+      value <- value / degree
+    }
     
     value <- sample(value, size = num_nonzero)
     for (i in 1:num_nonzero) {
@@ -22,7 +31,7 @@ gen_rr_adjmat <- function(n_node, degree, beta, alpha, type = c("ferro", "glass"
       adj[ind_nonzero[i, 2], ind_nonzero[i, 1]] <- value[i]
     }
     adj
-  }
+}
 
 gen_4nn_cyc <- function(n_node, degree, beta, alpha, type = c("ferro", "glass", "glass_weak")) {
     adj <- matrix(0, n_node, n_node)
@@ -200,6 +209,8 @@ sim_theta <- function(p, type = 1, graph_seed, beta, degree, alpha) {
     theta <- gen_4nn_cyc(p, degree, beta, alpha, type = "glass")
   if (type == 12)
     theta <- gen_4nn_cyc(p, degree, beta, alpha, type = "glass_weak")
+  if (type == 13)
+    theta <- gen_rr_adjmat(p, degree, beta, alpha, type = "ferro", degree_bound = FALSE)
   
   set.seed(NULL)
   return(theta)
