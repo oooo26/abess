@@ -263,6 +263,7 @@ nodewise_L0 <- function(x,
   p <- ncol(x) - 1
   if (is.null(max.support.size)) {
     max.support.size <- min(c(p - 2, 100))
+    max.support.size <- rep(max.support.size, p)
   }
   if (is.null(foldid)) {
     foldid <- rep(c(1, 2), each = nrow(x) / 2)
@@ -278,11 +279,11 @@ nodewise_L0 <- function(x,
         weight = x[, 1],
         family = "binomial",
         tune.path = "sequence",
-        support.size = 0:max.support.size,
+        support.size = 0:max.support.size[node],
         tune.type = tune.type,
         nfolds = nfolds,
         foldid = foldid,
-        c.max = round(max.support.size / 2),
+        c.max = round(max.support.size[node] / 2),
         max.splicing.iter = 100,
         newton = "approx",
         newton.thresh = 1e-10,
