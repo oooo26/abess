@@ -6,6 +6,7 @@
 \usage{
 nodewise_L0(
   x,
+  weight = NULL,
   max.support.size = NULL,
   tune.type = "cv",
   foldid = NULL,
@@ -17,6 +18,9 @@ nodewise_L0(
 \item{x}{Input matrix, of dimension \eqn{n \times p}; each row is an observation
 vector and each column is a predictor/feature/variable.
 Can be in sparse matrix format (inherit from class \code{"dgCMatrix"} in package \code{Matrix}).}
+
+\item{weight}{Observation weights. When \code{weight = NULL},
+we set \code{weight = 1} for each observation as default.}
 
 \item{max.support.size}{}
 
@@ -35,17 +39,19 @@ Nodewise logistic regression for inverse Ising problem
 }
 \examples{
 p <- 16
-n <- 1e5 / 2
+n <- 1e3
 library(abess)
-train <- generate.bmn.freq.data(n, p, type = 10, graph.seed = 1, seed = 1)
-res <- nodewise_L0(train[["data"]], tune.type = "gic", 
-                   max.support.size = 4, support.size = rep(4, p))
+train <- generate.bmn.data(n, p, type = 10, graph.seed = 1, seed = 1, beta = 0.4)
+res <- nodewise_L0(train[["data"]], train[["weight"]], tune.type = "gic", 
+                   max.support.size = rep(4, p), support.size = rep(4, p))
 all((res[[1]] != 0) == (train[["theta"]] != 0))
 
-valid <- generate.bmn.freq.data(n, p, type = 10, graph.seed = 1, seed = 2)
+valid <- generate.bmn.data(n, p, type = 10, graph.seed = 1, seed = 10000, beta = 0.4)
 all(train[["theta"]] == valid[["theta"]])
 x <- rbind(train[["data"]], valid[["data"]])
-res <- nodewise_L0(x, tune.type = "cv")
+sample_weight <- c(train[["weight"]], valid[["weight"]])
+fold_id <- c(rep(1, length(train[["weight"]])), rep(2, length(valid[["weight"]])))
+res <- nodewise_L0(x, sample_weight, tune.type = "cv", foldid = fold_id, graph.threshold = 0.2)
 all((res[[1]] != 0) == (train[["theta"]] != 0))
 
 }

@@ -216,22 +216,20 @@ sim_theta <- function(p, type = 1, graph_seed, beta, degree, alpha) {
   return(theta)
 }
 
-#' Generate a frequency dataset from binary markov network
+#' @title Generate a dataset from binary markov network
+#' @inheritParams generate.data
 #'
-#' @param n
-#' @param p
 #' @param type
-#' @param seed
 #' @param graph.seed
 #' @param beta
 #' @param degree
 #' @param alpha
-#'
+#' 
 #' @return
 #' @export
 #'
 #' @examples
-generate.bmn.freq.data <-
+generate.bmn.data <-
   function(n,
            p,
            type = 1,
@@ -239,7 +237,8 @@ generate.bmn.freq.data <-
            graph.seed = NULL,
            beta = 0.7,
            degree = 3,
-           alpha = 0.4) {
+           alpha = 0.4, 
+           method = "freq") {
     if (is.null(graph.seed)) {
       graph_seed <- round(runif(1 , 0, .Machine$integer.max))
     } else {
@@ -258,42 +257,19 @@ generate.bmn.freq.data <-
     if (is.null(seed)) {
       seed <- round(runif(1 , 0, .Machine$integer.max))
     }
-    
-    data <- sample_by_conf(n = n, theta = theta, seed = seed)
+
+    if (method == "freq") {
+      data <- sample_by_conf(n = n, theta = theta, seed = seed)
+      data <- data[data[, 1] > 0, ]
+      weight <- data[, 1]
+      data <- data[, -1]
+    } else {
+      value <- c(-1, 1)
+      data <- Ising_Gibbs(theta = theta, n_sample = n, value = value, burn = 1e5, skip = 50, seed = seed)
+      weight <- rep(1, n)
+    }
     
     set.seed(NULL)
     
-    return(list(data = data, theta = theta))
+    return(list(data = data, weight = weight, theta = theta))
   }
-
-#' 
-#' Generate a dataset with independent observations from binary markov network
-#' 
-#' @param n 
-#' @param p 
-#' @param type 
-#' @param seed 
-#' 
-#' 
-#' @return
-#' @export
-#'
-#' @examples
-generate.bmn.data <- function(n, p, type = 1, seed = NULL, graph.seed = NULL, 
-                              beta = 0.7, degree = 3, alpha = 0.4) {
-  if (is.null(graph.seed)) {
-    graph_seed <- round(runif(1 , 0, .Machine$integer.max))
-  } else {
-    graph_seed <- graph.seed
-  }
-  theta <- sim_theta(p, type, graph_seed, beta, degree, alpha)
-  
-  value <- c(-1, 1)
-  if (is.null(seed)) {
-    seed <- round(runif(1 , 0, .Machine$integer.max))
-  }
-  data <- Ising_Gibbs(theta = theta, n_sample = n, value = c(-1, 1), burn = 1e5, skip = 50, seed = seed)
-  
-  set.seed(NULL)
-  return(list(data = data, theta = theta))
-}
