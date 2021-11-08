@@ -91,4 +91,15 @@ Title
 }
 \examples{
 library(abess)
+p <- 16
+n <- 1e4
+train <- generate.bmn.freq.data(n, p, type = 10, graph.seed = 1, seed = 1, beta = 0.4)
+valid <- generate.bmn.freq.data(n, p, type = 10, graph.seed = 1, seed = 2, beta = 0.4)
+pool_data <- rbind(train[["data"]], valid[["data"]])
+res <- abessbmn(pool_data[, -1], weight = pool_data[, 1], support.size = 27:37, tune.type = "cv", nfolds = 2, foldid = rep(1:2, each = nrow(pool_data) / 2), graph.threshold = 0.2)
+all((res[["omega"]][, , which.min(res[["tune.value"]])] != 0) == (train[["theta"]] != 0))
+
+res <- abessbmn(pool_data[, -1], weight = pool_data[, 1], tune.type = "gic", support.size = 32, c.max = round(2 * p / 3))
+all((res[["omega"]][, , 1] != 0) == (train[["theta"]] != 0))
+
 }

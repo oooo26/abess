@@ -2,7 +2,7 @@
 % Please edit documentation in R/generate.graph.R
 \name{generate.bmn.data}
 \alias{generate.bmn.data}
-\title{Generate a dataset with independent observations from binary markov network}
+\title{Generate a dataset from binary markov network}
 \usage{
 generate.bmn.data(
   n,
@@ -12,21 +12,25 @@ generate.bmn.data(
   graph.seed = NULL,
   beta = 0.7,
   degree = 3,
-  alpha = 0.4
+  alpha = 0.4,
+  method = "freq"
 )
 }
 \arguments{
-\item{n}{}
+\item{n}{The number of observations.}
 
-\item{p}{}
+\item{p}{The number of predictors of interest.}
 
-\item{type}{}
+\item{seed}{random seed. Default: \code{seed = 1}.}
 
-\item{seed}{}
+\item{beta}{The coefficient values in the underlying regression model.
+If it is supplied, \code{support.size} would be omitted.}
+
+\item{alpha}{}
 }
 \value{
 
 }
 \description{
-Generate a dataset with independent observations from binary markov network
+Generate a dataset from binary markov network
 }

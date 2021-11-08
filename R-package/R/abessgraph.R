@@ -240,43 +240,50 @@ recovery_adjacent_matrix <- function(x, p) {
 #'
 #' @examples
 #' p <- 16
-#' n <- 1e5 / 2
+#' n <- 1e3
 #' library(abess)
-#' train <- generate.bmn.freq.data(n, p, type = 10, graph.seed = 1, seed = 1)
-#' res <- nodewise_L0(train[["data"]], tune.type = "gic", 
-#'                    max.support.size = 4, support.size = rep(4, p))
+#' train <- generate.bmn.data(n, p, type = 10, graph.seed = 1, seed = 1, beta = 0.4)
+#' res <- nodewise_L0(train[["data"]], train[["weight"]], tune.type = "gic", 
+#'                    max.support.size = rep(4, p), support.size = rep(4, p))
 #' all((res[[1]] != 0) == (train[["theta"]] != 0))
 #' 
-#' valid <- generate.bmn.freq.data(n, p, type = 10, graph.seed = 1, seed = 2)
+#' valid <- generate.bmn.data(n, p, type = 10, graph.seed = 1, seed = 10000, beta = 0.4)
 #' all(train[["theta"]] == valid[["theta"]])
 #' x <- rbind(train[["data"]], valid[["data"]])
-#' res <- nodewise_L0(x, tune.type = "cv")
+#' sample_weight <- c(train[["weight"]], valid[["weight"]])
+#' fold_id <- c(rep(1, length(train[["weight"]])), rep(2, length(valid[["weight"]])))
+#' res <- nodewise_L0(x, sample_weight, tune.type = "cv", foldid = fold_id, graph.threshold = 0.2)
 #' all((res[[1]] != 0) == (train[["theta"]] != 0))
 #' 
 nodewise_L0 <- function(x,
+                        weight = NULL, 
                         max.support.size = NULL,
                         tune.type = "cv",
                         foldid = NULL, 
                         support.size = NULL, 
                         graph.threshold = 0.0) 
 {
-  p <- ncol(x) - 1
+  p <- ncol(x)
   if (is.null(max.support.size)) {
     max.support.size <- min(c(p - 2, 100))
     max.support.size <- rep(max.support.size, p)
   }
-  if (is.null(foldid)) {
-    foldid <- rep(c(1, 2), each = nrow(x) / 2)
+  if (is.null(foldid) && tune.type == "cv") {
+    foldid <- c()
+    nfolds <- 2
+  } else if (tune.type == "cv") {
+    nfolds <- length(unique(foldid))
+  } else {
+    nfolds <- 1
   }
-  nfolds <- length(unique(foldid))
   
   theta <- matrix(0, p, p)
   for (node in 1:p) {
     model_node <-
       abess::abess(
-        x = x[, -c(1, node + 1)],
-        y = x[, node + 1],
-        weight = x[, 1],
+        x = x[, -node],
+        y = x[, node],
+        weight = weight,
         family = "binomial",
         tune.path = "sequence",
         support.size = 0:max.support.size[node],
@@ -299,7 +306,7 @@ nodewise_L0 <- function(x,
     theta[node, -node] <- est_theta_node
   }
   
-  if (is.null(support.size)) {
+  if (graph.threshold > 0.0 && is.null(support.size)) {
     theta <- thres_bmn_est(theta, graph.threshold)
   }
   
