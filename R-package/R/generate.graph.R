@@ -279,12 +279,17 @@ generate.bmn.freq.data <-
 #' @export
 #'
 #' @examples
-generate.bmn.data <- function(n, p, type = 1, seed = NULL, graph.seed = NULL, beta = 0.7, degree = 3, alpha = 0.4) {
+generate.bmn.data <- function(n, p, type = 1, seed = NULL, graph.seed = NULL, 
+                              beta = 0.7, degree = 3, alpha = 0.4) {
   if (is.null(graph.seed)) {
     graph_seed <- round(runif(1 , 0, .Machine$integer.max))
   } else {
     graph_seed <- graph.seed
   }
   theta <- sim_theta(p, type, graph_seed, beta, degree, alpha)
-  Ising_Gibbs(theta, n, )
+  value <- c(-1, 1)
+  Ising_Gibbs(theta = theta, n_sample = n, value = c(-1, 1))
+  
+  set.seed(NULL)
+  return(list(data = data, theta = theta))
 }
