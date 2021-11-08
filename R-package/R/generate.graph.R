@@ -287,8 +287,12 @@ generate.bmn.data <- function(n, p, type = 1, seed = NULL, graph.seed = NULL,
     graph_seed <- graph.seed
   }
   theta <- sim_theta(p, type, graph_seed, beta, degree, alpha)
+  
   value <- c(-1, 1)
-  Ising_Gibbs(theta = theta, n_sample = n, value = c(-1, 1))
+  if (is.null(seed)) {
+    seed <- round(runif(1 , 0, .Machine$integer.max))
+  }
+  data <- Ising_Gibbs(theta = theta, n_sample = n, value = c(-1, 1), burn = 1e5, skip = 50, seed = seed)
   
   set.seed(NULL)
   return(list(data = data, theta = theta))

@@ -96,11 +96,8 @@ void iteration(Eigen::VectorXd &sample, Eigen::MatrixXd &theta,
 
 // [[Rcpp::export]]
 Eigen::MatrixXd Ising_Gibbs(Eigen::MatrixXd theta, int n_sample, int burn, int skip,
-                            Eigen::VectorXd value, bool using_seed = false, int seed = 1) {
+                            Eigen::VectorXd value, int seed = 1) {
   
-  if (using_seed == false){
-    seed = (((long long) time(0)) * 2718) % 314159265;
-  } 
   int p = theta.cols();
   Eigen::MatrixXd data = Eigen::MatrixXd::Zero(n_sample, p);
   Eigen::VectorXd sample = Eigen::VectorXd::Zero(p);
