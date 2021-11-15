@@ -247,6 +247,7 @@ recovery_adjacent_matrix <- function(x, p) {
 #'                    max.support.size = rep(4, p), support.size = rep(4, p))
 #' all((res[[1]] != 0) == (train[["theta"]] != 0))
 #' 
+#' ## use cross validation to nodewisely select support.size
 #' valid <- generate.bmn.data(n, p, type = 10, graph.seed = 1, seed = 10000, beta = 0.4)
 #' all(train[["theta"]] == valid[["theta"]])
 #' x <- rbind(train[["data"]], valid[["data"]])
@@ -255,12 +256,23 @@ recovery_adjacent_matrix <- function(x, p) {
 #' res <- nodewise_L0(x, sample_weight, tune.type = "cv", foldid = fold_id, graph.threshold = 0.2)
 #' all((res[[1]] != 0) == (train[["theta"]] != 0))
 #' 
+#' ## use IC to nodewisely select support.size (without post-thresholding)
+#' res <- nodewise_L0(x, sample_weight, tune.type = "gic", ic.scale = 2)
+#' all((res[[1]] != 0) == (train[["theta"]] != 0))
+#' 
+#' res <- nodewise_L0(x, sample_weight, tune.type = "gic", ic.scale = 1, graph.threshold = 0.2)
+#' all((res[[1]] != 0) == (train[["theta"]] != 0))
+#' 
+#' #' res <- nodewise_L0(x, sample_weight, tune.type = "bic")
+#' all((res[[1]] != 0) == (train[["theta"]] != 0))
+#' 
 nodewise_L0 <- function(x,
                         weight = NULL, 
                         max.support.size = NULL,
                         tune.type = "cv",
                         foldid = NULL, 
-                        support.size = NULL, 
+                        support.size = NULL,
+                        ic.scale = 1, 
                         graph.threshold = 0.0) 
 {
   p <- ncol(x)
@@ -287,7 +299,8 @@ nodewise_L0 <- function(x,
         family = "binomial",
         tune.path = "sequence",
         support.size = 0:max.support.size[node],
-        tune.type = tune.type,
+        tune.type = tune.type, 
+        ic.scale = ic.scale, 
         nfolds = nfolds,
         foldid = foldid,
         c.max = round(max.support.size[node] / 2),
@@ -310,8 +323,13 @@ nodewise_L0 <- function(x,
     theta <- thres_bmn_est(theta, graph.threshold)
   }
   
-  res <- list(`1` = theta)
-  res
+  theta <- (t(theta) + theta) / 2
+  
+  res_out <- list(
+    omega = theta
+  )
+  class(res_out) <- "abessbmn"
+  res_out
 }
 
 

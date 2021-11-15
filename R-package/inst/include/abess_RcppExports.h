@@ -46,17 +46,17 @@ namespace abess {
         return Rcpp::as<Eigen::MatrixXd >(rcpp_result_gen);
     }
 
-    inline Eigen::MatrixXd Ising_Gibbs(Eigen::MatrixXd theta, int n_sample, int burn, int skip, Eigen::VectorXd value, bool using_seed = false, int seed = 1) {
-        typedef SEXP(*Ptr_Ising_Gibbs)(SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP);
+    inline Eigen::MatrixXd Ising_Gibbs(Eigen::MatrixXd theta, int n_sample, int burn, int skip, Eigen::VectorXd value, int seed = 1) {
+        typedef SEXP(*Ptr_Ising_Gibbs)(SEXP,SEXP,SEXP,SEXP,SEXP,SEXP);
         static Ptr_Ising_Gibbs p_Ising_Gibbs = NULL;
         if (p_Ising_Gibbs == NULL) {
-            validateSignature("Eigen::MatrixXd(*Ising_Gibbs)(Eigen::MatrixXd,int,int,int,Eigen::VectorXd,bool,int)");
+            validateSignature("Eigen::MatrixXd(*Ising_Gibbs)(Eigen::MatrixXd,int,int,int,Eigen::VectorXd,int)");
             p_Ising_Gibbs = (Ptr_Ising_Gibbs)R_GetCCallable("abess", "_abess_Ising_Gibbs");
         }
         RObject rcpp_result_gen;
         {
             RNGScope RCPP_rngScope_gen;
-            rcpp_result_gen = p_Ising_Gibbs(Shield<SEXP>(Rcpp::wrap(theta)), Shield<SEXP>(Rcpp::wrap(n_sample)), Shield<SEXP>(Rcpp::wrap(burn)), Shield<SEXP>(Rcpp::wrap(skip)), Shield<SEXP>(Rcpp::wrap(value)), Shield<SEXP>(Rcpp::wrap(using_seed)), Shield<SEXP>(Rcpp::wrap(seed)));
+            rcpp_result_gen = p_Ising_Gibbs(Shield<SEXP>(Rcpp::wrap(theta)), Shield<SEXP>(Rcpp::wrap(n_sample)), Shield<SEXP>(Rcpp::wrap(burn)), Shield<SEXP>(Rcpp::wrap(skip)), Shield<SEXP>(Rcpp::wrap(value)), Shield<SEXP>(Rcpp::wrap(seed)));
         }
         if (rcpp_result_gen.inherits("interrupted-error"))
             throw Rcpp::internal::InterruptedException();

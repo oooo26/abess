@@ -9,8 +9,8 @@ sample_by_conf <- function(n, theta, seed) {
     .Call(`_abess_sample_by_conf`, n, theta, seed)
 }
 
-Ising_Gibbs <- function(theta, n_sample, burn, skip, value, using_seed = FALSE, seed = 1L) {
-    .Call(`_abess_Ising_Gibbs`, theta, n_sample, burn, skip, value, using_seed, seed)
+Ising_Gibbs <- function(theta, n_sample, burn, skip, value, seed = 1L) {
+    .Call(`_abess_Ising_Gibbs`, theta, n_sample, burn, skip, value, seed)
 }
 
 # Register entry points for exported C++ functions

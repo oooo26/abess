@@ -11,6 +11,7 @@ nodewise_L0(
   tune.type = "cv",
   foldid = NULL,
   support.size = NULL,
+  ic.scale = 1,
   graph.threshold = 0
 )
 }
@@ -30,6 +31,9 @@ Default is \code{"gic"}.}
 
 \item{support.size}{An integer vector representing the alternative support sizes.
 Only used for \code{tune.path = "sequence"}. Default is \code{0:min(n, round(n/(log(log(n))log(p))))}.}
+
+\item{ic.scale}{A non-negative value used for multiplying the penalty term 
+in information criterion. Default: \code{ic.scale = 1}.}
 }
 \value{
 
@@ -46,12 +50,17 @@ res <- nodewise_L0(train[["data"]], train[["weight"]], tune.type = "gic",
                    max.support.size = rep(4, p), support.size = rep(4, p))
 all((res[[1]] != 0) == (train[["theta"]] != 0))
 
+## use cross validation to nodewisely select support.size
 valid <- generate.bmn.data(n, p, type = 10, graph.seed = 1, seed = 10000, beta = 0.4)
 all(train[["theta"]] == valid[["theta"]])
 x <- rbind(train[["data"]], valid[["data"]])
 sample_weight <- c(train[["weight"]], valid[["weight"]])
 fold_id <- c(rep(1, length(train[["weight"]])), rep(2, length(valid[["weight"]])))
 res <- nodewise_L0(x, sample_weight, tune.type = "cv", foldid = fold_id, graph.threshold = 0.2)
+all((res[[1]] != 0) == (train[["theta"]] != 0))
+
+## use GIC to nodewisely select support.size (without post-thresholding)
+res <- nodewise_L0(x, sample_weight, tune.type = "gic", ic.scale = 2)
 all((res[[1]] != 0) == (train[["theta"]] != 0))
 
 }
