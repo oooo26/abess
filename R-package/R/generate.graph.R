@@ -92,7 +92,7 @@ gen_5nn_cyc <- function(n_node, lattice_col, degree, beta, alpha, type = c("ferr
   half_adj <- half_cyc_lattice(half_n_node, lattice_col)
   adj <- rbind(cbind(half_adj, matrix(0, nrow = half_n_node, ncol = half_n_node)), 
                cbind(matrix(0, nrow = half_n_node, ncol = half_n_node), half_adj))
-  adj[abs(row(adj) - col(adj)) == hald_n_node] <- 1
+  adj[abs(row(adj) - col(adj)) == half_n_node] <- 1
   # rowSums(adj)
   
   ind_nonzero <- which(adj != 0, arr.ind = TRUE)
@@ -121,7 +121,7 @@ gen_5nn_cyc <- function(n_node, lattice_col, degree, beta, alpha, type = c("ferr
   adj
 }
 
-sim_theta <- function(p, type = 1, graph_seed, beta, degree, alpha) {
+sim_theta <- function(p, type = 1, graph_seed, beta, degree, alpha, lattice_col) {
   set.seed(graph_seed)
   # chain structure: size = p - 1
   if (type == 1) {
@@ -263,11 +263,11 @@ sim_theta <- function(p, type = 1, graph_seed, beta, degree, alpha) {
   if (type == 12)
     theta <- gen_4nn_cyc(p, degree, beta, alpha, type = "glass_weak")
   if (type == 13)
-    theta <- gen_5nn_cyc(p, degree, beta, alpha, type = "ferro")
+    theta <- gen_5nn_cyc(p, lattice_col, degree, beta, alpha, type = "ferro")
   if (type == 14)
-    theta <- gen_5nn_cyc(p, degree, beta, alpha, type = "glass")
+    theta <- gen_5nn_cyc(p, lattice_col, degree, beta, alpha, type = "glass")
   if (type == 15)
-    theta <- gen_5nn_cyc(p, degree, beta, alpha, type = "glass_weak")
+    theta <- gen_5nn_cyc(p, lattice_col, degree, beta, alpha, type = "glass_weak")
   
   
   set.seed(NULL)
@@ -296,6 +296,7 @@ generate.bmn.data <-
            beta = 0.7,
            degree = 3,
            alpha = 0.4, 
+           lattice.col = 3, 
            method = "freq") {
     if (is.null(graph.seed)) {
       graph_seed <- round(runif(1 , 0, .Machine$integer.max))
@@ -309,7 +310,8 @@ generate.bmn.data <-
         graph_seed = graph_seed,
         beta = beta,
         degree = degree,
-        alpha = alpha
+        alpha = alpha, 
+        lattice_col = lattice.col
       )
     
     if (is.null(seed)) {

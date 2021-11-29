@@ -13,6 +13,7 @@ generate.bmn.data(
   beta = 0.7,
   degree = 3,
   alpha = 0.4,
+  lattice.col = 3,
   method = "freq"
 )
 }

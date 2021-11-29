@@ -59,8 +59,14 @@ fold_id <- c(rep(1, length(train[["weight"]])), rep(2, length(valid[["weight"]])
 res <- nodewise_L0(x, sample_weight, tune.type = "cv", foldid = fold_id, graph.threshold = 0.2)
 all((res[[1]] != 0) == (train[["theta"]] != 0))
 
-## use GIC to nodewisely select support.size (without post-thresholding)
+## use IC to nodewisely select support.size (without post-thresholding)
 res <- nodewise_L0(x, sample_weight, tune.type = "gic", ic.scale = 2)
+all((res[[1]] != 0) == (train[["theta"]] != 0))
+
+res <- nodewise_L0(x, sample_weight, tune.type = "gic", ic.scale = 1, graph.threshold = 0.2)
+all((res[[1]] != 0) == (train[["theta"]] != 0))
+
+#' res <- nodewise_L0(x, sample_weight, tune.type = "bic")
 all((res[[1]] != 0) == (train[["theta"]] != 0))
 
 }
