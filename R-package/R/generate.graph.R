@@ -68,6 +68,59 @@ gen_4nn_cyc <- function(n_node, degree, beta, alpha, type = c("ferro", "glass", 
     adj
   }
 
+half_cyc_lattice <- function(half_n_node, lattice_col) {
+  adj <- matrix(0, half_n_node, half_n_node)
+  lattice_row <- half_n_node / lattice_col
+  index_lr <- (row(adj) - col(adj) == 1 & col(adj) %% lattice_col != 0)
+  index_ud <- (row(adj) - col(adj) == lattice_col)
+  cycle_lr <- (col(adj) %% lattice_col == 0 & col(adj) - row(adj) == lattice_col - 1)
+  cycle_ud <- (col(adj) <= lattice_col & row(adj) - col(adj) == lattice_col * (lattice_row - 1))
+  index <- index_lr | index_ud | cycle_lr | cycle_ud
+  adj[index] <- 1
+  adj <- adj + t(adj)
+  adj
+}
+
+gen_5nn_cyc <- function(n_node, lattice_col, degree, beta, alpha, type = c("ferro", "glass", "glass_weak")) {
+  stopifnot(n_node %% 2 == 0)
+  stopifnot(lattice_col >= 3)
+  lattice_row <- n_node / lattice_col
+  stopifnot(lattice_row == round(lattice_row))
+  stopifnot(lattice_row >= 3)
+  
+  half_n_node <- n_node / 2
+  half_adj <- half_cyc_lattice(half_n_node, lattice_col)
+  adj <- rbind(cbind(half_adj, matrix(0, nrow = half_n_node, ncol = half_n_node)), 
+               cbind(matrix(0, nrow = half_n_node, ncol = half_n_node), half_adj))
+  adj[abs(row(adj) - col(adj)) == hald_n_node] <- 1
+  # rowSums(adj)
+  
+  ind_nonzero <- which(adj != 0, arr.ind = TRUE)
+  ind_nonzero <- ind_nonzero[ind_nonzero[, 1] > ind_nonzero[, 2],]
+  num_nonzero <- nrow(ind_nonzero)
+  
+  type <- match.arg(type)
+  
+  if (type == "ferro") {
+    value <- c(alpha, rep(beta, num_nonzero - 1))
+  } else if (type == "glass") {
+    len_pos <- round(num_nonzero / 2)
+    len_neg <- num_nonzero - len_pos
+    value_pos <- c(alpha, rep(beta, len_pos - 1))
+    value_neg <- c(-alpha, rep(-beta, len_neg - 1))
+    value <- c(value_pos, value_neg)
+  } else if (type == "glass_weak") {
+    value <- c(-alpha, rep(beta, num_nonzero - 1))
+  }
+  
+  value <- sample(value, size = num_nonzero, replace = FALSE)
+  for (i in 1:num_nonzero) {
+    adj[ind_nonzero[i, 1], ind_nonzero[i, 2]] <- value[i]
+    adj[ind_nonzero[i, 2], ind_nonzero[i, 1]] <- value[i]
+  }
+  adj
+}
+
 sim_theta <- function(p, type = 1, graph_seed, beta, degree, alpha) {
   set.seed(graph_seed)
   # chain structure: size = p - 1
@@ -210,7 +263,12 @@ sim_theta <- function(p, type = 1, graph_seed, beta, degree, alpha) {
   if (type == 12)
     theta <- gen_4nn_cyc(p, degree, beta, alpha, type = "glass_weak")
   if (type == 13)
-    theta <- gen_rr_adjmat(p, degree, beta, alpha, type = "ferro", degree_bound = FALSE)
+    theta <- gen_5nn_cyc(p, degree, beta, alpha, type = "ferro")
+  if (type == 14)
+    theta <- gen_5nn_cyc(p, degree, beta, alpha, type = "glass")
+  if (type == 15)
+    theta <- gen_5nn_cyc(p, degree, beta, alpha, type = "glass_weak")
+  
   
   set.seed(NULL)
   return(theta)
