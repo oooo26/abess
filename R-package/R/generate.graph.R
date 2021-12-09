@@ -33,6 +33,86 @@ gen_rr_adjmat <- function(n_node,
     adj
 }
 
+
+#' A recursive function used to find the path that: 
+#' (i) go through all node via the pre-specified edges;
+#' (ii) the path have no loop.
+#'
+#' @param i 
+#' @param sub_path 
+#' @param adj 
+#' @param n_node 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#' index <- find_path(3, c(3), adj, n_node)
+#' length(unique(index)) == n_node
+#' alpha_adj_index <- cbind(index[-n_node], index[-1])
+#' result <- c()
+#' for (i in 1:nrow(alpha_adj_index)) {
+#'   result <- c(result, adj[alpha_adj_index[i, 1], alpha_adj_index[i, 2]])
+#' }
+#' all(result == 1)
+#' 
+find_path <- function(i, sub_path, adj, n_node) {
+  if (length(sub_path) == n_node) {
+    return(sub_path)
+  }
+  i_adj <- which(adj[, i] != 0)
+  i_adj <- setdiff(i_adj, sub_path)
+  if (length(i_adj) == 0) {
+    return(c(sub_path, NA))
+  }
+  for (j in i_adj) {
+    new_sub_path <- c(sub_path, j)
+    new_node <- find_path(j, new_sub_path, adj, n_node)
+    if (anyNA(new_node)) {
+    } else {
+      return(new_node)
+    }
+  }
+  return(c(sub_path, NA))
+}
+
+
+gen_rr_adjmat2 <- function(n_node,
+                           degree,
+                           beta,
+                           alpha,
+                           type = c("ferro", "glass")) 
+{
+  g <- igraph::sample_k_regular(n_node, degree)
+  adj <- as.matrix(igraph::as_adjacency_matrix(g, type = "both"))
+  
+  type <- match.arg(type)
+  
+  ind_nonzero <- which(adj != 0, arr.ind = TRUE)
+  ind_nonzero <- ind_nonzero[ind_nonzero[, 1] > ind_nonzero[, 2], ]
+  num_nonzero <- nrow(ind_nonzero)
+  
+  for (i in 1:num_nonzero) {
+    value <- beta
+    if (type == "glass") {
+      value <- sample(c(-1, 1), size = 1) * value
+    }
+    adj[ind_nonzero[i, 1], ind_nonzero[i, 2]] <- value
+    adj[ind_nonzero[i, 2], ind_nonzero[i, 1]] <- value
+  }
+  
+  value <- rep(alpha, n_node - 1)
+  if (type == "glass") {
+    value <- sample(c(-1, 1), size = (n_node - 1), replace = TRUE) * value
+  }
+  index <- find_path(1, c(1), adj, n_node)
+  alpha_adj_index <- cbind(index[-n_node], index[-1])
+  for (i in 1:(n_node - 1)) {
+    adj[alpha_adj_index[i, 1], alpha_adj_index[i, 2]] <- value[i]
+  }
+  adj
+}
+
 gen_4nn_cyc <- function(n_node, degree, beta, alpha, type = c("ferro", "glass", "glass_weak")) {
     adj <- matrix(0, n_node, n_node)
     index_lr <- (row(adj) - col(adj) == 1 & col(adj) %% sqrt(n_node) != 0)
@@ -268,7 +348,10 @@ sim_theta <- function(p, type = 1, graph_seed, beta, degree, alpha, lattice_col)
     theta <- gen_5nn_cyc(p, lattice_col, degree, beta, alpha, type = "glass")
   if (type == 15)
     theta <- gen_5nn_cyc(p, lattice_col, degree, beta, alpha, type = "glass_weak")
-  
+  if (type == 16)
+    theta <- gen_rr_adjmat2(p, degree, beta, alpha, type = "ferro")
+  if (type == 17)
+    theta <- gen_rr_adjmat2(p, degree, beta, alpha, type = "glass")
   
   set.seed(NULL)
   return(theta)
