@@ -44,7 +44,7 @@ gen_rr_adjmat <- function(n_node,
 #' @param n_node 
 #'
 #' @return
-#' @export
+#' @noRd
 #'
 #' @examples
 #' index <- find_path(3, c(3), adj, n_node)
