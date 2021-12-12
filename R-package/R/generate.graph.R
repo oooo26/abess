@@ -363,6 +363,7 @@ sim_theta <- function(p, type = 1, graph_seed, beta, degree, alpha, lattice_col)
 #' @param type
 #' @param graph.seed
 #' @param beta
+#' @param theta
 #' @param degree
 #' @param alpha
 #' 
@@ -376,6 +377,7 @@ generate.bmn.data <-
            type = 1,
            seed = NULL,
            graph.seed = NULL,
+           theta = NULL, 
            beta = 0.7,
            degree = 3,
            alpha = 0.4, 
@@ -386,16 +388,21 @@ generate.bmn.data <-
     } else {
       graph_seed <- graph.seed
     }
-    theta <-
-      sim_theta(
-        p,
-        type = type,
-        graph_seed = graph_seed,
-        beta = beta,
-        degree = degree,
-        alpha = alpha, 
-        lattice_col = lattice.col
-      )
+    
+    if (is.null(theta)) {
+      theta <-
+        sim_theta(
+          p,
+          type = type,
+          graph_seed = graph_seed,
+          beta = beta,
+          degree = degree,
+          alpha = alpha, 
+          lattice_col = lattice.col
+        )
+    } else {
+      ## check theta (TODO)
+    }
     
     if (is.null(seed)) {
       seed <- round(runif(1 , 0, .Machine$integer.max))

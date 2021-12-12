@@ -10,6 +10,7 @@ generate.bmn.data(
   type = 1,
   seed = NULL,
   graph.seed = NULL,
+  theta = NULL,
   beta = 0.7,
   degree = 3,
   alpha = 0.4,
