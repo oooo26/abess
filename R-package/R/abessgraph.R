@@ -312,18 +312,17 @@ nodewise_L0 <- function(x,
         seed = 1
       )
     if (is.null(support.size)) {
-      est_theta_node <- as.vector(extract(model_node)[["beta"]]) / 2
+      est_theta_node <- as.vector(extract(model_node)[["beta"]])
     } else {
-      est_theta_node <- as.vector(extract(model_node, support.size = support.size[node])[["beta"]]) / 2
+      est_theta_node <- as.vector(extract(model_node, support.size = support.size[node])[["beta"]])
     }
-    theta[node, -node] <- est_theta_node
+    theta[node, -node] <- (est_theta_node / 2)
   }
+  theta <- (t(theta) + theta) / 2
   
   if (graph.threshold > 0.0 && is.null(support.size)) {
     theta <- thres_bmn_est(theta, graph.threshold)
   }
-  
-  theta <- (t(theta) + theta) / 2
   
   res_out <- list(
     omega = theta
