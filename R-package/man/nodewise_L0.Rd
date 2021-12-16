@@ -12,7 +12,8 @@ nodewise_L0(
   foldid = NULL,
   support.size = NULL,
   ic.scale = 1,
-  graph.threshold = 0
+  graph.threshold = 0,
+  sparse = FALSE
 )
 }
 \arguments{
@@ -66,7 +67,14 @@ all((res[[1]] != 0) == (train[["theta"]] != 0))
 res <- nodewise_L0(x, sample_weight, tune.type = "gic", ic.scale = 1, graph.threshold = 0.2)
 all((res[[1]] != 0) == (train[["theta"]] != 0))
 
-#' res <- nodewise_L0(x, sample_weight, tune.type = "bic")
-all((res[[1]] != 0) == (train[["theta"]] != 0))
+new_theta <- train[["theta"]]
+diag(new_theta) <- 0.1
+train <- generate.bmn.data(2 * n, p, theta = new_theta)
+system.time(res <- nodewise_L0(train[["data"]], train[["weight"]], tune.type = "gic", ic.scale = 1, graph.threshold = 0.2))
+mean(res[[1]] - train[["theta"]])
+mean(diag(res[[1]]) - diag(train[["theta"]]))
+system.time(res <- nodewise_L0(train[["data"]], train[["weight"]], tune.type = "gic", ic.scale = 1, graph.threshold = 0.2, sparse = TRUE))
+mean(res[[1]] - train[["theta"]])
+mean(diag(res[[1]]) - diag(train[["theta"]]))
 
 }

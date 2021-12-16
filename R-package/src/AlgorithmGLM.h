@@ -185,6 +185,7 @@ public:
     Eigen::VectorXd betabar = Eigen::VectorXd::Zero(p);
     Eigen::VectorXd dbar = Eigen::VectorXd::Zero(p);
 
+    // std::cout << "InvphiG: " << std::endl;
     for (int i = 0; i < N; i++)
     {
       T4 XG = X.middleCols(g_index(i), g_size(i));
@@ -202,7 +203,14 @@ public:
       Eigen::MatrixXd invphiG = phiG.ldlt().solve(Eigen::MatrixXd::Identity(g_size(i), g_size(i)));
       betabar.segment(g_index(i), g_size(i)) = phiG * beta.segment(g_index(i), g_size(i));
       dbar.segment(g_index(i), g_size(i)) = invphiG * d.segment(g_index(i), g_size(i));
+
+      // std::cout << invphiG << " ";
+      // For Ising model, it can be simplified as: 
+      // betabar.segment(g_index(i), g_size(i)) = beta.segment(g_index(i), g_size(i));
+      // dbar.segment(g_index(i), g_size(i)) = d.segment(g_index(i), g_size(i));
     }
+    // std::cout << std::endl;
+
     for (int i = 0; i < A_size; i++)
     {
       bd(A(i)) = betabar.segment(g_index(A(i)), g_size(A(i))).squaredNorm() / g_size(A(i));

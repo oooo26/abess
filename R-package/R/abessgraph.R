@@ -263,8 +263,15 @@ recovery_adjacent_matrix <- function(x, p) {
 #' res <- nodewise_L0(x, sample_weight, tune.type = "gic", ic.scale = 1, graph.threshold = 0.2)
 #' all((res[[1]] != 0) == (train[["theta"]] != 0))
 #' 
-#' #' res <- nodewise_L0(x, sample_weight, tune.type = "bic")
-#' all((res[[1]] != 0) == (train[["theta"]] != 0))
+#' new_theta <- train[["theta"]]
+#' diag(new_theta) <- 0.1
+#' train <- generate.bmn.data(2 * n, p, theta = new_theta)
+#' system.time(res <- nodewise_L0(train[["data"]], train[["weight"]], tune.type = "gic", ic.scale = 1, graph.threshold = 0.2))
+#' mean(res[[1]] - train[["theta"]])
+#' mean(diag(res[[1]]) - diag(train[["theta"]]))
+#' system.time(res <- nodewise_L0(train[["data"]], train[["weight"]], tune.type = "gic", ic.scale = 1, graph.threshold = 0.2, sparse = TRUE))
+#' mean(res[[1]] - train[["theta"]])
+#' mean(diag(res[[1]]) - diag(train[["theta"]]))
 #' 
 nodewise_L0 <- function(x,
                         weight = NULL, 
@@ -273,7 +280,8 @@ nodewise_L0 <- function(x,
                         foldid = NULL, 
                         support.size = NULL,
                         ic.scale = 1, 
-                        graph.threshold = 0.0) 
+                        graph.threshold = 0.0, 
+                        sparse = FALSE) 
 {
   p <- ncol(x)
   if (is.null(max.support.size)) {
@@ -287,6 +295,13 @@ nodewise_L0 <- function(x,
     nfolds <- length(unique(foldid))
   } else {
     nfolds <- 1
+  }
+  
+  ## simple test suggest that sparsity is not useful:
+  # sparse <- FALSE
+  if (sparse) {
+    non_zero_ind <- which(x == 1, arr.ind = TRUE)
+    x <- sparseMatrix(i = non_zero_ind[, 1], j = non_zero_ind[, 2], x = 1)
   }
   
   theta <- matrix(0, p, p)
@@ -317,8 +332,17 @@ nodewise_L0 <- function(x,
       est_theta_node <- as.vector(extract(model_node, support.size = support.size[node])[["beta"]])
     }
     theta[node, -node] <- (est_theta_node / 2)
+    theta[node, node] <- extract(model_node)[["intercept"]] / 2
   }
   theta <- (t(theta) + theta) / 2
+  if (sparse) {
+    # For {0, 1} dataset, the pseudo likelihood no need to divide 2. 
+    # Here, 2 is multiply to compensate the divide 2 operation before. 
+    theta <- 2 * theta 
+    diag(theta) <- 0.25 * (colSums(theta) + diag(theta))
+    theta <- theta / 4
+    diag(theta) <- diag(theta) * 4
+  }
   
   if (graph.threshold > 0.0 && is.null(support.size)) {
     theta <- thres_bmn_est(theta, graph.threshold)
@@ -333,11 +357,13 @@ nodewise_L0 <- function(x,
 
 
 thres_bmn_est <- function(theta, thres) {
+  theta_diag <- diag(theta)
   if (thres > 0) {
     theta[abs(theta) <= thres] <- 0
   } else if (thres < 0) {
     theta_vec <- as.vector(theta)
     ## TODO: use finite mixture model to cluster
   } 
+  diag(theta) <- theta_diag
   theta
 }
