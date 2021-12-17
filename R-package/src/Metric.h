@@ -12,7 +12,7 @@
 #include <algorithm>
 #include "utilities.h"
 
-template <class T1, class T2, class T3, class T4, class T5>
+template <class T1, class T2, class T3, class T4>
 // To do: calculate loss && all to one && lm poisson cox
 class Metric
 {
@@ -36,7 +36,7 @@ public:
   std::vector<Eigen::VectorXd> train_weight_list;
   std::vector<Eigen::VectorXd> test_weight_list;
 
-  std::vector<FIT_ARG<T2, T3, T5>> cv_init_fit_arg;
+  std::vector<FIT_ARG<T2, T3>> cv_init_fit_arg;
 
   // std::vector<std::vector<T4>> group_XTX_list;
 
@@ -70,9 +70,9 @@ public:
       T3 coef0_init;
       coef_set_zero(beta_size, M, beta_init, coef0_init);
       Eigen::VectorXi A_init;
-      T5 bd_init;
+      Eigen::VectorXd bd_init;
 
-      FIT_ARG<T2, T3, T5> fit_arg(0, 0., beta_init, coef0_init, bd_init, A_init);
+      FIT_ARG<T2, T3> fit_arg(0, 0., beta_init, coef0_init, bd_init, A_init);
 
       cv_init_fit_arg[i] = fit_arg;
     }
@@ -112,7 +112,7 @@ public:
   //   this->cv_initial_coef0[k] = coef0;
   // }
 
-  void set_cv_train_test_mask(Data<T1, T2, T3, T4, T5> &data, int n, Eigen::VectorXi &cv_fold_id)
+  void set_cv_train_test_mask(Data<T1, T2, T3, T4> &data, int n, Eigen::VectorXi &cv_fold_id)
   {
     Eigen::VectorXi index_list(n);
     std::vector<int> index_vec((unsigned int)n);
@@ -225,7 +225,7 @@ public:
   //   this->group_XTX_list = group_XTX_list_tmp;
   // }
 
-  double ic(int train_n, int M, int N, Algorithm<T1, T2, T3, T4, T5> *algorithm)
+  double ic(int train_n, int M, int N, Algorithm<T1, T2, T3, T4> *algorithm)
   {
     double loss;
     if (algorithm->model_type == 1 || algorithm->model_type == 5)
@@ -307,6 +307,7 @@ public:
       Eigen::VectorXi g_index = data.g_index;
       Eigen::VectorXi g_size = data.g_size;
       int p = data.p;
+      int N = data.g_num;
 
 #pragma omp parallel for
       ///////////////////////parallel/////////////////////////

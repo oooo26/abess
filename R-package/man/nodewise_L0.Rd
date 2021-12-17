@@ -30,10 +30,13 @@ we set \code{weight = 1} for each observation as default.}
 Available options are \code{"gic"}, \code{"ebic"}, \code{"bic"}, \code{"aic"} and \code{"cv"}.
 Default is \code{"gic"}.}
 
+\item{foldid}{an optional integer vector of values between 1, ..., nfolds identifying what fold each observation is in.
+The default \code{foldid = NULL} would generate a random foldid.}
+
 \item{support.size}{An integer vector representing the alternative support sizes.
 Only used for \code{tune.path = "sequence"}. Default is \code{0:min(n, round(n/(log(log(n))log(p))))}.}
 
-\item{ic.scale}{A non-negative value used for multiplying the penalty term 
+\item{ic.scale}{A non-negative value used for multiplying the penalty term
 in information criterion. Default: \code{ic.scale = 1}.}
 }
 \value{

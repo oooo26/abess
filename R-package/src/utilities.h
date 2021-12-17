@@ -66,7 +66,6 @@ void MatrixXd2Pointer(Eigen::MatrixXd x_matrix, double *x);
 // void MatrixXi2Pointer(Eigen::MatrixXi x_matrix, int *x);
 void VectorXd2Pointer(Eigen::VectorXd x_vector, double *x);
 // void VectorXi2Pointer(Eigen::VectorXi x_vector, int *x);
-void VectorXd2Pointer(Eigen::Matrix<long double, Eigen::Dynamic, 1> x_vector, long double *x);
 #endif
 
 Eigen::VectorXi find_ind(Eigen::VectorXi &L, Eigen::VectorXi &index, Eigen::VectorXi &gsize, int beta_size, int N);
@@ -145,23 +144,19 @@ Eigen::VectorXi Ac(Eigen::VectorXi &A, int N);
 Eigen::VectorXi diff_union(Eigen::VectorXi A, Eigen::VectorXi &B, Eigen::VectorXi &C);
 Eigen::VectorXi min_k(Eigen::VectorXd &nums, int k, bool sort_by_value = false);
 Eigen::VectorXi max_k(Eigen::VectorXd &nums, int k, bool sort_by_value = false);
-Eigen::VectorXi min_k(Eigen::Matrix<long double, Eigen::Dynamic, 1> &nums, int k, bool sort_by_value = false);
-Eigen::VectorXi max_k(Eigen::Matrix<long double, Eigen::Dynamic, 1> &nums, int k, bool sort_by_value = false);
+
 // Eigen::VectorXi max_k_2(Eigen::VectorXd &vec, int k);
 
 // to do
 void slice(Eigen::VectorXd &nums, Eigen::VectorXi &ind, Eigen::VectorXd &A, int axis = 0);
 void slice(Eigen::MatrixXd &nums, Eigen::VectorXi &ind, Eigen::MatrixXd &A, int axis = 0);
 void slice(Eigen::SparseMatrix<double> &nums, Eigen::VectorXi &ind, Eigen::SparseMatrix<double> &A, int axis = 0);
-void slice(Eigen::Matrix<long double, Eigen::Dynamic, 1> &nums, Eigen::VectorXi &ind, Eigen::Matrix<long double, Eigen::Dynamic, 1> &A, int axis = 0);
 
 void slice_restore(Eigen::VectorXd &A, Eigen::VectorXi &ind, Eigen::VectorXd &nums, int axis = 0);
 void slice_restore(Eigen::MatrixXd &A, Eigen::VectorXi &ind, Eigen::MatrixXd &nums, int axis = 0);
-void slice_restore(Eigen::Matrix<long double, Eigen::Dynamic, 1> &A, Eigen::VectorXi &ind, Eigen::Matrix<long double, Eigen::Dynamic, 1> &nums, int axis = 0);
 
 void coef_set_zero(int p, int M, Eigen::VectorXd &beta, double &coef0);
 void coef_set_zero(int p, int M, Eigen::MatrixXd &beta, Eigen::VectorXd &coef0);
-void coef_set_zero(int p, int M, Eigen::Matrix<long double, Eigen::Dynamic, 1> &beta, double &coef0);
 
 Eigen::VectorXd array_product(Eigen::VectorXd &A, Eigen::VectorXd &B, int axis = 0);
 Eigen::MatrixXd array_product(Eigen::MatrixXd &A, Eigen::VectorXd &B, int axis = 0);
@@ -169,10 +164,8 @@ Eigen::MatrixXd array_product(Eigen::MatrixXd &A, Eigen::VectorXd &B, int axis =
 
 void array_quotient(Eigen::VectorXd &A, Eigen::VectorXd &B, int axis = 0);
 void array_quotient(Eigen::MatrixXd &A, Eigen::VectorXd &B, int axis = 0);
-void array_quotient(Eigen::Matrix<long double, Eigen::Dynamic, 1> &A, Eigen::VectorXd &B, int axis = 0);
 
 double matrix_dot(Eigen::VectorXd &A, Eigen::VectorXd &B);
-double matrix_dot(Eigen::Matrix<long double, Eigen::Dynamic, 1> &A, Eigen::VectorXd &B);
 Eigen::VectorXd matrix_dot(Eigen::MatrixXd &A, Eigen::VectorXd &B);
 
 void matrix_sqrt(Eigen::MatrixXd &A, Eigen::MatrixXd &B);

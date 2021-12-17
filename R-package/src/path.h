@@ -68,15 +68,14 @@ void sequential_path_cv(Data<T1, T2, T3, T4> &data, Algorithm<T1, T2, T3, T4> *a
     Eigen::MatrixXd train_loss_matrix(sequence_size, lambda_size);
     Eigen::MatrixXd ic_matrix(sequence_size, lambda_size);
     Eigen::MatrixXd test_loss_matrix(sequence_size, lambda_size);
-    Eigen::Matrix<T5, Dynamic, Dynamic> bd_matrix(sequence_size, lambda_size);
+    Eigen::Matrix<VectorXd, Dynamic, Dynamic> bd_matrix(sequence_size, lambda_size);
     Eigen::MatrixXd effective_number_matrix(sequence_size, lambda_size);
 
-    //init beta & coef0
     T2 beta_init;
     T3 coef0_init;
     coef_set_zero(beta_size, M, beta_init, coef0_init);
     Eigen::VectorXi A_init;
-    T5 bd_init;
+    Eigen::VectorXd bd_init;
 
     for (int i = 0; i < sequence_size; i++)
     {

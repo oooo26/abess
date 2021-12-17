@@ -6,7 +6,7 @@
 using namespace std;
 
 template <class T4>
-class abessLogistic : public Algorithm<Eigen::VectorXd, Eigen::VectorXd, double, T4, Eigen::VectorXd>
+class abessLogistic : public Algorithm<Eigen::VectorXd, Eigen::VectorXd, double, T4>
 {
 public:
   bool approximate_Newton; /* use approximate Newton method or not. */
@@ -193,7 +193,6 @@ public:
     Eigen::VectorXd betabar = Eigen::VectorXd::Zero(p);
     Eigen::VectorXd dbar = Eigen::VectorXd::Zero(p);
 
-    // std::cout << "InvphiG: " << std::endl;
     for (int i = 0; i < N; i++)
     {
       T4 XG = X.middleCols(g_index(i), g_size(i));
@@ -211,14 +210,7 @@ public:
       Eigen::MatrixXd invphiG = phiG.ldlt().solve(Eigen::MatrixXd::Identity(g_size(i), g_size(i)));
       betabar.segment(g_index(i), g_size(i)) = phiG * beta.segment(g_index(i), g_size(i));
       dbar.segment(g_index(i), g_size(i)) = invphiG * d.segment(g_index(i), g_size(i));
-
-      // std::cout << invphiG << " ";
-      // For Ising model, it can be simplified as: 
-      // betabar.segment(g_index(i), g_size(i)) = beta.segment(g_index(i), g_size(i));
-      // dbar.segment(g_index(i), g_size(i)) = d.segment(g_index(i), g_size(i));
     }
-    // std::cout << std::endl;
-
     for (int i = 0; i < A_size; i++)
     {
       bd(A(i)) = betabar.segment(g_index(A(i)), g_size(A(i))).squaredNorm() / g_size(A(i));
@@ -278,7 +270,7 @@ public:
 };
 
 template <class T4>
-class abessLm : public Algorithm<Eigen::VectorXd, Eigen::VectorXd, double, T4, Eigen::VectorXd>
+class abessLm : public Algorithm<Eigen::VectorXd, Eigen::VectorXd, double, T4>
 {
 public:
   bool clear = true;
@@ -527,7 +519,7 @@ public:
 };
 
 template <class T4>
-class abessPoisson : public Algorithm<Eigen::VectorXd, Eigen::VectorXd, double, T4, Eigen::VectorXd>
+class abessPoisson : public Algorithm<Eigen::VectorXd, Eigen::VectorXd, double, T4>
 {
 public:
   bool approximate_Newton; /* use approximate Newton method or not. */
@@ -814,7 +806,7 @@ public:
 };
 
 template <class T4>
-class abessCox : public Algorithm<Eigen::VectorXd, Eigen::VectorXd, double, T4, Eigen::VectorXd>
+class abessCox : public Algorithm<Eigen::VectorXd, Eigen::VectorXd, double, T4>
 {
 public:
   Eigen::MatrixXd cox_hessian; /* hessian matrix for cox model. */
@@ -1170,7 +1162,7 @@ public:
 };
 
 template <class T4>
-class abessMLm : public Algorithm<Eigen::MatrixXd, Eigen::MatrixXd, Eigen::VectorXd, T4, Eigen::VectorXd>
+class abessMLm : public Algorithm<Eigen::MatrixXd, Eigen::MatrixXd, Eigen::VectorXd, T4>
 {
 public:
   bool clear = true;
@@ -1425,7 +1417,7 @@ public:
 };
 
 template <class T4>
-class abessMultinomial : public Algorithm<Eigen::MatrixXd, Eigen::MatrixXd, Eigen::VectorXd, T4, Eigen::VectorXd>
+class abessMultinomial : public Algorithm<Eigen::MatrixXd, Eigen::MatrixXd, Eigen::VectorXd, T4>
 {
 public:
   bool approximate_Newton; /* use approximate Newton method or not. */

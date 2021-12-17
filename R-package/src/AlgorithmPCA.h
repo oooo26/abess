@@ -7,7 +7,7 @@
 using namespace Spectra;
 
 template <class T4>
-class abessPCA : public Algorithm<Eigen::VectorXd, Eigen::VectorXd, double, T4, Eigen::VectorXd>
+class abessPCA : public Algorithm<Eigen::VectorXd, Eigen::VectorXd, double, T4>
 {
 public:
   int pca_n = -1;

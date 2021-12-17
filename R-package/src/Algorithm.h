@@ -66,7 +66,7 @@ bool quick_sort_pair_max(std::pair<int, double> x, std::pair<int, double> y);
  * <Eigen::MatrixXd, Eigen::MatrixXd, Eigen::VectorXd, Eigen::SparseMatrix<double> > for Multivariable Sparse
  */
 
-template <class T1, class T2, class T3, class T4, class T5>
+template <class T1, class T2, class T3, class T4>
 class Algorithm
 {
 public:
@@ -84,14 +84,14 @@ public:
   T4 *x = NULL;
   T1 *y = NULL;
   T2 beta;                 /* coefficients. */
-  T5 bd;      /* sacrifices. */
+  Eigen::VectorXd bd;      /* */
   T3 coef0;                /* intercept. */
   double train_loss = 0.;  /* train loss. */
   T2 beta_init;            /* initialization coefficients. */
   T3 coef0_init;           /* initialization intercept. */
   Eigen::VectorXi A_init;  /* initialization active set. */
   Eigen::VectorXi I_init;  /* initialization inactive set. */
-  T5 bd_init; /* initialization bd vector. */
+  Eigen::VectorXd bd_init; /* initialization bd vector. */
 
   Eigen::VectorXi A_out; /* final active set. */
   Eigen::VectorXi I_out; /* final active set. */
@@ -141,7 +141,7 @@ public:
     this->I_init = Ac(A_init, g_num);
   }
 
-  void update_bd_init(T5 &bd_init) { this->bd_init = bd_init; }
+  void update_bd_init(Eigen::VectorXd &bd_init) { this->bd_init = bd_init; }
 
   void update_coef0_init(T3 coef0) { this->coef0_init = coef0; }
 
@@ -203,9 +203,8 @@ public:
     this->bd = this->bd_init;
     if (this->sub_search == 0 || this->sparsity_level + this->sub_search > N)
       this->U_size = N;
-    }else{
+    else
       this->U_size = this->sparsity_level + this->sub_search;
-    }
 
     // specific init 
     this->inital_setting(train_x, train_y, train_weight, g_index, g_size, N);
@@ -214,9 +213,8 @@ public:
     if (N == T0)
     {
       this->A_out = Eigen::VectorXi::LinSpaced(N, 0, N - 1);
-      
-      T2 beta_old = this->beta;
-      T3 coef0_old = this->coef0;
+      // T2 beta_old = this->beta;
+      // T3 coef0_old = this->coef0;
       bool success = this->primary_model_fit(train_x, train_y, train_weight, this->beta, this->coef0, DBL_MAX, this->A_out, g_index, g_size);
       // if (!success){
       //   this->beta = beta_old;
@@ -241,7 +239,7 @@ public:
     // if (this->algorithm_type == 6)
     // {
 
-    T3 coef0_old = this->coef0;
+    // T3 coef0_old = this->coef0;
     bool success = this->primary_model_fit(X_A, train_y, train_weight, beta_A, this->coef0, DBL_MAX, A, g_index, g_size);
     // if (!success){
     //   this->coef0 = coef0_old;
@@ -285,11 +283,10 @@ public:
     this->effective_number = this->effective_number_of_parameter(train_x, X_A, train_y, train_weight, this->beta, beta_A, this->coef0);
     this->group_df = A_ind.size();
 
-    // cout<<"End Fit"<<endl;///
     return;
   };
 
-  virtual void get_A(T4 &X, T1 &y, Eigen::VectorXi &A, Eigen::VectorXi &I, int &C_max, T2 &beta, T3 &coef0, T5 &bd, int T0, Eigen::VectorXd &weights,
+  void get_A(T4 &X, T1 &y, Eigen::VectorXi &A, Eigen::VectorXi &I, int &C_max, T2 &beta, T3 &coef0, Eigen::VectorXd &bd, int T0, Eigen::VectorXd &weights,
              Eigen::VectorXi &g_index, Eigen::VectorXi &g_size, int N, double tau, double &train_loss)
   {
     Eigen::VectorXi U(this->U_size);
@@ -317,7 +314,7 @@ public:
     int iter = 0;
     while (iter++ < this->max_iter)
     {
-      // cout<<"==> get_A | iter = "<<iter<<" | T0 = "<<T0<<" | Usize = "<<this->U_size<<" | N = "<<N<<" | p = "<<p<<endl;///
+
       // mapping
       if (this->U_size == N)
       {
@@ -337,31 +334,29 @@ public:
         *X_U = X_seg(X, n, U_ind, this->model_type);
         slice(beta, U_ind, beta_U);
 
-        if (this->model_type != 8){ // group is not supported in Ising now 
-          int pos = 0;
-          for (int i = 0; i < this->U_size; i++)
-          {
-            g_size_U(i) = g_size(U(i));
-            g_index_U(i) = pos;
-            pos += g_size_U(i);
-          }
+        int pos = 0;
+        for (int i = 0; i < U.size(); i++)
+        {
+          g_size_U(i) = g_size(U(i));
+          g_index_U(i) = pos;
+          pos += g_size_U(i);
         }
 
         A_U = Eigen::VectorXi::LinSpaced(T0, 0, T0 - 1);
         I_U = Eigen::VectorXi::LinSpaced(this->U_size - T0, T0, this->U_size - 1);
 
-        int *temp = new int[N], as = this->always_select.size();
+        int *temp = new int[N], s = this->always_select.size();
         memset(temp, 0, N);
-        for (int i = 0; i < as; i++)
+        for (int i = 0; i < s; i++)
           temp[this->always_select(i)] = 1;
         for (int i = 0; i < this->U_size; i++)
         {
-          if (as <= 0)
+          if (s <= 0)
             break;
           if (temp[U(i)] == 1)
           {
-            always_select_U(this->always_select.size() - as) = i;
-            as--;
+            always_select_U(this->always_select.size() - s) = i;
+            s--;
           }
         }
         delete[] temp;
@@ -377,7 +372,7 @@ public:
         T2 beta_A;
         slice(beta_U, A_ind, beta_A);
 
-        T5 bd_U = T5::Zero(this->U_size);
+        Eigen::VectorXd bd_U = Eigen::VectorXd::Zero(this->U_size);
         this->sacrifice(*X_U, X_A, y, beta_U, beta_A, coef0, A_U, I_U, weights, g_index_U, g_size_U, this->U_size, A_ind, bd_U, U, U_ind, num);
 
         for (int i = 0; i < always_select_U.size(); i++)
@@ -389,36 +384,17 @@ public:
         bool exchange = this->splicing(*X_U, y, A_U, I_U, C_max, beta_U, coef0, bd_U, weights,
                                        g_index_U, g_size_U, this->U_size, tau, l0);
 
-        // cout<<"  --> splicing num = "<<num<<endl;///
-        // break;
-
         if (exchange)
           train_loss = l0;
         else
           break; // A_U is stable
       }
 
-      if (A_U.size() == 0 || A_U.maxCoeff() == T0 - 1){
-        // cout<<"End get A"<<endl;///
+      if (A_U.size() == 0 || A_U.maxCoeff() == T0 - 1)
         break; // if A_U not change, stop
-      }
 
       // store beta, A, I
       slice_restore(beta_U, U_ind, beta);
-
-      // int *temp = new int[N];
-      // memset(temp, 0, N);
-      // for (int i = 0; i < T0; i++)
-      //   temp[U(A_U(i))] = 1;
-
-      // int tempA = 0, tempI = 0;
-      // for (int i = 0; i < N; i++)
-      //   if (temp[i] == 0)
-      //     I(tempI++) = i;
-      //   else
-      //     A(tempA++) = i;
-      
-      // delete[] temp;
 
       Eigen::VectorXi ind = Eigen::VectorXi::Zero(N);
       for (int i = 0; i < T0; i++)
@@ -468,11 +444,9 @@ public:
     return;
   };
 
-  virtual bool splicing(T4 &X, T1 &y, Eigen::VectorXi &A, Eigen::VectorXi &I, int &C_max, T2 &beta, T3 &coef0, T5 &bd, Eigen::VectorXd &weights,
+  bool splicing(T4 &X, T1 &y, Eigen::VectorXi &A, Eigen::VectorXi &I, int &C_max, T2 &beta, T3 &coef0, Eigen::VectorXd &bd, Eigen::VectorXd &weights,
                 Eigen::VectorXi &g_index, Eigen::VectorXi &g_size, int N, double tau, double &train_loss)
   {
-    // cout<<" --> splicing | A = ";///
-    // for (int i = 0;i<A.size();i++) {cout<<A(i)<<" ";} cout<<endl;///
     if (C_max <= 0)
       return false;
 
@@ -483,8 +457,8 @@ public:
     int A_size = A.size();
     int I_size = I.size();
 
-    T5 beta_A_group(A_size);
-    T5 d_I_group(I_size);
+    Eigen::VectorXd beta_A_group(A_size);
+    Eigen::VectorXd d_I_group(I_size);
     for (int i = 0; i < A_size; i++)
     {
       beta_A_group(i) = bd(A(i));
@@ -505,15 +479,10 @@ public:
     // }
 
     Eigen::VectorXi A_exchange(A_size);
-    Eigen::VectorXi A_ind_exchange;
-    T4 X_A_exchange;
+    Eigen::VectorXi A_ind_exchage;
+    T4 X_A_exchage;
     T2 beta_A_exchange;
     T3 coef0_A_exchange;
-
-    // cout << " | A_min_k : ";
-    // for (int i=0;i<A_min_k.size();i++) cout<<A(A_min_k(i))<<"("<<this->map1(A(A_min_k(i)), 0)<<","<<this->map1(A(A_min_k(i)), 1)<<") ";cout<<endl;
-    // cout << " | I_max_k : ";
-    // for (int i=0;i<I_max_k.size();i++) cout<<I(I_max_k(i))<<"("<<this->map1(I(I_max_k(i)), 0)<<","<<this->map1(I(I_max_k(i)), 1)<<") ";cout<<endl;
 
     double L;
     for (int k = C_max; k >= 1;)
@@ -536,11 +505,9 @@ public:
         train_loss = L;
         A = A_exchange;
         I = Ac(A_exchange, N);
-        slice_restore(beta_A_exchange, A_ind_exchange, beta);
+        slice_restore(beta_A_exchange, A_ind_exchage, beta);
         coef0 = coef0_A_exchange;
         C_max = k;
-
-        // cout<<"   ~~> exchange k = "<<k<<endl;///
 
         return true;
       }

@@ -118,11 +118,4 @@ Eigen::VectorXi screening(Data<T1, T2, T3, T4> &data, std::vector<Algorithm<T1, 
     return screening_A_ind;
 }
 
-template <class T4>
-Eigen::VectorXi screening(Data<Eigen::VectorXd, Eigen::Matrix<long double, Eigen::Dynamic, 1>, double, T4, Eigen::Matrix<long double, Eigen::Dynamic, 1>> &data, int model_type, int screening_size, Eigen::VectorXi &always_select, bool approximate_Newton, int primary_model_fit_max_iter, double primary_model_fit_epsilon)
-{
-    // to do
-    return Eigen::VectorXi::LinSpaced(screening_size, 0, screening_size - 1);
-}
-
 #endif
