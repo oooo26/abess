@@ -367,6 +367,8 @@ sim_theta <- function(p, type = 1, graph_seed, beta, degree, alpha, lattice_col)
 #' @param degree
 #' @param alpha
 #' 
+#' @import dplyr
+#' 
 #' @return
 #' @export
 #'
@@ -416,7 +418,10 @@ generate.bmn.data <-
     } else {
       value <- c(-1, 1)
       data <- Ising_Gibbs(theta = theta, n_sample = n, value = value, burn = 1e5, skip = 50, seed = seed)
-      weight <- rep(1, n)
+      # weight <- rep(1, n)
+      weight_num <- tibble(data) %>% group_by_all() %>% summarise(num = n())
+      data <- as.matrix(weight_num[["data"]])
+      weight <- weight_num[["num"]]
     }
     
     set.seed(NULL)
