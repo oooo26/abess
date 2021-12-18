@@ -13,7 +13,10 @@ nodewise_L0(
   support.size = NULL,
   ic.scale = 1,
   graph.threshold = 0,
-  sparse = FALSE
+  newton = c("approx", "exact"),
+  max.newton.iter = 100,
+  sparse = FALSE,
+  ...
 )
 }
 \arguments{
@@ -38,6 +41,17 @@ Only used for \code{tune.path = "sequence"}. Default is \code{0:min(n, round(n/(
 
 \item{ic.scale}{A non-negative value used for multiplying the penalty term
 in information criterion. Default: \code{ic.scale = 1}.}
+
+\item{newton}{A character specify the Newton's method for fitting generalized linear models,
+it should be either \code{newton = "exact"} or \code{newton = "approx"}.
+If \code{newton = "exact"}, then the exact hessian is used,
+while \code{newton = "approx"} uses diagonal entry of the hessian,
+and can be faster (especially when \code{family = "cox"}).}
+
+\item{max.newton.iter}{a integer giving the maximal number of Newton's iteration iterations.
+Default is \code{max.newton.iter = 10} if \code{newton = "exact"}, and \code{max.newton.iter = 60} if \code{newton = "approx"}.}
+
+\item{...}{further arguments to be passed to or from methods.}
 }
 \value{
 
@@ -70,14 +84,26 @@ all((res[[1]] != 0) == (train[["theta"]] != 0))
 res <- nodewise_L0(x, sample_weight, tune.type = "gic", ic.scale = 1, graph.threshold = 0.2)
 all((res[[1]] != 0) == (train[["theta"]] != 0))
 
-new_theta <- train[["theta"]]
-diag(new_theta) <- 0.1
-train <- generate.bmn.data(2 * n, p, theta = new_theta)
+train <- generate.bmn.data(10000 * n, p, type = 8, alpha = 0.9, beta = 0.9, degree = 3, seed = 1)
 system.time(res <- nodewise_L0(train[["data"]], train[["weight"]], tune.type = "gic", ic.scale = 1, graph.threshold = 0.2))
 mean(res[[1]] - train[["theta"]])
 mean(diag(res[[1]]) - diag(train[["theta"]]))
+diag(res[[1]]) <- 0
+all((res[[1]] != 0) == (train[["theta"]] != 0))
+\dontrun{
+## simple test suggest that sparsity is not useful
 system.time(res <- nodewise_L0(train[["data"]], train[["weight"]], tune.type = "gic", ic.scale = 1, graph.threshold = 0.2, sparse = TRUE))
 mean(res[[1]] - train[["theta"]])
 mean(diag(res[[1]]) - diag(train[["theta"]]))
+diag(res[[1]]) <- 0
+all((res[[1]] != 0) == (train[["theta"]] != 0))
+}
+
+train <- generate.bmn.data(9000, 48, type = 8, alpha = 0.9, beta = 0.9, degree = 3, method = "gibbs", seed = 1)
+system.time(res <- nodewise_L0(train[["data"]], train[["weight"]], tune.type = "gic", ic.scale = 1, graph.threshold = 0.2))
+mean(res[[1]] - train[["theta"]])
+mean(diag(res[[1]]) - diag(train[["theta"]]))
+diag(res[[1]]) <- 0
+all((res[[1]] != 0) == (train[["theta"]] != 0))
 
 }

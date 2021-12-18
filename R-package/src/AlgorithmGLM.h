@@ -23,6 +23,7 @@ public:
       coef0 = -log(1 / y.mean() - 1);
       return true;
     }
+    double hessian_diagonal_threshold = 1e-3;
 
     int n = x.rows();
     int p = x.cols();
@@ -48,8 +49,8 @@ public:
     Eigen::VectorXd W = Pi.cwiseProduct(one - Pi);
     for (int i = 0; i < n; i++)
     {
-      if (W(i) < 0.001)
-        W(i) = 0.001;
+      if (W(i) < hessian_diagonal_threshold)
+        W(i) = hessian_diagonal_threshold;
     }
     Eigen::VectorXd Z = X * beta0 + (y - Pi).cwiseQuotient(W);
 
@@ -96,8 +97,8 @@ public:
           W = Pi.cwiseProduct(one - Pi);
           for (int i = 0; i < n; i++)
           {
-            if (W(i) < 0.001)
-              W(i) = 0.001;
+            if (W(i) < hessian_diagonal_threshold)
+              W(i) = hessian_diagonal_threshold;
           }
         }
 
@@ -142,8 +143,8 @@ public:
         W = Pi.cwiseProduct(one - Pi);
         for (int i = 0; i < n; i++)
         {
-          if (W(i) < 0.001)
-            W(i) = 0.001;
+          if (W(i) < hessian_diagonal_threshold)
+            W(i) = hessian_diagonal_threshold;
         }
         Z = X * beta0 + (y - Pi).cwiseQuotient(W);
       }
@@ -151,6 +152,8 @@ public:
 
     beta = beta0.tail(p).eval();
     coef0 = beta0(0);
+
+    // std::cout << "Iteration time: " << j << std::endl;
     return true;
   };
 

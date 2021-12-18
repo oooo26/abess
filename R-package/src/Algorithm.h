@@ -267,7 +267,7 @@ public:
       X_A = X_seg(train_x, train_n, A_ind, this->model_type);
       slice(this->beta, A_ind, beta_A);
 
-      this->primary_model_fit_max_iter += 20;
+      // this->primary_model_fit_max_iter += 20;
       // coef0_old = this->coef0;
       success = this->primary_model_fit(X_A, train_y, train_weight, beta_A, this->coef0, DBL_MAX, A, g_index, g_size);
       // if (!success){
@@ -276,7 +276,7 @@ public:
       slice_restore(beta_A, A_ind, this->beta);
       this->train_loss = this->loss_function(X_A, train_y, train_weight, beta_A, this->coef0, A, g_index, g_size, this->lambda_level);
       // }
-      this->primary_model_fit_max_iter -= 20;
+      // this->primary_model_fit_max_iter -= 20;
     }
 
     this->A_out = A;
