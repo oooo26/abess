@@ -296,6 +296,7 @@ nodewise_L0 <- function(x,
                         newton = c("approx", "exact"), 
                         max.newton.iter = 100, 
                         sparse = FALSE, 
+                        magnetic = FALSE, 
                         ...) 
 {
   p <- ncol(x)
@@ -350,7 +351,9 @@ nodewise_L0 <- function(x,
       est_theta_node <- as.vector(extract(model_node, support.size = support.size[node])[["beta"]])
     }
     theta[node, -node] <- (est_theta_node / 2)
-    theta[node, node] <- extract(model_node)[["intercept"]] / 2
+    if (magnetic) {
+      theta[node, node] <- extract(model_node)[["intercept"]] / 2
+    }
   }
   theta <- (t(theta) + theta) / 2
   if (sparse) {
