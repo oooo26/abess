@@ -2,35 +2,34 @@ gen_rr_adjmat <- function(n_node,
                           degree,
                           beta,
                           alpha,
-                          type = c("ferro", "glass"), 
-                          degree_bound = TRUE) 
+                          type = c("ferro", "glass", "glass_weak", "glass_nodeweak")) 
 {
-    g <- igraph::sample_k_regular(n_node, degree)
-    adj <- as.matrix(igraph::as_adjacency_matrix(g, type = "both"))
-    
-    ind_nonzero <- which(adj != 0, arr.ind = TRUE)
-    ind_nonzero <- ind_nonzero[ind_nonzero[, 1] > ind_nonzero[, 2], ]
-    num_nonzero <- nrow(ind_nonzero)
-    
-    if (type == "ferro") {
-      value <- c(alpha, rep(beta, num_nonzero - 1))
-    } else if (type == "glass") {
-      len_pos <- round(num_nonzero / 2)
-      len_neg <- num_nonzero - len_pos
-      value_pos <- c(alpha, rep(beta, len_pos - 1))
-      value_neg <- c(-alpha, rep(-beta, len_neg - 1))
-      value <- c(value_pos, value_neg)
-    }
-    if (!degree_bound) {
-      value <- value / degree
-    }
-    
-    value <- sample(value, size = num_nonzero)
-    for (i in 1:num_nonzero) {
-      adj[ind_nonzero[i, 1], ind_nonzero[i, 2]] <- value[i]
-      adj[ind_nonzero[i, 2], ind_nonzero[i, 1]] <- value[i]
-    }
-    adj
+  g <- igraph::sample_k_regular(n_node, degree)
+  adj <- as.matrix(igraph::as_adjacency_matrix(g, type = "both"))
+  
+  ind_nonzero <- which(adj != 0, arr.ind = TRUE)
+  ind_nonzero <- ind_nonzero[ind_nonzero[, 1] > ind_nonzero[, 2], ]
+  num_nonzero <- nrow(ind_nonzero)
+  
+  type <- match.arg(type)
+  if (type == "ferro") {
+    value <- c(alpha, rep(beta, num_nonzero - 1))
+  } else if (type == "glass") {
+    len_pos <- round(num_nonzero / 2)
+    len_neg <- num_nonzero - len_pos
+    value_pos <- c(alpha, rep(beta, len_pos - 1))
+    value_neg <- c(-alpha, rep(-beta, len_neg - 1))
+    value <- c(value_pos, value_neg)
+  } else if (type == "glass_weak") {
+    value <- c(-alpha, rep(beta, num_nonzero - 1))
+  }
+  
+  value <- sample(value, size = num_nonzero)
+  for (i in 1:num_nonzero) {
+    adj[ind_nonzero[i, 1], ind_nonzero[i, 2]] <- value[i]
+    adj[ind_nonzero[i, 2], ind_nonzero[i, 1]] <- value[i]
+  }
+  adj
 }
 
 
@@ -113,7 +112,7 @@ gen_rr_adjmat2 <- function(n_node,
   adj
 }
 
-gen_4nn_cyc <- function(n_node, degree, beta, alpha, type = c("ferro", "glass", "glass_weak")) {
+gen_4nn_cyc <- function(n_node, degree, beta, alpha, type = c("ferro", "glass", "glass_weak", "glass_nodeweak")) {
     adj <- matrix(0, n_node, n_node)
     index_lr <- (row(adj) - col(adj) == 1 & col(adj) %% sqrt(n_node) != 0)
     index_ud <- (row(adj) - col(adj) == sqrt(n_node))
@@ -138,12 +137,21 @@ gen_4nn_cyc <- function(n_node, degree, beta, alpha, type = c("ferro", "glass", 
       value <- c(value_pos, value_neg)
     } else if (type == "glass_weak") {
       value <- c(-alpha, rep(beta, num_nonzero - 1))
+    } else if (type == "glass_node_weak") {
+      value <- rep(beta, num_nonzero)
     }
     
     value <- sample(value, size = num_nonzero, replace = FALSE)
     for (i in 1:num_nonzero) {
       adj[ind_nonzero[i, 1], ind_nonzero[i, 2]] <- value[i]
       adj[ind_nonzero[i, 2], ind_nonzero[i, 1]] <- value[i]
+    }
+    if (type == "glass_node_weak") {
+      index <- find_path(1, c(1), adj, n_node)
+      alpha_adj_index <- cbind(index[-n_node], index[-1])
+      for (i in 1:(n_node - 1)) {
+        adj[alpha_adj_index[i, 1], alpha_adj_index[i, 2]] <- -alpha
+      }
     }
     adj
   }
@@ -343,15 +351,19 @@ sim_theta <- function(p, type = 1, graph_seed, beta, degree, alpha, lattice_col)
   if (type == 12)
     theta <- gen_4nn_cyc(p, degree, beta, alpha, type = "glass_weak")
   if (type == 13)
-    theta <- gen_5nn_cyc(p, lattice_col, degree, beta, alpha, type = "ferro")
+    theta <- gen_4nn_cyc(p, degree, beta, alpha, type = "glass_nodeweak")
   if (type == 14)
-    theta <- gen_5nn_cyc(p, lattice_col, degree, beta, alpha, type = "glass")
+    theta <- gen_rr_adjmat(p, degree, beta, alpha, type = "glass_weak")
   if (type == 15)
     theta <- gen_5nn_cyc(p, lattice_col, degree, beta, alpha, type = "glass_weak")
   if (type == 16)
     theta <- gen_rr_adjmat2(p, degree, beta, alpha, type = "ferro")
   if (type == 17)
     theta <- gen_rr_adjmat2(p, degree, beta, alpha, type = "glass")
+  if (type == 18)
+    theta <- gen_5nn_cyc(p, lattice_col, degree, beta, alpha, type = "ferro")
+  if (type == 19)
+    theta <- gen_5nn_cyc(p, lattice_col, degree, beta, alpha, type = "glass")
   
   set.seed(NULL)
   return(theta)
