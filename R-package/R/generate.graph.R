@@ -127,6 +127,7 @@ gen_4nn_cyc <- function(n_node, degree, beta, alpha, type = c("ferro", "glass", 
     ind_nonzero <- ind_nonzero[ind_nonzero[, 1] > ind_nonzero[, 2],]
     num_nonzero <- nrow(ind_nonzero)
     
+    type <- match.arg(type)
     if (type == "ferro") {
       value <- c(alpha, rep(beta, num_nonzero - 1))
     } else if (type == "glass") {
@@ -137,7 +138,7 @@ gen_4nn_cyc <- function(n_node, degree, beta, alpha, type = c("ferro", "glass", 
       value <- c(value_pos, value_neg)
     } else if (type == "glass_weak") {
       value <- c(-alpha, rep(beta, num_nonzero - 1))
-    } else if (type == "glass_node_weak") {
+    } else if (type == "glass_nodeweak") {
       value <- rep(beta, num_nonzero)
     }
     
@@ -146,7 +147,7 @@ gen_4nn_cyc <- function(n_node, degree, beta, alpha, type = c("ferro", "glass", 
       adj[ind_nonzero[i, 1], ind_nonzero[i, 2]] <- value[i]
       adj[ind_nonzero[i, 2], ind_nonzero[i, 1]] <- value[i]
     }
-    if (type == "glass_node_weak") {
+    if (type == "glass_nodeweak") {
       index <- find_path(1, c(1), adj, n_node)
       alpha_adj_index <- cbind(index[-n_node], index[-1])
       for (i in 1:(n_node - 1)) {
