@@ -264,7 +264,7 @@
 #' all((res[[1]] != 0) == (train[["theta"]] != 0))
 #' 
 #' train <- generate.bmn.data(10000 * n, p, type = 8, alpha = 0.9, beta = 0.9, degree = 3, seed = 1)
-#' system.time(res <- nodewise_L0(train[["data"]], train[["weight"]], tune.type = "gic", ic.scale = 1, graph.threshold = 0.2))
+#' system.time(res <- nodewise_L0(train[["data"]], train[["weight"]], tune.type = "gic", ic.scale = 1, graph.threshold = 0.2, magnetic = TRUE))
 #' mean(res[[1]] - train[["theta"]])
 #' mean(diag(res[[1]]) - diag(train[["theta"]]))
 #' diag(res[[1]]) <- 0
@@ -325,7 +325,7 @@ nodewise_L0 <- function(x,
   newton_method <- match.arg(newton)
   
   if (is.null(c.max)) {
-    c_max_value <- round(max.support.size[node] / 3)
+    c_max_value <- round(max(max.support.size) / 3)
   } else {
     c_max_value <- c.max
   }
