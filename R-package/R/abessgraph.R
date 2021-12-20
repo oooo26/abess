@@ -325,34 +325,50 @@ nodewise_L0 <- function(x,
   
   theta <- matrix(0, p, p)
   for (node in 1:p) {
-    model_node <-
-      abess::abess(
-        x = x[, -node],
-        y = x[, node],
-        weight = weight,
-        family = "binomial",
-        tune.path = "sequence",
-        support.size = 0:max.support.size[node],
-        tune.type = tune.type, 
-        ic.scale = ic.scale, 
-        nfolds = nfolds,
-        foldid = foldid,
-        c.max = round(max.support.size[node] / 2),
-        max.splicing.iter = 100,
-        newton = newton_method,
-        newton.thresh = log(p) * log(log(n)) / n,
-        max.newton.iter = as.integer(max.newton.iter),
-        num.threads = nfolds, 
-        seed = 1
-      )
-    if (is.null(support.size)) {
-      est_theta_node <- as.vector(extract(model_node)[["beta"]])
+    no_fit_flag <- FALSE
+    min_nobs <- min(table(x[, node]))
+    if (min_nobs > 1) {
+      model_node <-
+        abess::abess(
+          x = x[, -node],
+          y = x[, node],
+          weight = weight,
+          family = "binomial",
+          tune.path = "sequence",
+          support.size = 0:max.support.size[node],
+          tune.type = tune.type, 
+          ic.scale = ic.scale, 
+          nfolds = nfolds,
+          foldid = foldid,
+          c.max = round(max.support.size[node] / 2),
+          max.splicing.iter = 100,
+          newton = newton_method,
+          newton.thresh = log(p) * log(log(n)) / n,
+          max.newton.iter = as.integer(max.newton.iter),
+          num.threads = nfolds, 
+          seed = 1
+        )
+      if (is.null(support.size)) {
+        est_theta_node <- as.vector(extract(model_node)[["beta"]])
+      } else {
+        est_theta_node <- as.vector(extract(model_node, support.size = support.size[node])[["beta"]])
+      }
+      theta[node, -node] <- (est_theta_node / 2)
+      if (magnetic) {
+        theta[node, node] <- extract(model_node)[["intercept"]] / 2
+      }
+      if (anyNA(theta[node, ])) {
+        theta[node, ] <- 0.0
+        no_fit_flag <- TRUE
+      }
     } else {
-      est_theta_node <- as.vector(extract(model_node, support.size = support.size[node])[["beta"]])
+      no_fit_flag <- TRUE
     }
-    theta[node, -node] <- (est_theta_node / 2)
-    if (magnetic) {
-      theta[node, node] <- extract(model_node)[["intercept"]] / 2
+    # additional handling not fitted case:
+    if (no_fit_flag) {
+      if (magnetic & min_nobs != 0) {
+        theta[node, node] <- -0.5 * log(1 / mean(x[, node], na.rm=TRUE) - 1)
+      }
     }
   }
   theta <- (t(theta) + theta) / 2
