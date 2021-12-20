@@ -289,6 +289,7 @@ nodewise_L0 <- function(x,
                         weight = NULL, 
                         max.support.size = NULL,
                         tune.type = "cv",
+                        c.max = NULL
                         foldid = NULL, 
                         support.size = NULL,
                         ic.scale = 1, 
@@ -302,7 +303,7 @@ nodewise_L0 <- function(x,
   p <- ncol(x)
   n <- nrow(x)
   if (is.null(max.support.size)) {
-    max.support.size <- min(c(p - 2, 100))
+    max.support.size <- min(c(p - 2, 20))
     max.support.size <- rep(max.support.size, p)
   }
   if (is.null(foldid) && tune.type == "cv") {
@@ -323,6 +324,12 @@ nodewise_L0 <- function(x,
   
   newton_method <- match.arg(newton)
   
+  if (is.null(c.max)) {
+    c_max_value <- round(max.support.size[node] / 3)
+  } else {
+    c_max_value <- c.max
+  }
+  
   theta <- matrix(0, p, p)
   for (node in 1:p) {
     no_fit_flag <- FALSE
@@ -340,7 +347,7 @@ nodewise_L0 <- function(x,
           ic.scale = ic.scale, 
           nfolds = nfolds,
           foldid = foldid,
-          c.max = round(max.support.size[node] / 2),
+          c.max = c_max_value,
           max.splicing.iter = 100,
           newton = newton_method,
           newton.thresh = log(p) * log(log(n)) / n,
