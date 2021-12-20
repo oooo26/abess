@@ -9,6 +9,7 @@ nodewise_L0(
   weight = NULL,
   max.support.size = NULL,
   tune.type = "cv",
+  c.max = NULL,
   foldid = NULL,
   support.size = NULL,
   ic.scale = 1,
@@ -33,6 +34,8 @@ we set \code{weight = 1} for each observation as default.}
 \item{tune.type}{The type of criterion for choosing the support size.
 Available options are \code{"gic"}, \code{"ebic"}, \code{"bic"}, \code{"aic"} and \code{"cv"}.
 Default is \code{"gic"}.}
+
+\item{c.max}{an integer splicing size. Default is: \code{c.max = 2}.}
 
 \item{foldid}{an optional integer vector of values between 1, ..., nfolds identifying what fold each observation is in.
 The default \code{foldid = NULL} would generate a random foldid.}
