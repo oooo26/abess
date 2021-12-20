@@ -289,7 +289,7 @@ nodewise_L0 <- function(x,
                         weight = NULL, 
                         max.support.size = NULL,
                         tune.type = "cv",
-                        c.max = NULL
+                        c.max = NULL, 
                         foldid = NULL, 
                         support.size = NULL,
                         ic.scale = 1, 
