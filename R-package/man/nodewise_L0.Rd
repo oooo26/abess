@@ -16,6 +16,7 @@ nodewise_L0(
   newton = c("approx", "exact"),
   max.newton.iter = 100,
   sparse = FALSE,
+  magnetic = FALSE,
   ...
 )
 }
