@@ -325,7 +325,7 @@ nodewise_L0 <- function(x,
   newton_method <- match.arg(newton)
   
   if (is.null(c.max)) {
-    c_max_value <- round(max(max.support.size) / 3)
+    c_max_value <- round(max(max.support.size) / 2)
   } else {
     c_max_value <- c.max
   }
@@ -356,13 +356,13 @@ nodewise_L0 <- function(x,
           seed = 1
         )
       if (is.null(support.size)) {
-        est_theta_node <- as.vector(extract(model_node)[["beta"]])
+        est_theta_node <- as.vector(coef(model_node, support.size = model_node[["best.size"]]))[-1]
       } else {
-        est_theta_node <- as.vector(extract(model_node, support.size = support.size[node])[["beta"]])
+        est_theta_node <- as.vector(coef(model_node, support.size = support.size[node]))[-1]
       }
       theta[node, -node] <- (est_theta_node / 2)
       if (magnetic) {
-        theta[node, node] <- extract(model_node)[["intercept"]] / 2
+        theta[node, node] <- as.vector(coef(model_node, support.size = support.size[node], sparse = FALSE))[1] / 2
       }
       if (anyNA(theta[node, ])) {
         theta[node, ] <- 0.0
