@@ -374,7 +374,7 @@ nodewise_L0 <- function(x,
     # additional handling not fitted case:
     if (no_fit_flag) {
       if (magnetic & min_nobs > 1) {
-        theta[node, node] <- -0.5 * log(1 / mean(x[, node], na.rm=TRUE) - 1)
+        theta[node, node] <- -0.5 * log(1 / mean(x[, node] == 1, na.rm=TRUE) - 1)
       }
     }
   }
