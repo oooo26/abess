@@ -100,14 +100,35 @@ gen_rr_adjmat2 <- function(n_node,
     adj[ind_nonzero[i, 2], ind_nonzero[i, 1]] <- value
   }
   
-  value <- rep(alpha, n_node - 1)
-  if (type == "glass") {
-    value <- sample(c(-1, 1), size = (n_node - 1), replace = TRUE) * value
+  if (n_node %% 2 != 0) {
+    stop("The number of nodes must be even.")
   }
-  index <- find_path(1, c(1), adj, n_node)
+
+  index <- c()
+  k <- 1
+  while (length(index) != n_node) {
+    if (k > n_node) {
+      break
+    }
+    index <- find_path(k, c(k), adj, n_node)
+    k <- k + 1
+  }
+
+  if (length(index) != n_node) {
+    stop("Find path fails!")
+  }
+
   alpha_adj_index <- cbind(index[-n_node], index[-1])
-  for (i in 1:(n_node - 1)) {
+  remove_index <- which((1:nrow(alpha_adj_index) %% 2) != 0)
+  alpha_adj_index <- alpha_adj_index[remove_index, ]
+  ws_edge_num <- nrow(alpha_adj_index)
+  value <- rep(alpha, ws_edge_num)
+  if (type == "glass") {
+    value <- sample(c(-1, 1), size = ws_edge_num, replace = TRUE) * value
+  }
+  for (i in 1:ws_edge_num) {
     adj[alpha_adj_index[i, 1], alpha_adj_index[i, 2]] <- value[i]
+    adj[alpha_adj_index[i, 2], alpha_adj_index[i, 1]] <- value[i]
   }
   adj
 }
