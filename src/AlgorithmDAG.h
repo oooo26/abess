@@ -11,6 +11,7 @@ template <class T4>
 class abessDAG : public Algorithm<Eigen::VectorXd, Eigen::VectorXd, double, T4> {
    public:
     // MatrixXd Adj;  // adjacency matrix
+    MatrixXd Sigma;
 
     abessDAG(int algorithm_type, int model_type, int max_iter = 30, int primary_model_fit_max_iter = 10,
              double primary_model_fit_epsilon = 1e-8, bool warm_start = true, int exchange_num = 5,
@@ -21,19 +22,31 @@ class abessDAG : public Algorithm<Eigen::VectorXd, Eigen::VectorXd, double, T4> 
 
     ~abessDAG(){};
 
-    // void inital_setting(T4 &X, VectorXd &y, Eigen::VectorXd &weights, Eigen::VectorXi &g_index, Eigen::VectorXi
-    // &g_size,
-    //                     int &N) {
-
-    // }
+    void inital_setting(T4 &X, VectorXd &y, Eigen::VectorXd &weights, Eigen::VectorXi &g_index, Eigen::VectorXi &g_size,
+                        int &N) {
+        MatrixXd centered = X.rowwise() - X.colwise().mean();
+        this->Sigma = (centered.adjoint() * centered) / double(X.rows() - 1);
+    }
 
     bool primary_model_fit(T4 &x, Eigen::VectorXd &y, Eigen::VectorXd &weights, Eigen::VectorXd &beta, double &coef0,
                            double loss0, Eigen::VectorXi &A, Eigen::VectorXi &g_index, Eigen::VectorXi &g_size) {
         int n = x.rows();
         int p = x.cols();
-        MatrixXd Adj = this->compute_Adj(beta, A, n, p);
+        // MatrixXd Adj = this->compute_Adj(beta, A, n, p);
 
-        beta = this->compute_beta(Adj, p, A.size());
+        MatrixXd X_temp(n, p);
+        int ind = 0, col = -1, beta_ind = 0;
+        for (int i = 0; i < A.size(); i++) {
+            if (col != int(A(i) / p)) {  // new node
+                if (ind > 0) {           // update beta
+                    beta.segment(beta_ind, ind) = lm(X_temp.block(0, 0, n, ind), X.col(col));
+                    beta_ind += ind;
+                }
+                col = int(A(i) / p);
+                ind = 0;
+            }
+            X_temp.col(ind++) = X.col(A(i) % p);
+        }
     };
 
     double loss_function(T4 &X, Eigen::VectorXd &y, Eigen::VectorXd &weights, Eigen::VectorXd &beta, double &coef0,
@@ -41,12 +54,7 @@ class abessDAG : public Algorithm<Eigen::VectorXd, Eigen::VectorXd, double, T4> 
         int n = x.rows();
         int p = x.cols();
         MatrixXd Adj = this->compute_Adj(beta, A, n, p);
-        MatrixXd Xj(n, 1);
-        MatrixXd Xother(n, p - 1);
-        for (int j = 0; j < p; j++){
-            X_est = X * Adj;
-
-        }
+        return (X - X * Adj).norm();
     };
 
     void sacrifice(T4 &X, T4 &XA, Eigen::VectorXd &y, Eigen::VectorXd &beta, Eigen::VectorXd &beta_A, double &coef0,
@@ -56,6 +64,24 @@ class abessDAG : public Algorithm<Eigen::VectorXd, Eigen::VectorXd, double, T4> 
         int n = x.rows();
         int p = x.cols();
         MatrixXd Adj = this->compute_Adj(beta_A, A, n, p);
+
+        // forward
+        MatrixXd E = X - X * Adj;
+        MatrixXd inv = (MatrixXd::Identity(p, p) - Adj).inverse();  // TODO(hjh): sparse inverse?
+        VectorXd Omega = E.colwise().norm();
+        MatrixXd temp = Omega.asDiagonal() - inv.adjoint() * this->Sigma * inv;
+        for (int i = 0; i < A.size(); i++) {
+            int mi = A(i) % p;
+            int mj = int(A(i) / p);
+            bd(A(i)) = abs(temp(mi, mj));
+        }
+
+        // backward
+        for (int i = 0; i < I.size(); i++) {
+            int mi = I(i) % p;
+            int mj = int(I(i) / p);
+            bd(I(i)) = abs(Adj(mi, mj));
+        }
     };
 
     MatrixXd compute_Adj(VectorXd &beta_A, VectorXi &A, int p) {
@@ -79,10 +105,7 @@ class abessDAG : public Algorithm<Eigen::VectorXd, Eigen::VectorXd, double, T4> 
         return beta_A;
     }
 
-    void split_col(MatrixXd &X, int j, MatrixXd &Xj, MatrixXd &Xother){
-        Xj.col(0) = X.col(j);
-        Xother << X.block(0, 0, X.rows(), j), X.block(0, j + 1, X.rows(), X.cols()-j-1);
-    }
+    VectorXd lm(MatrixXd X, VectorXd Y) { return (X.adjoint() * X).ldlt().solve(X.adjoint() * y); }
 };
 
 #endif  // SRC_ALGORITHMDAG_H
