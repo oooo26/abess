@@ -129,4 +129,10 @@ List abessRPCA_API(Eigen::MatrixXd x, int n, int p, int max_iter, int exchange_n
                    Eigen::VectorXi always_select, bool early_stop, int thread, bool sparse_matrix, int splicing_type,
                    int sub_search);
 
+List abessDAG_API(Eigen::MatrixXd x, int n, int p, int normalize_type, int max_iter, int exchange_num, int path_type,
+                  bool is_warm_start, int ic_type, double ic_coef, int Kfold, Eigen::VectorXi sequence, int s_min,
+                  int s_max, int screening_size, Eigen::VectorXi g_index, Eigen::VectorXi always_select,
+                  bool early_stop, int thread, bool sparse_matrix, int splicing_type, int sub_search,
+                  Eigen::VectorXi cv_fold_id);
+
 #endif  // SRC_API_H

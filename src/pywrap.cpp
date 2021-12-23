@@ -192,3 +192,42 @@ void pywrap_RPCA(double *x, int x_row, int x_col, int n, int p, int normalize_ty
     *train_loss_out = train_loss;
     *ic_out = ic;
 }
+
+void pywrap_DAG(double *x, int x_row, int x_col, double *weight, int weight_len, int n, int p, int normalize_type,
+                int max_iter, int exchange_num, int path_type, bool is_warm_start, int ic_type, double ic_coef,
+                int Kfold, int *gindex, int gindex_len, int *sequence, int sequence_len, int *cv_fold_id,
+                int cv_fold_id_len, int s_min, int s_max, int screening_size, int *always_select, int always_select_len,
+                bool early_stop, int thread, bool sparse_matrix, int splicing_type, int sub_search, int pca_num,
+                double *beta_out, int beta_out_len, double *coef0_out, int coef0_out_len, double *train_loss_out,
+                int train_loss_out_len, double *ic_out, int ic_out_len) {
+    Eigen::MatrixXd x_Mat;
+    Eigen::VectorXi sequence_Vec;
+    Eigen::VectorXi gindex_Vec;
+    Eigen::VectorXi always_select_Vec;
+    Eigen::VectorXi cv_fold_id_Vec;
+
+    x_Mat = Pointer2MatrixXd(x, x_row, x_col);
+    sequence_Vec = Pointer2VectorXi(sequence, sequence_len);
+    gindex_Vec = Pointer2VectorXi(gindex, gindex_len);
+    always_select_Vec = Pointer2VectorXi(always_select, always_select_len);
+    cv_fold_id_Vec = Pointer2VectorXi(cv_fold_id, cv_fold_id_len);
+
+    List mylist =
+        abessDAG_API(x_Mat, n, p, normalize_type, max_iter, exchange_num, path_type, is_warm_start, ic_type, ic_coef,
+                     Kfold, sequence_Vec, s_min, s_max, screening_size, gindex_Vec, always_select_Vec, early_stop,
+                     thread, sparse_matrix, splicing_type, sub_search, cv_fold_id_Vec);
+
+    Eigen::VectorXd beta;
+    double coef0 = 0;
+    double train_loss = 0;
+    double ic = 0;
+    mylist.get_value_by_name("beta", beta);
+    mylist.get_value_by_name("coef0", coef0);
+    mylist.get_value_by_name("train_loss", train_loss);
+    mylist.get_value_by_name("ic", ic);
+
+    VectorXd2Pointer(beta, beta_out);
+    *coef0_out = coef0;
+    *train_loss_out = train_loss;
+    *ic_out = ic;
+}

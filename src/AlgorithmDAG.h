@@ -22,10 +22,13 @@ class abessDAG : public Algorithm<Eigen::VectorXd, Eigen::VectorXd, double, T4> 
 
     ~abessDAG(){};
 
+    int get_beta_size(int n, int p) { return p * p; }
+
     void inital_setting(T4 &X, VectorXd &y, Eigen::VectorXd &weights, Eigen::VectorXi &g_index, Eigen::VectorXi &g_size,
                         int &N) {
-        MatrixXd centered = X.rowwise() - X.colwise().mean();
-        this->Sigma = (centered.adjoint() * centered) / double(X.rows() - 1);
+        MatrixXd X1 = X;
+        MatrixXd centered = X1.rowwise() - X1.colwise().mean();
+        this->Sigma = (centered.adjoint() * centered);
     }
 
     bool primary_model_fit(T4 &x, Eigen::VectorXd &y, Eigen::VectorXd &weights, Eigen::VectorXd &beta, double &coef0,
@@ -39,21 +42,21 @@ class abessDAG : public Algorithm<Eigen::VectorXd, Eigen::VectorXd, double, T4> 
         for (int i = 0; i < A.size(); i++) {
             if (col != int(A(i) / p)) {  // new node
                 if (ind > 0) {           // update beta
-                    beta.segment(beta_ind, ind) = lm(X_temp.block(0, 0, n, ind), X.col(col));
+                    beta.segment(beta_ind, ind) = lm(X_temp.block(0, 0, n, ind), x.col(col));
                     beta_ind += ind;
                 }
                 col = int(A(i) / p);
                 ind = 0;
             }
-            X_temp.col(ind++) = X.col(A(i) % p);
+            X_temp.col(ind++) = x.col(A(i) % p);
         }
     };
 
     double loss_function(T4 &X, Eigen::VectorXd &y, Eigen::VectorXd &weights, Eigen::VectorXd &beta, double &coef0,
                          Eigen::VectorXi &A, Eigen::VectorXi &g_index, Eigen::VectorXi &g_size, double lambda) {
-        int n = x.rows();
-        int p = x.cols();
-        MatrixXd Adj = this->compute_Adj(beta, A, n, p);
+        int n = X.rows();
+        int p = X.cols();
+        MatrixXd Adj = this->compute_Adj(beta, A, p);
         return (X - X * Adj).norm();
     };
 
@@ -61,15 +64,16 @@ class abessDAG : public Algorithm<Eigen::VectorXd, Eigen::VectorXd, double, T4> 
                    Eigen::VectorXi &A, Eigen::VectorXi &I, Eigen::VectorXd &weights, Eigen::VectorXi &g_index,
                    Eigen::VectorXi &g_size, int N, Eigen::VectorXi &A_ind, Eigen::VectorXd &bd, Eigen::VectorXi &U,
                    Eigen::VectorXi &U_ind, int num) {
-        int n = x.rows();
-        int p = x.cols();
-        MatrixXd Adj = this->compute_Adj(beta_A, A, n, p);
+        int n = X.rows();
+        int p = X.cols();
+        MatrixXd Adj = this->compute_Adj(beta_A, A, p);
 
         // forward
         MatrixXd E = X - X * Adj;
+        E = E.rowwise() - E.colwise().mean();
+        MatrixXd Omega = (E.colwise().squaredNorm()).asDiagonal();
         MatrixXd inv = (MatrixXd::Identity(p, p) - Adj).inverse();  // TODO(hjh): sparse inverse?
-        VectorXd Omega = E.colwise().norm();
-        MatrixXd temp = Omega.asDiagonal() - inv.adjoint() * this->Sigma * inv;
+        MatrixXd temp = Omega - inv.adjoint() * this->Sigma * inv;
         for (int i = 0; i < A.size(); i++) {
             int mi = A(i) % p;
             int mj = int(A(i) / p);
@@ -89,23 +93,23 @@ class abessDAG : public Algorithm<Eigen::VectorXd, Eigen::VectorXd, double, T4> 
         for (int i = 0; i < A.size(); i++) {
             int mi = A(i) % p;
             int mj = int(A(i) / p);
-            Adj(mi, mj) = beta(i);
+            Adj(mi, mj) = beta_A(i);
         }
         return Adj;
     }
 
-    VectorXd compute_beta_A(MatrixXd &Adj, VectorXi &A, int beta_A_size) {
-        VectorXd beta_A = VectorXd::Zero(beta_A_size);
-        int p = Adj.rows();
-        for (int i = 0; i < A.size(); i++) {
-            int mi = A(i) % p;
-            int mj = int(A(i) / p);
-            beta_A(i) = Adj(mi, mj);
-        }
-        return beta_A;
-    }
+    // VectorXd compute_beta_A(MatrixXd &Adj, VectorXi &A, int beta_A_size) {
+    //     VectorXd beta_A = VectorXd::Zero(beta_A_size);
+    //     int p = Adj.rows();
+    //     for (int i = 0; i < A.size(); i++) {
+    //         int mi = A(i) % p;
+    //         int mj = int(A(i) / p);
+    //         beta_A(i) = Adj(mi, mj);
+    //     }
+    //     return beta_A;
+    // }
 
-    VectorXd lm(MatrixXd X, VectorXd Y) { return (X.adjoint() * X).ldlt().solve(X.adjoint() * y); }
+    VectorXd lm(MatrixXd X, VectorXd y) { return (X.adjoint() * X).ldlt().solve(X.adjoint() * y); }
 };
 
 #endif  // SRC_ALGORITHMDAG_H

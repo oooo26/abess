@@ -18,6 +18,7 @@ using namespace Rcpp;
 #include <vector>
 
 #include "Algorithm.h"
+#include "AlgorithmDAG.h"
 #include "AlgorithmGLM.h"
 #include "AlgorithmPCA.h"
 #include "utilities.h"
@@ -519,3 +520,88 @@ List abessRPCA_API(Eigen::MatrixXd x, int n, int p, int max_iter, int exchange_n
 
     return out_result;
 }
+
+// [[Rcpp::export]]
+List abessDAG_API(Eigen::MatrixXd x, int n, int p, int normalize_type, int max_iter, int exchange_num, int path_type,
+                  bool is_warm_start, int ic_type, double ic_coef, int Kfold, Eigen::VectorXi sequence, int s_min,
+                  int s_max, int screening_size, Eigen::VectorXi g_index, Eigen::VectorXi always_select,
+                  bool early_stop, int thread, bool sparse_matrix, int splicing_type, int sub_search,
+                  Eigen::VectorXi cv_fold_id) {
+#ifdef _OPENMP
+    // Eigen::initParallel();
+    int max_thread = omp_get_max_threads();
+    if (thread == 0 || thread > max_thread) {
+        thread = max_thread;
+    }
+
+    Eigen::setNbThreads(thread);
+    omp_set_num_threads(thread);
+
+#endif
+
+    int model_type = 11, algorithm_type = 6;
+    Eigen::VectorXd weight = Eigen::VectorXd::Ones(n);
+    Eigen::VectorXd y_vec = Eigen::VectorXd::Zero(n);
+    int primary_model_fit_max_iter = 1;
+    double primary_model_fit_epsilon = 1e-3;
+    Eigen::VectorXd lambda_seq = Eigen::VectorXd::Zero(1);
+    int lambda_min = 0, lambda_max = 0, nlambda = 100;
+
+    int algorithm_list_size = max(thread, Kfold);
+    vector<Algorithm<Eigen::VectorXd, Eigen::VectorXd, double, Eigen::MatrixXd> *> algorithm_list_uni_dense(
+        algorithm_list_size);
+    vector<Algorithm<Eigen::VectorXd, Eigen::VectorXd, double, Eigen::SparseMatrix<double>> *>
+        algorithm_list_uni_sparse(algorithm_list_size);
+
+    for (int i = 0; i < algorithm_list_size; i++) {
+        if (!sparse_matrix) {
+            algorithm_list_uni_dense[i] = new abessDAG<Eigen::MatrixXd>(
+                algorithm_type, model_type, max_iter, primary_model_fit_max_iter, primary_model_fit_epsilon,
+                is_warm_start, exchange_num, always_select, splicing_type, sub_search);
+        } else {
+            algorithm_list_uni_sparse[i] = new abessDAG<Eigen::SparseMatrix<double>>(
+                algorithm_type, model_type, max_iter, primary_model_fit_max_iter, primary_model_fit_epsilon,
+                is_warm_start, exchange_num, always_select, splicing_type, sub_search);
+        }
+    }
+
+    // parameter list
+    Parameters parameters(sequence, lambda_seq, s_min, s_max);
+
+    List out_result;
+    if (!sparse_matrix) {
+        out_result = abessWorkflow<Eigen::VectorXd, Eigen::VectorXd, double, Eigen::MatrixXd>(
+            x, y_vec, n, p, normalize_type, weight, algorithm_type, path_type, is_warm_start, ic_type, ic_coef, Kfold,
+            parameters, screening_size, g_index, early_stop, thread, sparse_matrix, cv_fold_id,
+            algorithm_list_uni_dense);
+
+    } else {
+        Eigen::SparseMatrix<double> sparse_x(n, p);
+
+        // std::vector<triplet> tripletList;
+        // tripletList.reserve(x.rows());
+        // for (int i = 0; i < x.rows(); i++)
+        // {
+        //   tripletList.push_back(triplet(int(x(i, 1)), int(x(i, 2)), x(i, 0)));
+        // }
+        // sparse_x.setFromTriplets(tripletList.begin(), tripletList.end());
+
+        sparse_x.reserve(x.rows());
+        for (int i = 0; i < x.rows(); i++) {
+            sparse_x.insert(int(x(i, 1)), int(x(i, 2))) = x(i, 0);
+        }
+        sparse_x.makeCompressed();
+
+        out_result = abessWorkflow<Eigen::VectorXd, Eigen::VectorXd, double, Eigen::SparseMatrix<double>>(
+            sparse_x, y_vec, n, p, normalize_type, weight, algorithm_type, path_type, is_warm_start, ic_type, ic_coef,
+            Kfold, parameters, screening_size, g_index, early_stop, thread, sparse_matrix, cv_fold_id,
+            algorithm_list_uni_sparse);
+    }
+
+    for (int i = 0; i < algorithm_list_size; i++) {
+        delete algorithm_list_uni_dense[i];
+        delete algorithm_list_uni_sparse[i];
+    }
+
+    return out_result;
+};
