@@ -527,7 +527,7 @@ List abessDAG_API(Eigen::MatrixXd x, int n, int p, int normalize_type, int max_i
                   bool is_warm_start, int ic_type, double ic_coef, int Kfold, Eigen::VectorXi sequence, int s_min,
                   int s_max, int screening_size, Eigen::VectorXi g_index, Eigen::VectorXi always_select,
                   bool early_stop, int thread, bool sparse_matrix, int splicing_type, int sub_search,
-                  Eigen::VectorXi cv_fold_id) {
+                  Eigen::VectorXi cv_fold_id, Eigen::VectorXi A_init) {
 #ifdef _OPENMP
     // Eigen::initParallel();
     int max_thread = omp_get_max_threads();
@@ -573,7 +573,7 @@ List abessDAG_API(Eigen::MatrixXd x, int n, int p, int normalize_type, int max_i
     if (!sparse_matrix) {
         out_result = abessWorkflow<Eigen::VectorXd, Eigen::VectorXd, double, Eigen::MatrixXd>(
             x, y_vec, n, p, normalize_type, weight, algorithm_type, path_type, is_warm_start, ic_type, ic_coef, Kfold,
-            parameters, screening_size, g_index, early_stop, thread, sparse_matrix, cv_fold_id,
+            parameters, screening_size, g_index, early_stop, thread, sparse_matrix, cv_fold_id, A_init,
             algorithm_list_uni_dense);
 
     } else {
@@ -595,7 +595,7 @@ List abessDAG_API(Eigen::MatrixXd x, int n, int p, int normalize_type, int max_i
 
         out_result = abessWorkflow<Eigen::VectorXd, Eigen::VectorXd, double, Eigen::SparseMatrix<double>>(
             sparse_x, y_vec, n, p, normalize_type, weight, algorithm_type, path_type, is_warm_start, ic_type, ic_coef,
-            Kfold, parameters, screening_size, g_index, early_stop, thread, sparse_matrix, cv_fold_id,
+            Kfold, parameters, screening_size, g_index, early_stop, thread, sparse_matrix, cv_fold_id, A_init,
             algorithm_list_uni_sparse);
     }
 

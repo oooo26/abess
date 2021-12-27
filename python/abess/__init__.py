@@ -9,3 +9,4 @@
 from abess.linear import abessLogistic, abessLm, abessCox, abessPoisson, abessMultigaussian, abessMultinomial, abessGamma
 from abess.pca import abessPCA, abessRPCA
 from abess.datasets import make_glm_data, make_multivariate_glm_data
+from abess.graph import abessDAG

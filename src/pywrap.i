@@ -57,3 +57,11 @@ void pywrap_RPCA(double *x, int x_row, int x_col, int n, int p, int normalize_ty
                  bool early_stop, int thread, bool sparse_matrix, int splicing_type, int sub_search, int *A_init,
                  int A_init_len, double *beta_out, int beta_out_len, double *coef0_out, int coef0_out_len,
                  double *train_loss_out, int train_loss_out_len, double *ic_out, int ic_out_len);
+
+void pywrap_DAG(double *x, int x_row, int x_col, int n, int p, int normalize_type, int max_iter, int exchange_num,
+                int path_type, bool is_warm_start, int ic_type, double ic_coef, int Kfold, int *gindex, int gindex_len,
+                int *sequence, int sequence_len, int *cv_fold_id, int cv_fold_id_len, int s_min, int s_max,
+                int screening_size, int *always_select, int always_select_len, bool early_stop, int thread,
+                bool sparse_matrix, int splicing_type, int sub_search, int *A_init, int A_init_len, double *beta_out,
+                int beta_out_len, double *coef0_out, int coef0_out_len, double *train_loss_out, int train_loss_out_len,
+                double *ic_out, int ic_out_len);

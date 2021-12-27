@@ -209,14 +209,14 @@ class Algorithm {
         // no need to splicing?
         if (N == T0) {
             this->A_out = Eigen::VectorXi::LinSpaced(N, 0, N - 1);
-            // T2 beta_old = this->beta;
-            // T3 coef0_old = this->coef0;
+            T2 beta_old = this->beta;
+            T3 coef0_old = this->coef0;
             bool success = this->primary_model_fit(train_x, train_y, train_weight, this->beta, this->coef0, DBL_MAX,
                                                    this->A_out, g_index, g_size);
-            // if (!success){
-            //   this->beta = beta_old;
-            //   this->coef0 = coef0_old;
-            // }
+            if (!success) {
+                this->beta = beta_old;
+                this->coef0 = coef0_old;
+            }
             this->train_loss = this->loss_function(train_x, train_y, train_weight, this->beta, this->coef0, this->A_out,
                                                    g_index, g_size, this->lambda_level);
             this->effective_number = this->effective_number_of_parameter(train_x, train_x, train_y, train_weight,
@@ -230,6 +230,8 @@ class Algorithm {
         Eigen::VectorXi A = this->inital_screening(train_x, train_y, this->beta, this->coef0, this->A_init,
                                                    this->I_init, this->bd, train_weight, g_index, g_size, N);
         Eigen::VectorXi I = Ac(A, N);
+        cout << "==> sparsity = " << T0 << endl;
+        cout << "  --> A = " << A.transpose() << endl;
 
         Eigen::VectorXi A_ind = find_ind(A, g_index, g_size, (this->beta).rows(), N);
         T4 X_A = X_seg(train_x, train_n, A_ind, this->model_type);
@@ -239,18 +241,17 @@ class Algorithm {
         // if (this->algorithm_type == 6)
         // {
 
-        // T3 coef0_old = this->coef0;
+        T3 coef0_old = this->coef0;
         bool success =
             this->primary_model_fit(X_A, train_y, train_weight, beta_A, this->coef0, DBL_MAX, A, g_index, g_size);
-        // if (!success){
-        //   this->coef0 = coef0_old;
-        // }else{
-        slice_restore(beta_A, A_ind, this->beta);
-        this->train_loss = this->loss_function(X_A, train_y, train_weight, beta_A, this->coef0, A, g_index, g_size,
-                                               this->lambda_level);
-        // }
+        if (!success) {
+            this->coef0 = coef0_old;
+        } else {
+            slice_restore(beta_A, A_ind, this->beta);
+            this->train_loss = this->loss_function(X_A, train_y, train_weight, beta_A, this->coef0, A, g_index, g_size,
+                                                   this->lambda_level);
+        }
 
-        // for (int i=0;i<A.size();i++) cout<<A(i)<<" ";cout<<endl<<"init loss = "<<this->train_loss<<endl;
         // }
 
         // start splicing
@@ -376,6 +377,7 @@ class Algorithm {
                 bool exchange = this->splicing(*X_U, y, A_U, I_U, C_max, beta_U, coef0, bd_U, weights, g_index_U,
                                                g_size_U, this->U_size, tau, l0);
 
+                cout << "  --> A = " << A_U.transpose() << endl;
                 if (exchange)
                     train_loss = l0;
                 else
@@ -475,12 +477,12 @@ class Algorithm {
 
             bool success = this->primary_model_fit(X_A_exchage, y, weights, beta_A_exchange, coef0_A_exchange,
                                                    train_loss, A_exchange, g_index, g_size);
-            // if (success){
-            L = this->loss_function(X_A_exchage, y, weights, beta_A_exchange, coef0_A_exchange, A_exchange, g_index,
-                                    g_size, this->lambda_level);
-            // }else{
-            //   L = train_loss + 1;
-            // }
+            if (success) {
+                L = this->loss_function(X_A_exchage, y, weights, beta_A_exchange, coef0_A_exchange, A_exchange, g_index,
+                                        g_size, this->lambda_level);
+            } else {
+                L = train_loss + 1;
+            }
 
             if (train_loss - L > tau) {
                 train_loss = L;
