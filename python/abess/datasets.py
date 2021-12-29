@@ -1,10 +1,13 @@
 import numpy as np
+from collections import namedtuple
+
 
 class data:
     """
     Data format.
     Include: x, y, coefficients.
     """
+
     def __init__(self, x, y, coef_):
         self.x = x
         self.y = y
@@ -296,3 +299,29 @@ def make_multivariate_glm_data(
 
     raise ValueError(
         "Family should be \'gaussian\', \'multigaussian\', or \'multinomial\'")
+
+
+def make_dag_data(n, p, proba=0.4):
+    """ 
+    Kalisch & Bühlmann, 2007
+    """
+    # adjacency matrix
+    A = np.zeros((p, p))
+    success = np.random.binomial(1, proba, int(p*(p-1)/2))
+    print(f"Vertices: {np.arange(p)}")
+    for i in range(p):
+        for j in range(i):
+            if success[int(i*(i-1)/2) + j] == 1:
+                A[j, i] = np.random.uniform(0.1, 1)
+                print(f"Edge: {j}->{i} [{A[j, i]:.4f}]")
+    # first node
+    X = np.zeros((n, p))
+    X[:, 0] = np.random.normal(size=n)
+    # other nodes
+    for i in range(1, p):
+        eps = np.random.normal(size=n)
+        X[:, i] = X @ A[:, i] + eps
+    # return
+    DAGdata = namedtuple('DAGdata', ['X', 'A'])
+    data = DAGdata(X, A)
+    return data

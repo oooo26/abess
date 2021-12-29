@@ -33,7 +33,7 @@ class abessDAG : public Algorithm<Eigen::VectorXd, Eigen::VectorXd, double, T4> 
             int p = X.cols();
             bd = Eigen::VectorXd::Zero(N);
 
-            // acyclic
+            // initial acyclic
             for (int i = 0; i < p; i++) {
                 for (int j = 0; j < i; j++) {
                     bd(i * p + j) = 1;
@@ -67,7 +67,7 @@ class abessDAG : public Algorithm<Eigen::VectorXd, Eigen::VectorXd, double, T4> 
         cout << "  --> primary fit" << endl;
         int n = x.rows();
         int p = x.cols();
-        // MatrixXd Adj = this->compute_Adj(beta, A, n, p);
+        // MatrixXd Adj = this->compute_Adj(beta, A, p);
 
         if (this->is_cyclic(A, p)) {
             cout << "    cyclic !" << endl;
@@ -101,6 +101,7 @@ class abessDAG : public Algorithm<Eigen::VectorXd, Eigen::VectorXd, double, T4> 
         // int n = X.rows();
         int p = X.cols();
         MatrixXd Adj = this->compute_Adj(beta, A, p);
+        cout << "    " << (X - X * Adj).norm() << endl;
         return (X - X * Adj).norm();
     };
 
@@ -166,14 +167,14 @@ class abessDAG : public Algorithm<Eigen::VectorXd, Eigen::VectorXd, double, T4> 
             if (new_num == num) return true;
             if (new_num == 0) break;
             // delete "node_in == 0"
-            Adj = slice_Adj(Adj, ind);
+            Adj = slice_Adj(Adj, ind.head(new_num));
             node_in = Adj.colwise().sum();
             num = node_in.size();
         }
         return false;
     }
 
-    MatrixXd slice_Adj(MatrixXd &Adj, VectorXi &ind) {
+    MatrixXd slice_Adj(MatrixXd &Adj, VectorXi ind) {
         int isize = ind.size();
         MatrixXd Adj_new(isize, isize);
         for (int i = 0; i < isize; i++) {

@@ -170,14 +170,13 @@ class abessDAG(bess_base):
         else:
             if isinstance(self.support_size, (numbers.Integral)):
                 support_sizes = [self.support_size]
-            elif (len(self.support_size.shape) != 1):
+            elif (np.any(np.array(self.support_size) > p * p) or
+                    np.any(np.array(self.support_size) < 0)):
                 raise ValueError(
-                    "`support_size` should be 1-dimension")
-            elif self.support_size.max() > p*(p-1)/2:
-                raise ValueError(
-                    "`support_size` should not larger than p*(p-1)/2")
+                    "All support_size should be between 0 and X.shape[1] * X.shape[1]")
             else:
                 support_sizes = self.support_size
+
         support_sizes = np.array(support_sizes).astype('int32')
 
         # screening
@@ -278,9 +277,10 @@ class abessDAG(bess_base):
                             self.splicing_type,
                             self.important_search,
                             A_init,
-                            p, 1,
+                            p * p, 1,
                             1, 1
                             )
 
-        self.coef_ = result[0]
+        self.coef_ = result[0].reshape(p, p).T
+        self.train_loss_ = result[2]
         return self
