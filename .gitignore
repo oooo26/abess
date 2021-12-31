@@ -117,3 +117,6 @@ TODO.md
 R-package/R/omit
 R-package/pca_x.csv
 python/src/pywrap_wrap.cpp
+R-package/config.log
+R-package/config.status
+R-package/configure~
