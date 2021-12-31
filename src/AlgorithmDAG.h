@@ -4,6 +4,7 @@
 #include <Spectra/SymEigsSolver.h>
 
 #include "Algorithm.h"
+#include <cmath
 
 using namespace Spectra;
 
@@ -11,7 +12,7 @@ template <class T4>
 class abessDAG : public Algorithm<Eigen::VectorXd, Eigen::VectorXd, double, T4> {
    public:
     // MatrixXd Adj;  // adjacency matrix
-    MatrixXd Sigma;
+    // MatrixXd Sigma;
 
     abessDAG(int algorithm_type, int model_type, int max_iter = 30, int primary_model_fit_max_iter = 10,
              double primary_model_fit_epsilon = 1e-8, bool warm_start = true, int exchange_num = 5,
@@ -33,10 +34,14 @@ class abessDAG : public Algorithm<Eigen::VectorXd, Eigen::VectorXd, double, T4> 
             int p = X.cols();
             bd = Eigen::VectorXd::Zero(N);
 
-            // initial acyclic
+            // pearson correlation
+            MatrixXd X1 = X;
+            MatrixXd centered = X1.rowwise() - X1.colwise().mean();
+            MatrixXd Sigma = (centered.adjoint() * centered);
+            VectorXd sd = Sigma.diagonal().unaryExpr([](double x){sqrt(x);});
             for (int i = 0; i < p; i++) {
                 for (int j = 0; j < i; j++) {
-                    bd(i * p + j) = 1;
+                    bd(i * p + j) = Sigma(i, j) / sd(i) / sd(j);
                 }
             }
 
@@ -53,13 +58,6 @@ class abessDAG : public Algorithm<Eigen::VectorXd, Eigen::VectorXd, double, T4> 
         Eigen::VectorXi A_new = max_k(bd, this->sparsity_level);
 
         return A_new;
-    }
-
-    void inital_setting(T4 &X, VectorXd &y, Eigen::VectorXd &weights, Eigen::VectorXi &g_index, Eigen::VectorXi &g_size,
-                        int &N) {
-        MatrixXd X1 = X;
-        MatrixXd centered = X1.rowwise() - X1.colwise().mean();
-        this->Sigma = (centered.adjoint() * centered);
     }
 
     bool primary_model_fit(T4 &x, Eigen::VectorXd &y, Eigen::VectorXd &weights, Eigen::VectorXd &beta, double &coef0,
@@ -115,8 +113,24 @@ class abessDAG : public Algorithm<Eigen::VectorXd, Eigen::VectorXd, double, T4> 
             int mi = A(i) % p;
             int mj = int(A(i) / p);
             VectorXd est_old = X * Adj.col(mj).eval();
-            VectorXd est_new = est_old - beta_A(i) * X.col(mi).eval();
+            VectorXd est_new(p);
             VectorXd Xj = X.col(mj);
+            MatrixXd X_temp(n, p);
+            int ind = 1;
+            X_temp.col(0) = X.col(mi);
+            for (int k = 0; k < p; k++) {
+                if (Adj(k, mj) != 0) {
+                    X_temp.col(ind++) = X.col(k);
+                }
+            }
+            VectorXd beta_temp = this->lm(X_temp.block(0, 0, n, ind), X.col(mj));
+            ind = 1;
+            est_new(mi) = beta_temp(0);
+            for (int k = 0; k < p; k++) {
+                if (Adj(k, mj) != 0) {
+                    est_new(k) = beta_temp(ind++);
+                }
+            }
             bd(A(i)) = (est_new - Xj).squaredNorm() - (est_old - Xj).squaredNorm();
             cout<<"    backward: ("<<A(i)<<") = "<<bd(A(i))<<endl;
             // bd(A(i)) = ((est_new + est_old - 2 * Xj).array() * (est_new - est_old).array()).sum();
