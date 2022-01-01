@@ -4,7 +4,8 @@ gen_rr_adjmat <- function(n_node,
                           alpha,
                           type = c("ferro", "glass", "glass_weak", "glass_nodeweak")) 
 {
-  g <- igraph::sample_k_regular(n_node, degree)
+  # g <- igraph::sample_k_regular(n_node, degree)
+  g <- igraph::sample_degseq(out.deg = rep(degree, n_node), method = "vl")
   adj <- as.matrix(igraph::as_adjacency_matrix(g, type = "both"))
   
   ind_nonzero <- which(adj != 0, arr.ind = TRUE)
