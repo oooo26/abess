@@ -14,7 +14,6 @@ class abessDAG : public Algorithm<Eigen::VectorXd, Eigen::VectorXd, double, T4> 
    public:
     // MatrixXd Adj;  // adjacency matrix
     // MatrixXd Sigma;
-    Matrix<VectorXi, -1, 1> parents;
 
     abessDAG(int algorithm_type, int model_type, int max_iter = 30, int primary_model_fit_max_iter = 10,
              double primary_model_fit_epsilon = 1e-8, bool warm_start = true, int exchange_num = 5,
@@ -47,6 +46,11 @@ class abessDAG : public Algorithm<Eigen::VectorXd, Eigen::VectorXd, double, T4> 
                 }
             }
 
+            // diag
+            for (int i = 0; i < p; i++) {
+                bd(i * p + i) = -DBL_MAX;
+            }
+
             // alway_select
             for (int i = 0; i < this->always_select.size(); i++) {
                 bd(this->always_select(i)) = DBL_MAX;
@@ -63,11 +67,6 @@ class abessDAG : public Algorithm<Eigen::VectorXd, Eigen::VectorXd, double, T4> 
         return A_new;
     }
 
-    void inital_setting(T4 &X, Eigen::VectorXd &y, Eigen::VectorXd &weights, Eigen::VectorXi &g_index,
-                        Eigen::VectorXi &g_size, int &N) {
-        (this->parents).resize(X.cols(), 1);
-    }
-
     bool primary_model_fit(T4 &x, Eigen::VectorXd &y, Eigen::VectorXd &weights, Eigen::VectorXd &beta, double &coef0,
                            double loss0, Eigen::VectorXi &A, Eigen::VectorXi &g_index, Eigen::VectorXi &g_size) {
         cout << "  --> primary fit | A = " << A.transpose() << endl;
@@ -78,51 +77,36 @@ class abessDAG : public Algorithm<Eigen::VectorXd, Eigen::VectorXd, double, T4> 
         VectorXd temp = VectorXd::Ones(A.size());
         MatrixXd Adj = compute_Adj(temp, A, p);
         if (this->is_cyclic(Adj)) {
-            cout << "    Cyclic!" << endl;
+            cout << "      Cyclic!" << endl;
             return false;
         }
-        cout << "    Pass."<<endl;
+        cout << "      Pass." << endl;
 
         // update parents
-        VectorXi index(p);
-        int len = 0, col = 0;
-        for (int i = 0; i < A.size(); i++) {
-            while (col != int(A(i) / p)) {  // next node
-                this->parents(col++) = index.segment(0, len);
-                len = 0;
-            }
-            index(len++) = A(i) % p;
-        }
-
-        this->parents(col++) = index.segment(0, len);
-        while (col < p) {
-            this->parents(col++) = VectorXi::Zero(0);
-        }
+        vector<VectorXi> parents = this->compute_parents(A, p);
 
         // compute beta
-        len = 0;
-        col = 0;
-        while (col < p) {
-            int beta_len = this->parents(col).size();
-            if (beta_len != 0) {
-                T4 XA = X_seg(x, n, this->parents(col), 0);
-                VectorXd y = x.col(col);
-                beta.segment(len, beta_len) = this->lm(XA, y);
-                len += beta_len;
+        int ind = 0;
+        for (int i = 0; i < p; i++) {
+            int len = parents[i].size();
+            if (len != 0) {
+                T4 Xpar = X_seg(x, n, parents[i], 0);
+                VectorXd y = x.col(i);
+                beta.segment(ind, len) = this->lm(Xpar, y);
+                ind += len;
             }
-            col++;
         }
 
-        cout << "    beta_new: " << beta.transpose() << endl;
+        // cout << "    beta_new: " << beta.transpose() << endl;
         return true;
     };
 
     double loss_function(T4 &X, Eigen::VectorXd &y, Eigen::VectorXd &weights, Eigen::VectorXd &beta, double &coef0,
                          Eigen::VectorXi &A, Eigen::VectorXi &g_index, Eigen::VectorXi &g_size, double lambda) {
-        cout << "  --> loss" << endl;
         MatrixXd Adj = this->compute_Adj(beta, A, X.cols());
-        cout << "    " << (X - X * Adj).norm() << endl;
-        return (X - X * Adj).norm();
+        double loss = (X - X * Adj).squaredNorm();
+        cout << "  --> loss = " << loss << endl;
+        return loss;
     };
 
     void sacrifice(T4 &X, T4 &XA, Eigen::VectorXd &y, Eigen::VectorXd &beta, Eigen::VectorXd &beta_A, double &coef0,
@@ -133,27 +117,26 @@ class abessDAG : public Algorithm<Eigen::VectorXd, Eigen::VectorXd, double, T4> 
         int n = X.rows();
         int p = X.cols();
         MatrixXd Adj = this->compute_Adj(beta_A, A, p);
+        vector<VectorXi> parents = this->compute_parents(A, p);
 
         // backward
         for (int i = 0; i < A.size(); i++) {
             int mi = A(i) % p;
             int mj = int(A(i) / p);
             // drop A(i) and refit
-            VectorXi ind = this->parents(mj);
-            for (int j = 0; j < ind.size(); j++) {
-                if (ind(j) > mi) {
-                    ind(j - 1) = ind(j);
-                }
+            VectorXi par(parents[mj].size() - 1);
+            int ind = 0;
+            for (int k = 0; k < parents[mj].size(); k++) {
+                if (parents[mj](k) != mi) par(ind++) = parents[mj](k);
             }
-            ind = ind.head(ind.size() - 1).eval();
-            T4 XA = X_seg(X, n, ind, 0);
+            T4 Xpar = X_seg(X, n, par, 0);
             VectorXd y = X.col(mj);
-            VectorXd est_new = XA * this->lm(XA, y);
+            VectorXd est_new = Xpar * this->lm(Xpar, y);
             VectorXd est_old = X * Adj.col(mj);
             // loss change
             bd(A(i)) = (est_new - y).squaredNorm() - (est_old - y).squaredNorm();
             // bd(A(i)) = ((est_new + est_old - 2 * y).array() * (est_new - est_old).array()).sum();
-            cout << "    backward: (" << A(i) << ") = " << bd(A(i)) << endl;
+            // cout << "    backward: (" << A(i) << ") = " << bd(A(i)) << endl;
         }
 
         // forward
@@ -175,16 +158,16 @@ class abessDAG : public Algorithm<Eigen::VectorXd, Eigen::VectorXd, double, T4> 
                 continue;
             }
             // add I(i) and refit
-            VectorXi ind(this->parents(mj).size() + 1);
-            ind.head(ind.size() - 1) = this->parents(mj);
-            ind(ind.size() - 1) = mi;
-            T4 XA = X_seg(X, n, ind, 0);
+            VectorXi par(parents[mj].size() + 1);
+            par.head(parents[mj].size()) = parents[mj];
+            par(parents[mj].size()) = mi;
+            T4 Xpar = X_seg(X, n, par, 0);
             VectorXd y = X.col(mj);
-            VectorXd est_new = XA * this->lm(XA, y);
+            VectorXd est_new = Xpar * this->lm(Xpar, y);
             VectorXd est_old = X * Adj.col(mj);
             // loss change
-            bd(I(i)) = (est_new - y).squaredNorm() - (est_old - y).squaredNorm();
-            // bd(I(i)) = ((est_new + est_old - 2 * y).array() * (est_new - est_old).array()).sum();
+            bd(I(i)) = (est_old - y).squaredNorm() - (est_new - y).squaredNorm();
+            // bd(I(i)) = ((est_old + est_new - 2 * y).array() * (est_old - est_new).array()).sum();
         }
 
         // // forward
@@ -220,6 +203,26 @@ class abessDAG : public Algorithm<Eigen::VectorXd, Eigen::VectorXd, double, T4> 
             Adj(mi, mj) = beta_A(i);
         }
         return Adj;
+    }
+
+    vector<VectorXi> compute_parents(VectorXi &A, int p) {
+        VectorXi temp(p);
+        vector<VectorXi> parents(p);
+        int len = 0, col = 0;
+        for (int i = 0; i < A.size(); i++) {
+            while (col != int(A(i) / p)) {  // next node
+                parents[col++] = temp.segment(0, len).eval();
+                len = 0;
+            }
+            temp(len++) = A(i) % p;
+        }
+
+        parents[col++] = temp.segment(0, len).eval();
+        while (col < p) {
+            parents[col++] = VectorXi::Zero(0);
+        }
+
+        return parents;
     }
 
     VectorXd lm(T4 &XA, VectorXd &y) {

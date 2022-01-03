@@ -492,6 +492,7 @@ class Algorithm {
                 coef0 = coef0_A_exchange;
                 C_max = k;
 
+                cout << "==> splicing: " << k << endl;
                 return true;
             } else {
                 if (this->splicing_type == 1)
@@ -503,6 +504,7 @@ class Algorithm {
             }
         }
 
+        cout << "==> splicing no change." << endl;
         return false;
     };
 
