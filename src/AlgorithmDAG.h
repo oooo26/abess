@@ -69,18 +69,18 @@ class abessDAG : public Algorithm<Eigen::VectorXd, Eigen::VectorXd, double, T4> 
 
     bool primary_model_fit(T4 &x, Eigen::VectorXd &y, Eigen::VectorXd &weights, Eigen::VectorXd &beta, double &coef0,
                            double loss0, Eigen::VectorXi &A, Eigen::VectorXi &g_index, Eigen::VectorXi &g_size) {
-        cout << "  --> primary fit | A = " << A.transpose() << endl;
+        // cout << "  --> primary fit | A = " << A.transpose() << endl;
         int n = x.rows();
         int p = x.cols();
 
-        cout << "    Test acyclic:" << endl;
+        // cout << "    Test acyclic:" << endl;
         VectorXd temp = VectorXd::Ones(A.size());
         MatrixXd Adj = compute_Adj(temp, A, p);
         if (this->is_cyclic(Adj)) {
-            cout << "      Cyclic!" << endl;
+            // cout << "      Cyclic!" << endl;
             return false;
         }
-        cout << "      Pass." << endl;
+        // cout << "      Pass." << endl;
 
         // update parents
         vector<VectorXi> parents = this->compute_parents(A, p);
@@ -105,7 +105,7 @@ class abessDAG : public Algorithm<Eigen::VectorXd, Eigen::VectorXd, double, T4> 
                          Eigen::VectorXi &A, Eigen::VectorXi &g_index, Eigen::VectorXi &g_size, double lambda) {
         MatrixXd Adj = this->compute_Adj(beta, A, X.cols());
         double loss = (X - X * Adj).squaredNorm();
-        cout << "  --> loss = " << loss << endl;
+        // cout << "  --> loss = " << loss << endl;
         return loss;
     };
 
@@ -113,7 +113,7 @@ class abessDAG : public Algorithm<Eigen::VectorXd, Eigen::VectorXd, double, T4> 
                    Eigen::VectorXi &A, Eigen::VectorXi &I, Eigen::VectorXd &weights, Eigen::VectorXi &g_index,
                    Eigen::VectorXi &g_size, int N, Eigen::VectorXi &A_ind, Eigen::VectorXd &bd, Eigen::VectorXi &U,
                    Eigen::VectorXi &U_ind, int num) {
-        cout << "  --> sacrifice" << endl;
+        // cout << "  --> sacrifice" << endl;
         int n = X.rows();
         int p = X.cols();
         MatrixXd Adj = this->compute_Adj(beta_A, A, p);

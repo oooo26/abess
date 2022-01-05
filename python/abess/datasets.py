@@ -301,7 +301,7 @@ def make_multivariate_glm_data(
         "Family should be \'gaussian\', \'multigaussian\', or \'multinomial\'")
 
 
-def make_dag_data(n, p, proba=0.4):
+def make_dag_data(n, p, proba=0.4, snr=1.0, shuffle=True):
     """ 
     Kalisch & Bühlmann, 2007
     """
@@ -320,7 +320,15 @@ def make_dag_data(n, p, proba=0.4):
     # other nodes
     for i in range(1, p):
         eps = np.random.normal(size=n)
-        X[:, i] = X @ A[:, i] + eps
+        X[:, i] = X @ A[:, i] + eps / snr
+    # shuffle
+    if (shuffle):
+        ind = np.arange(p)
+        np.random.shuffle(ind)
+        temp = np.identity(p).take(ind, axis=0)
+        A = temp @ A @ temp.T
+        X = X @ temp.T
+        print(f"shuffle to: {ind}")
     # return
     DAGdata = namedtuple('DAGdata', ['X', 'A'])
     data = DAGdata(X, A)

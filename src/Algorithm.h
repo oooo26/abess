@@ -230,8 +230,11 @@ class Algorithm {
         Eigen::VectorXi A = this->inital_screening(train_x, train_y, this->beta, this->coef0, this->A_init,
                                                    this->I_init, this->bd, train_weight, g_index, g_size, N);
         Eigen::VectorXi I = Ac(A, N);
-        cout << "==> sparsity = " << T0 << endl;
-        cout << "  --> A = " << A.transpose() << endl;
+        cout << "==> sparsity = " << T0 << endl << "  --> A = ";
+        for (int i = 0; i < A.size(); i++){
+            cout << "(" << A(i)%p <<", "<<int(A(i)/p)<<") ";
+        }
+        cout<<endl;
 
         Eigen::VectorXi A_ind = find_ind(A, g_index, g_size, (this->beta).rows(), N);
         T4 X_A = X_seg(train_x, train_n, A_ind, this->model_type);
@@ -377,7 +380,11 @@ class Algorithm {
                 bool exchange = this->splicing(*X_U, y, A_U, I_U, C_max, beta_U, coef0, bd_U, weights, g_index_U,
                                                g_size_U, this->U_size, tau, l0);
 
-                cout << "  --> A = " << A_U.transpose() << endl;
+                cout << "  --> A = ";
+                for (int i = 0; i < A_U.size(); i++){
+                    cout << "(" << A_U(i)%(X.cols()) <<", "<<int(A_U(i)/(X.cols()))<<") ";
+                }
+                cout<<endl;
                 if (exchange)
                     train_loss = l0;
                 else
@@ -492,7 +499,6 @@ class Algorithm {
                 coef0 = coef0_A_exchange;
                 C_max = k;
 
-                cout << "==> splicing: " << k << endl;
                 return true;
             } else {
                 if (this->splicing_type == 1)
@@ -504,7 +510,6 @@ class Algorithm {
             }
         }
 
-        cout << "==> splicing no change." << endl;
         return false;
     };
 
