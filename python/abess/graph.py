@@ -278,7 +278,7 @@ class abessDAG(bess_base):
                             self.important_search,
                             A_init,
                             p * p, 1,
-                            1, 1
+                            1, 1, 1
                             )
 
         self.coef_ = result[0].reshape(p, p).T
