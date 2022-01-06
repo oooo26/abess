@@ -6,11 +6,13 @@
 [![R Build](https://github.com/abess-team/abess/actions/workflows/r_test.yml/badge.svg)](https://github.com/abess-team/abess/actions/workflows/r_test.yml)
 [![codecov](https://codecov.io/gh/abess-team/abess/branch/master/graph/badge.svg?token=LK56LHXV00)](https://codecov.io/gh/abess-team/abess)
 [![docs](https://readthedocs.org/projects/abess/badge/?version=latest)](https://abess.readthedocs.io/en/latest/?badge=latest)
+[![R website](https://abess-team.github.io/abess/)](https://github.com/abess-team/abess/actions/workflows/r_website.yml)
 [![cran](https://img.shields.io/cran/v/abess?logo=R)](https://cran.r-project.org/package=abess)
 [![pypi](https://badge.fury.io/py/abess.svg)](https://badge.fury.io/py/abess)
 [![pyversions](https://img.shields.io/pypi/pyversions/abess)](https://img.shields.io/pypi/pyversions/abess)
 [![License](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](http://www.gnu.org/licenses/gpl-3.0)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/3f6e60a3a3e44699a033159633981b76)](https://www.codacy.com/gh/abess-team/abess/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=abess-team/abess&amp;utm_campaign=Badge_Grade)
+[![CodeFactor](https://www.codefactor.io/repository/github/abess-team/abess/badge)](https://www.codefactor.io/repository/github/abess-team/abess)
 <!-- [![Build Status](https://travis-ci.com/abess-team/abess.svg?branch=master)](https://travis-ci.com/abess-team/abess) -->
 
 ## Overview
@@ -114,6 +116,19 @@ $ Rscript abess/docs/simulation/R/timings.R
 
 `abess` is a free software and its source code is publicly available on [Github](https://github.com/abess-team/abess). The core framework is programmed in C++, and user-friendly R and Python interfaces are offered. You can redistribute it and/or modify it under the terms of the [GPL-v3 License](https://www.gnu.org/licenses/gpl-3.0.html). We welcome contributions for `abess`, especially stretching `abess` to the other best subset selection problems. 
 
+## What's news
+
+New features:
+
+- Support user-specified cross validation division.
+- Support user-specified initial active set.
+- Support flexible support size for sequentially best subset selection for principal component analysis (PCA). 
+
+New best subset selection tasks: 
+
+- Generalized linear model when the link function is gamma distribution.
+- Robust principal component analysis (RPCA).
+
 ## Citation         
 
 If you use `abess` or reference our tutorials in a presentation or publication, we would appreciate citations of our library.
@@ -139,3 +154,5 @@ The corresponding BibteX entry:
 - Yanhang Zhang, Junxian Zhu, Jin Zhu, and Xueqin Wang (2021). Certifiably Polynomial Algorithm for Best Group Subset Selection. arXiv preprint arXiv:2104.12576.
 
 - Qiang Sun and Heping Zhang (2020). Targeted Inference Involving High-Dimensional Data Using Nuisance Penalized Regression, Journal of the American Statistical Association, DOI: 10.1080/01621459.2020.1737079.
+
+- Jin Zhu, Liyuan Hu, Junhao Huang, Kangkang Jiang, Yanhang Zhang, Shiyun Lin, Junxian Zhu, and Xueqin Wang (2021). abess: A Fast Best Subset Selection Library in Python and R. arXiv:2110.09697, 2021.

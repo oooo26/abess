@@ -9,13 +9,16 @@ import numpy
 os_type = 'MS_WIN64'
 CURRENT_DIR = os.path.abspath(os.path.dirname(__file__))
 
+# copy src
+os.system(f'bash "{CURRENT_DIR}/copy_src.sh" "{CURRENT_DIR}"')
+
 if sys.platform.startswith('win32'):
     python_path = sys.base_prefix
     temp = python_path.split("\\")
     version = str(sys.version_info.major) + str(sys.version_info.minor)
     path1 = "-I" + python_path + "\\include"
     path2 = "-L" + python_path + "\\libs"
-    os.system('bash ' + CURRENT_DIR + '/pre.sh ' + python_path + ' ' + version)
+    os.system(f'bash "{CURRENT_DIR}/pre.sh" ' + python_path + ' ' + version)
 
     cabess_module = Extension(name='abess._cabess',
                               sources=[CURRENT_DIR + '/src/api.cpp', CURRENT_DIR + '/src/List.cpp', CURRENT_DIR + '/src/utilities.cpp',
@@ -65,7 +68,7 @@ with open(path.join(CURRENT_DIR, 'README.rst'), encoding='utf-8') as f:
     long_description = f.read()
 
 setup(name='abess',
-      version='0.3.0',
+      version='0.4.0',
       author="Jin Zhu, Kangkang Jiang, Junhao Huang, Yanhang Zhang, Junxian Zhu, Xueqin Wang",
       author_email="zhuj37@mail2.sysu.edu.cn",
       maintainer="Kangkang Jiang",
