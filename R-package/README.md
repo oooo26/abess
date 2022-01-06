@@ -7,7 +7,7 @@
 [![R Build](https://github.com/abess-team/abess/actions/workflows/r_test.yml/badge.svg)](https://github.com/abess-team/abess/actions/workflows/r_test.yml)
 [![codecov](https://codecov.io/gh/abess-team/abess/branch/master/graph/badge.svg?token=LK56LHXV00)](https://codecov.io/gh/abess-team/abess)
 [![docs](https://readthedocs.org/projects/abess/badge/?version=latest)](https://abess.readthedocs.io/en/latest/?badge=latest)
-[![R website](https://abess-team.github.io/abess/)](https://github.com/abess-team/abess/actions/workflows/r_website.yml)
+[![R docs](https://github.com/abess-team/abess/actions/workflows/r_website.yml/badge.svg)](https://abess-team.github.io/abess/)
 [![cran](https://img.shields.io/cran/v/abess?logo=R)](https://cran.r-project.org/package=abess)
 [![pypi](https://badge.fury.io/py/abess.svg)](https://badge.fury.io/py/abess)
 [![pyversions](https://img.shields.io/pypi/pyversions/abess)](https://img.shields.io/pypi/pyversions/abess)
@@ -84,6 +84,22 @@ By setting `family = "gamma"` in `abess` function, users can analyze the dataset
 * Support robust principal component analysis now. A new R function `abessrpca` can access it.
 
 * Improve the R package document by: adding more details and giving more links related to core functions.  
+
+## Citation         
+
+If you use `abess` or reference our tutorials in a presentation or publication, we would appreciate citations of our library.
+> Jin Zhu, Liyuan Hu, Junhao Huang, Kangkang Jiang, Yanhang Zhang, Shiyun Lin, Junxian Zhu, Xueqin Wang (2021). “abess: A Fast Best Subset Selection Library in Python and R.” arXiv:2110.09697.
+
+The corresponding BibteX entry:
+
+```
+@article{zhu-abess-arxiv,
+  author    = {Jin Zhu and Liyuan Hu and Junhao Huang and Kangkang Jiang and Yanhang Zhang and Shiyun Lin and Junxian Zhu and Xueqin Wang},
+  title     = {abess: A Fast Best Subset Selection Library in Python and R},
+  journal   = {arXiv:2110.09697},
+  year      = {2021},
+}
+```
 
 ## References
 
