@@ -336,6 +336,7 @@ nodewise_L0 <- function(x,
     no_fit_flag <- FALSE
     min_nobs <- min(table(x[, node]))
     if (min_nobs > 1) {
+      init_active_set <- which(theta[-node, node] != 0)
       model_node <-
         abess::abess(
           x = x[, -node],
@@ -344,6 +345,7 @@ nodewise_L0 <- function(x,
           family = "binomial",
           tune.path = "sequence",
           support.size = 0:max.support.size[node],
+          init.active.set = init_active_set, 
           tune.type = tune.type, 
           ic.scale = ic.scale, 
           nfolds = nfolds,
