@@ -331,6 +331,7 @@ nodewise_L0 <- function(x,
   }
   
   theta <- matrix(0, p, p)
+  tune_value_list <- list()
   for (node in 1:p) {
     no_fit_flag <- FALSE
     min_nobs <- min(table(x[, node]))
@@ -355,6 +356,7 @@ nodewise_L0 <- function(x,
           num.threads = nfolds, 
           seed = 1
         )
+      tune_value_list[[node]] <- model_node[["tune.value"]]
       if (is.null(support.size)) {
         est_theta_node <- as.vector(coef(model_node, support.size = model_node[["best.size"]]))[-1]
       } else {
@@ -392,8 +394,10 @@ nodewise_L0 <- function(x,
     theta <- thres_bmn_est(theta, graph.threshold)
   }
   
+  names(tune_value_list) <- NULL
   res_out <- list(
-    omega = theta
+    omega = theta, 
+    tune.value = tune_value_list
   )
   class(res_out) <- "abessbmn"
   res_out
