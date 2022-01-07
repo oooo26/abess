@@ -321,19 +321,25 @@ def make_multivariate_glm_data(
         "Family should be \'gaussian\', \'multigaussian\', or \'multinomial\'")
 
 
-def make_dag_data(n, p, proba=0.4, snr=1.0, shuffle=True):
+def make_dag_data(n, p, k=0, proba=0.4, snr=1.0, shuffle=True):
     """ 
     Kalisch & Bühlmann, 2007
     """
     # adjacency matrix
     A = np.zeros((p, p))
-    success = np.random.binomial(1, proba, int(p*(p-1)/2))
-    print(f"Vertices: {np.arange(p)}")
+    # print(f"Vertices: {np.arange(p)}")
+    # active position
+    if (k == 0):
+        success = np.random.binomial(1, proba, int(p*(p-1)/2))
+    else:
+        ind = np.random.choice(int(p*(p-1)/2), k, replace=False)
+        success = np.zeros(int(p*(p-1)/2))
+        success[ind] = 1
     for i in range(p):
         for j in range(i):
             if success[int(i*(i-1)/2) + j] == 1:
                 A[j, i] = np.random.uniform(0.1, 1)
-                print(f"Edge: {j}->{i} [{A[j, i]:.4f}]")
+                # print(f"Edge: {j}->{i} [{A[j, i]:.4f}]")
     # first node
     X = np.zeros((n, p))
     X[:, 0] = np.random.normal(size=n)
@@ -348,7 +354,7 @@ def make_dag_data(n, p, proba=0.4, snr=1.0, shuffle=True):
         temp = np.identity(p).take(ind, axis=0)
         A = temp @ A @ temp.T
         X = X @ temp.T
-        print(f"shuffle to: {ind}")
+        # print(f"shuffle to: {ind}")
     # return
     DAGdata = namedtuple('DAGdata', ['X', 'A'])
     data = DAGdata(X, A)

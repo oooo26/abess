@@ -81,7 +81,6 @@ List abessWorkflow(T4 &x, T1 &y, int n, int p, int normalize_type, Eigen::Vector
         //   metric->cal_cv_group_XTX(data);
     }
 
-    cout<<"path in"<<endl;
     // calculate loss for each parameter parameter combination
     vector<Result<T2, T3>> result_list(Kfold);
     if (path_type == 1) {
@@ -105,8 +104,6 @@ List abessWorkflow(T4 &x, T1 &y, int n, int p, int normalize_type, Eigen::Vector
     for (int k = 0; k < Kfold; k++) {
         algorithm_list[k]->clear_setting();
     }
-
-    cout<<"Best model"<<endl;
 
     // Get bestmodel index && fit bestmodel
     int min_loss_index = 0;
