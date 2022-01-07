@@ -1,4 +1,4 @@
-import numpy
+import numpy as np
 from sklearn.utils import check_array, check_consistent_length
 
 
@@ -17,7 +17,7 @@ def _check_inputs(event_indicator, event_time, estimate):
     event_time = check_array(event_time, ensure_2d=False)
     estimate = _check_estimate_1d(estimate, event_time)
 
-    if not numpy.issubdtype(event_indicator.dtype, numpy.bool_):
+    if not np.issubdtype(event_indicator.dtype, np.bool_):
         raise ValueError(
             f'only boolean arrays are supported as class labels for survival analysis, got {event_indicator.dtype}')
 
@@ -47,7 +47,7 @@ def _get_comparable(event_indicator, event_time, order):
         censored_at_same_time = ~event_at_same_time
         for j in range(i, end):
             if event_indicator[order[j]]:
-                mask = numpy.zeros(n_samples, dtype=bool)
+                mask = np.zeros(n_samples, dtype=bool)
                 mask[end:] = True
                 # an event is comparable to censored samples at same time point
                 mask[i:end] = censored_at_same_time
@@ -60,7 +60,7 @@ def _get_comparable(event_indicator, event_time, order):
 
 def _estimate_concordance_index(
         event_indicator, event_time, estimate, weights, tied_tol=1e-8):
-    order = numpy.argsort(event_time)
+    order = np.argsort(event_time)
 
     comparable, tied_time = _get_comparable(event_indicator, event_time, order)
 
@@ -82,7 +82,7 @@ def _estimate_concordance_index(
 
         assert event_i, f'got censored sample at index {order[ind]}, but expected uncensored'
 
-        ties = numpy.absolute(est - est_i) <= tied_tol
+        ties = np.absolute(est - est_i) <= tied_tol
         n_ties = ties.sum()
         # an event should have a higher score
         con = est < est_i
@@ -156,7 +156,36 @@ def concordance_index_censored(
     event_indicator, event_time, estimate = _check_inputs(
         event_indicator, event_time, estimate)
 
-    w = numpy.ones_like(estimate)
+    w = np.ones_like(estimate)
 
     return _estimate_concordance_index(
         event_indicator, event_time, estimate, w, tied_tol)
+
+def tpr_fpr(real, est, eps=1e-10):
+    """
+    Test tpr and fpr for estimated non-zero position.
+
+    Parameters
+    ----------
+    real: array-like
+        Real sparse coefficients.
+    est: array-like
+        Estimated sparse coefficients with the same shape of `real`.
+    eps: float
+        A small number. If the coefficient larger than `eps`, we suppose it is non-zero.
+        Default: eps=1e-10
+
+    Returns
+    -------
+    tpr: float
+        tpr
+    fpr: float
+        fpr
+    """
+    real = np.array(real).flatten()
+    est = np.array(est).flatten()
+    p = abs(real) > eps
+    r = abs(est) > eps
+    tpr = sum(r & p) / sum(r)
+    fpr = sum(~r & p) / sum(~r)
+    return tpr, fpr
