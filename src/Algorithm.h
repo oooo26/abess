@@ -541,7 +541,7 @@ class Algorithm {
             }
             // A_init
             for (int i = 0; i < A.size(); i++) {
-                bd(A(i)) = DBL_MAX;
+                bd(A(i)) = DBL_MAX - 1;
             }
         }
 
