@@ -30,6 +30,7 @@ class abessDAG : public Algorithm<Eigen::VectorXd, Eigen::VectorXd, double, T4> 
                                      Eigen::VectorXi &A, Eigen::VectorXi &I, Eigen::VectorXd &bd,
                                      Eigen::VectorXd &weights, Eigen::VectorXi &g_index, Eigen::VectorXi &g_size,
                                      int &N) {
+        // cout<<"inital screening"<<endl;
         if (bd.size() == 0) {
             // variable initialization
             int p = X.cols();

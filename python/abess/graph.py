@@ -2,59 +2,35 @@ import numbers
 import numpy as np
 from scipy.sparse import coo_matrix
 from sklearn.utils.validation import check_array
-from .cabess import *
+from .cabess import pywrap_DAG
 from .bess_base import bess_base
 
 
 def fix_docs(cls):
-    # inherit the document from base class
+    # This function is to inherit the docstring from base class
+    # and avoid unnecessary duplications on description.
     index = cls.__doc__.find("Examples\n    --------\n")
     if index != -1:
         cls.__doc__ = cls.__doc__[:index] + \
             cls.__bases__[0].__doc__ + cls.__doc__[index:]
-
-    # for name, func in vars(cls).items():
-    #     if isinstance(func, types.FunctionType):
-    #         # print(str(func) +  'needs doc')
-    #         for parent in cls.__bases__:
-    #             parfunc = getattr(parent, name, None)
-    #             if parfunc and getattr(parfunc, '__doc__', None):
-    #                 func.__doc__ = parfunc.__doc__ + func.__doc__
     return cls
 
 
 @fix_docs
-class abessDAG(bess_base):
-    """
-    Adaptive Best-Subset Selection(ABESS) algorithm for principal component analysis.
+class DAG(bess_base):
+    r"""
+    Adaptive Best-Subset Selection(ABESS) algorithm for directed acylic graph recognization.
 
     Parameters
     ----------
-    splicing_type: {0, 1}, optional
-        The type of splicing in `fit()` (in Algorithm.h).
+    splicing_type: {0, 1}, optional, default=0
+        The type of splicing:
         "0" for decreasing by half, "1" for decresing by one.
-        Default: splicing_type = 1.
-
-    Examples
-    --------
-    >>> ### Sparsity known
-    >>>
-    >>> from abess.pca import abessPCA
-    >>> import numpy as np
-    >>> np.random.seed(12345)
-    >>> model = abessPCA(support_size = 10)
-    >>>
-    >>> ### X known
-    >>> X = np.random.randn(100, 50)
-    >>> model.fit(X)
-    >>> print(model.coef_)
-    >>>
-    >>> ### X unknown, but Sigma known
-    >>> model.fit(Sigma = np.cov(X.T))
-    >>> print(model.coef_)
     """
 
-    def __init__(self, max_iter=20, exchange_num=5, path_type="seq", is_warm_start=True, support_size=None, s_min=None, s_max=None,
+    def __init__(self, max_iter=20, exchange_num=5, path_type="seq",
+                 is_warm_start=True, support_size=None,
+                 s_min=None, s_max=None,
                  ic_type="ebic", ic_coef=1.0, cv=1, screening_size=-1,
                  always_select=None,
                  thread=1,
@@ -62,42 +38,27 @@ class abessDAG(bess_base):
                  splicing_type=1
                  ):
         super().__init__(
-            algorithm_type="abess", model_type="DAG", normalize_type=1, path_type=path_type, max_iter=max_iter, exchange_num=exchange_num,
-            is_warm_start=is_warm_start, support_size=support_size, s_min=s_min, s_max=s_max,
-            ic_type=ic_type, ic_coef=ic_coef, cv=cv, screening_size=screening_size,
+            algorithm_type="abess", model_type="DAG", normalize_type=1,
+            path_type=path_type, max_iter=max_iter, exchange_num=exchange_num,
+            is_warm_start=is_warm_start, support_size=support_size,
+            s_min=s_min, s_max=s_max,
+            ic_type=ic_type, ic_coef=ic_coef, cv=cv,
+            screening_size=screening_size,
             always_select=always_select,
             thread=thread,
             sparse_matrix=sparse_matrix,
             splicing_type=splicing_type
         )
 
-    def fit(self, X=None, is_normal=False, A_init=None):
+    def fit(self, X=None, is_normal=False, A_init=None, cv_fold_id=None):
         """
-        The fit function is used to transfer the information of data and return the fit result.
+        The fit function is used to transfer the information of data and
+        return the fit result.
 
         Parameters
         ----------
-        X : array-like of shape (n_samples, p_features)
-            Training data
-        is_normal : bool, optional
-            whether normalize the variables array before fitting the algorithm.
-            Default: is_normal=False.
-        weight : array-like of shape (n_samples,)
-            Individual weights for each sample. Only used for is_weight=True.
-            Default is 1 for each observation.
-        group : int, optional
-            The group index for each variable.
-            Default: group = \\code{numpy.ones(p)}.
-        Sigma : array-like of shape (n_features, n_features), optional
-            Sample covariance matrix.
-            For PCA, it can be given as input, instead of X. But if X is given, Sigma will be set to \\code{np.cov(X.T)}.
-            Default: Sigma = \\code{np.cov(X.T)}.
-        number : int, optional
-            Indicates the number of PCs returned.
-            Default: 1
-        n : int, optional
-            Sample size. If X is given, it would be X.shape[0]; if Sigma is given, it would be 1 by default.
-            Default: X.shape[0] or 1.
+        X : array-like, shape(n_samples, p_features)
+            Training data.
         """
 
         # Input check
@@ -108,8 +69,6 @@ class abessDAG(bess_base):
 
             n = X.shape[0]
             p = X.shape[1]
-            X = X - X.mean(axis=0)
-            Sigma = np.cov(X.T)
             self.n_features_in_ = p
         else:
             raise ValueError("X should be given.")
@@ -144,8 +103,34 @@ class abessDAG(bess_base):
         if self.cv > n:
             raise ValueError("cv should be smaller than n.")
 
+        # cv_fold_id
+        if cv_fold_id is None:
+            cv_fold_id = np.array([], dtype="int32")
+        else:
+            cv_fold_id = np.array(cv_fold_id, dtype="int32")
+            if cv_fold_id.ndim > 1:
+                raise ValueError("group should be an 1D array of integers.")
+            if cv_fold_id.size != n:
+                raise ValueError(
+                    "The length of group should be equal to X.shape[0].")
+            if len(set(cv_fold_id)) != self.cv:
+                raise ValueError(
+                    "The number of different masks should be equal to `cv`.")
+
+        # A_init
+        if A_init is None:
+            A_init = np.array([], dtype="int32")
+        else:
+            A_init = np.array(A_init, dtype="int32")
+            if A_init.ndim > 1:
+                raise ValueError(
+                    "The initial active set should be an 1D array of integers.")
+            if (A_init.min() < 0 or A_init.max() >= p):
+                raise ValueError(
+                    "A_init contains wrong index.")
+
         # Group
-        g_index = list(range(p*p))
+        g_index = list(range(p * p))
         # if group is None:
         #     g_index = list(range(p))
         # else:
@@ -166,35 +151,35 @@ class abessDAG(bess_base):
 
         # path parameter (note that: path_type_int = 1)
         if self.support_size is None:
-            support_sizes = np.arange(0, p)
+            support_sizes = np.arange(0, int(p * (p - 1) / 2))
         else:
             if isinstance(self.support_size, (numbers.Integral)):
                 support_sizes = [self.support_size]
-            elif (np.any(np.array(self.support_size) > p * p) or
+            elif (np.any(np.array(self.support_size) > int(p * (p - 1) / 2)) or
                     np.any(np.array(self.support_size) < 0)):
                 raise ValueError(
-                    "All support_size should be between 0 and X.shape[1] * X.shape[1]")
+                    "All support_size should be between 0 and X.shape[1] * (X.shape[1] - 1) / 2")
             else:
                 support_sizes = self.support_size
 
         support_sizes = np.array(support_sizes).astype('int32')
 
-        # screening
-        if self.screening_size != -1:
-            if self.screening_size == 0:
-                self.screening_size = min(
-                    p, int(n / (np.log(np.log(n)) * np.log(p))))
-            elif self.screening_size > p:
-                raise ValueError(
-                    "screening size should be smaller than X.shape[1].")
-            elif self.screening_size < max(support_sizes):
-                raise ValueError(
-                    "screening size should be more than max(support_size).")
+        # # screening
+        # if self.screening_size != -1:
+        #     if self.screening_size == 0:
+        #         self.screening_size = min(
+        #             p, int(n / (np.log(np.log(n)) * np.log(p))))
+        #     elif self.screening_size > p:
+        #         raise ValueError(
+        #             "screening size should be smaller than X.shape[1].")
+        #     elif self.screening_size < max(support_sizes):
+        #         raise ValueError(
+        #             "screening size should be more than max(support_size).")
 
         # unused
         new_s_min = 0
         new_s_max = 0
-        cv_fold_id = np.array([], dtype="int32")
+        early_stop = False
 
         # Exchange_num
         if (not isinstance(self.exchange_num, int) or self.exchange_num <= 0):
@@ -214,18 +199,6 @@ class abessDAG(bess_base):
                 or self.important_search < 0):
             raise ValueError(
                 "important_search should be a non-negative number.")
-
-        # A_init
-        if A_init is None:
-            A_init = np.array([], dtype="int32")
-        else:
-            A_init = np.array(A_init, dtype="int32")
-            if A_init.ndim > 1:
-                raise ValueError(
-                    "The initial active set should be an 1D array of integers.")
-            if (A_init.min() < 0 or A_init.max() >= p*p):
-                raise ValueError(
-                    "A_init contains wrong index.")
 
         # Sparse X
         if self.sparse_matrix:
@@ -256,12 +229,14 @@ class abessDAG(bess_base):
 
         # always_select
         if self.always_select is None:
-            self.always_select = []
+            always_select_list = np.zeros(0, dtype="int32")
+        else:
+            always_select_list = np.array(self.always_select, dtype="int32")
 
         # wrap with cpp
         # weight = np.ones(n)
-        result = pywrap_DAG(X, 
-                            n, p, normalize, 
+        result = pywrap_DAG(X,
+                            n, p, normalize,
                             self.max_iter, self.exchange_num,
                             path_type_int, self.is_warm_start,
                             ic_type_int, self.ic_coef, self.cv,
@@ -270,8 +245,8 @@ class abessDAG(bess_base):
                             cv_fold_id,
                             new_s_min, new_s_max,
                             self.screening_size,
-                            self.always_select,
-                            self.early_stop,
+                            always_select_list,
+                            early_stop,
                             self.thread,
                             self.sparse_matrix,
                             self.splicing_type,
