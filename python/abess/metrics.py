@@ -162,9 +162,10 @@ def concordance_index_censored(
     return _estimate_concordance_index(
         event_indicator, event_time, estimate, w, tied_tol)
 
-def tpr_fpr(real, est, eps=1e-10):
-    """
-    Test tpr and fpr for estimated non-zero position.
+
+def mymetrics(real, est, eps=1e-10):
+    r"""
+    Some metrics for estimating active variables.
 
     Parameters
     ----------
@@ -172,21 +173,31 @@ def tpr_fpr(real, est, eps=1e-10):
         Real sparse coefficients.
     est: array-like
         Estimated sparse coefficients with the same shape of `real`.
-    eps: float
-        A small number. If the coefficient larger than `eps`, we suppose it is non-zero.
-        Default: eps=1e-10
+    eps: float, optional, default=1e-10
+        A small number. If the coefficient larger than `eps`,
+        we suppose it is non-zero.
 
     Returns
     -------
     tpr: float
-        tpr
+        True positive rate.
     fpr: float
-        fpr
+        False positive rate.
+    mcc: float
+        Matthews correlation coefficient.
     """
-    real = np.array(real).flatten()
-    est = np.array(est).flatten()
-    p = abs(real) > eps
-    r = abs(est) > eps
-    tpr = sum(r & p) / sum(r)
-    fpr = sum(~r & p) / sum(~r)
-    return tpr, fpr
+    real = abs(np.array(real).flatten()) > eps
+    est = abs(np.array(est).flatten()) > eps
+
+    tp = sum(real & est)
+    tn = sum(~real & ~est)
+    fp = sum(~real & est)
+    fn = sum(real & ~est)
+    p = tp + fn
+    n = tn + fp
+
+    tpr = tp / p
+    fpr = fp / n
+    mcc = (tp * tn - fp * fn) / np.sqrt((tp + fp)
+                                        * (tp + fn) * (tn + fp) * (tn + fn))
+    return tpr, fpr, mcc

@@ -267,7 +267,6 @@ class Algorithm {
         this->update_tau(train_n, N);
         this->get_A(train_x, train_y, A, I, C_max, this->beta, this->coef0, this->bd, T0, train_weight, g_index, g_size,
                     N, this->tau, this->train_loss);
-
         if (this->model_type < 7) {
             // final fit
             A_ind = find_ind(A, g_index, g_size, (this->beta).rows(), N);
@@ -360,6 +359,7 @@ class Algorithm {
             }
 
             int num = -1;
+            bool unchanged = true;
             while (true) {
                 num++;
 
@@ -385,13 +385,14 @@ class Algorithm {
                 //     cout << "(" << A_U(i)%(X.cols()) <<", "<<int(A_U(i)/(X.cols()))<<") ";
                 // }
                 // cout<<endl;
-                if (exchange)
+                if (exchange) {
                     train_loss = l0;
-                else
+                    unchanged = false;
+                } else
                     break;  // A_U is stable
             }
 
-            if (A_U.size() == 0 || A_U.maxCoeff() == T0 - 1) break;  // if A_U not change, stop
+            if (unchanged) break;  // if A_U not change, stop
 
             // store beta, A, I
             slice_restore(beta_U, U_ind, beta);

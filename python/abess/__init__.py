@@ -22,7 +22,7 @@ from .datasets import (
     make_multivariate_glm_data,
     make_dag_data)
 from .graph import (DAG)
-from .metrics import (tpr_fpr)
+from .metrics import (mymetrics)
 
 # To be deprecated in version 0.6.0
 from .linear import (

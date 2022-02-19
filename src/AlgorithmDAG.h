@@ -26,6 +26,8 @@ class abessDAG : public Algorithm<Eigen::VectorXd, Eigen::VectorXd, double, T4> 
 
     int get_beta_size(int n, int p) { return p * p; }
 
+    void update_tau(int train_n, int N) { this->tau = 0.0; }
+
     Eigen::VectorXi inital_screening(T4 &X, Eigen::VectorXd &y, Eigen::VectorXd &beta, double &coef0,
                                      Eigen::VectorXi &A, Eigen::VectorXi &I, Eigen::VectorXd &bd,
                                      Eigen::VectorXd &weights, Eigen::VectorXi &g_index, Eigen::VectorXi &g_size,
