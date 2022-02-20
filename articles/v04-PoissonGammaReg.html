@@ -181,12 +181,12 @@
 <span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">abess_fit</span><span class="op">)</span></code></pre></div>
 <pre><code><span class="co">## 7 x 7 sparse Matrix of class "dgCMatrix"</span>
 <span class="co">##                    0         1         2          3          4           5</span>
-<span class="co">## (intercept) 1.581038 0.4281174 0.2558212 -0.1046633 -0.1047990 -0.11247190</span>
+<span class="co">## (intercept) 1.581038 0.4281174 0.2558212 -0.1046637 -0.1047990 -0.11247190</span>
 <span class="co">## age         .        .         .          .         -0.1220295 -0.14952539</span>
 <span class="co">## sex         .        .         .          .          .         -0.05079621</span>
-<span class="co">## job         .        1.5000589 1.3764399  1.3352331  1.3066525  1.31052716</span>
-<span class="co">## education   .        .         .          0.7481257  0.7402953  0.74962027</span>
-<span class="co">## region      .        .         0.5200980  0.6772797  0.7321922  0.73122117</span>
+<span class="co">## job         .        1.5000589 1.3764399  1.3352332  1.3066525  1.31052716</span>
+<span class="co">## education   .        .         .          0.7481258  0.7402953  0.74962027</span>
+<span class="co">## region      .        .         0.5200980  0.6772798  0.7321922  0.73122117</span>
 <span class="co">## marriage    .        .         .          .          .          .         </span>
 <span class="co">##                        6</span>
 <span class="co">## (intercept) -0.113001462</span>
@@ -221,7 +221,7 @@
 <span class="co">## [1,]  1.838261  1.954873</span>
 <span class="co">## [2,]  2.650754  2.692235</span>
 <span class="co">## [3,]  3.080212  3.088154</span>
-<span class="co">## [4,] -1.098234 -1.302043</span>
+<span class="co">## [4,] -1.098235 -1.302043</span>
 <span class="co">## [5,] -2.200376 -2.211216</span>
 <span class="co">## [6,]  4.107197  4.103329</span></code></pre>
 <p>The <code><a href="../reference/plot.abess.html">plot.abess()</a></code> function helps to visualize the change of models with the change of support size. There are 5 types of graph you can generate, including <code>coef</code> for the coefficient value, <code>l2norm</code> for the L2-norm of the coefficients, <code>dev</code> for the deviance and <code>tune</code> for the tuning value. Default if <code>coef</code>.</p>
@@ -263,9 +263,9 @@
 <span class="co">##                   3</span>
 <span class="co">## age       .        </span>
 <span class="co">## sex       .        </span>
-<span class="co">## job       1.3352331</span>
-<span class="co">## education 0.7481257</span>
-<span class="co">## region    0.6772797</span>
+<span class="co">## job       1.3352332</span>
+<span class="co">## education 0.7481258</span>
+<span class="co">## region    0.6772798</span>
 <span class="co">## marriage  .</span></code></pre>
 <p>The return is a list containing the basic information of the estimated model. The best model has estimated coefficients every close to the true coefficients and it successfully recovers the correct support.</p>
 </div>
@@ -303,21 +303,21 @@ y_i \sim Gamma(\mu_i, \alpha),
 <span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">abess_fit</span><span class="op">)</span></code></pre></div>
 <pre><code><span class="co">## 7 x 7 sparse Matrix of class "dgCMatrix"</span>
 <span class="co">##                    0        1         2         3         4         5</span>
-<span class="co">## (intercept) 342.3786 433.5399 449.07955 453.59162 454.63478 456.86208</span>
-<span class="co">## age           .        .        .         .         .       -12.73405</span>
-<span class="co">## sex           .        .        .         .       -17.05556 -15.31075</span>
-<span class="co">## job           .        .      104.53483  83.99608  85.35160  87.44358</span>
-<span class="co">## education     .        .        .        72.05160  71.92788  71.30622</span>
-<span class="co">## region        .      132.5486  73.37383  55.16201  58.86699  61.05249</span>
+<span class="co">## (intercept) 342.3786 433.5399 449.07955 453.59162 454.62486 456.86280</span>
+<span class="co">## age           .        .        .         .         .       -12.73044</span>
+<span class="co">## sex           .        .        .         .       -17.05833 -15.30942</span>
+<span class="co">## job           .        .      104.53483  83.99608  85.32251  87.43632</span>
+<span class="co">## education     .        .        .        72.05160  71.94211  71.31821</span>
+<span class="co">## region        .      132.5486  73.37383  55.16201  58.87711  61.05067</span>
 <span class="co">## marriage      .        .        .         .         .         .      </span>
 <span class="co">##                       6</span>
-<span class="co">## (intercept) 456.9215002</span>
-<span class="co">## age         -12.6857071</span>
-<span class="co">## sex         -15.1295630</span>
-<span class="co">## job          87.4285225</span>
-<span class="co">## education    71.2964225</span>
-<span class="co">## region       61.0158409</span>
-<span class="co">## marriage      0.8788533</span></code></pre>
+<span class="co">## (intercept) 456.9214598</span>
+<span class="co">## age         -12.6859059</span>
+<span class="co">## sex         -15.1305799</span>
+<span class="co">## job          87.4267021</span>
+<span class="co">## education    71.2965875</span>
+<span class="co">## region       61.0173033</span>
+<span class="co">## marriage      0.8783947</span></code></pre>
 <div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># get the deviance of the estimated model on all candidate support size</span>
 <span class="fu"><a href="https://rdrr.io/r/stats/deviance.html" class="external-link">deviance</a></span><span class="op">(</span><span class="va">abess_fit</span><span class="op">)</span></code></pre></div>
@@ -334,19 +334,19 @@ y_i \sim Gamma(\mu_i, \alpha),
 <span class="co">## 2            1 -4.979948 -4.879505</span>
 <span class="co">## 3            2 -5.041090 -5.009830</span>
 <span class="co">## 4            3 -5.058884 -4.568354</span>
-<span class="co">## 5            4 -5.059648 -4.569233</span>
-<span class="co">## 6            5 -5.060127 -4.568359</span>
-<span class="co">## 7            6 -5.060129 -4.569263</span></code></pre>
+<span class="co">## 5            4 -5.059648 -4.568300</span>
+<span class="co">## 6            5 -5.060127 -4.569411</span>
+<span class="co">## 7            6 -5.060129 -4.569221</span></code></pre>
 <div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># predict results for given support sizes</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">abess_fit</span>, newx <span class="op">=</span> <span class="va">dat</span><span class="op">$</span><span class="va">x</span>, support.size <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <pre><code><span class="co">##             3        4</span>
-<span class="co">## [1,] 611.6387 627.6877</span>
-<span class="co">## [2,] 624.5590 634.3261</span>
-<span class="co">## [3,] 695.6343 711.8864</span>
-<span class="co">## [4,] 376.5943 373.0929</span>
-<span class="co">## [5,] 357.8650 365.2280</span>
-<span class="co">## [6,] 751.6207 724.3286</span></code></pre>
+<span class="co">## [1,] 611.6387 627.6912</span>
+<span class="co">## [2,] 624.5590 634.2712</span>
+<span class="co">## [3,] 695.6343 711.8548</span>
+<span class="co">## [4,] 376.5943 373.0828</span>
+<span class="co">## [5,] 357.8650 365.3057</span>
+<span class="co">## [6,] 751.6207 724.2588</span></code></pre>
 <div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">abess_fit</span>, label <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
 <p><img src="v04-PoissonGammaReg_files/figure-html/unnamed-chunk-9-1.png" width="700"></p>
