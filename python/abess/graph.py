@@ -2,7 +2,7 @@ import numbers
 import numpy as np
 from scipy.sparse import coo_matrix
 from sklearn.utils.validation import check_array
-from .cabess import pywrap_DAG
+from pybind_cabess import pywrap_DAG
 from .bess_base import bess_base
 
 
@@ -251,11 +251,8 @@ class DAG(bess_base):
                             self.sparse_matrix,
                             self.splicing_type,
                             self.important_search,
-                            A_init,
-                            p * p, 1,
-                            1, 1, 1
+                            A_init
                             )
 
         self.coef_ = result[0].reshape(p, p).T
-        self.train_loss_ = result[2]
         return self
