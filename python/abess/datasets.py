@@ -476,22 +476,37 @@ class make_dag_data:
         The adjacency matrix.
     """
 
-    def __init__(self, n, p, k=0, proba=0.4, snr=1.0, shuffle=True):
+    def __init__(self, n, p=None, k=None, proba=0.4,
+                 snr=1.0, shuffle=True, Adj=None):
         # adjacency matrix
-        A = np.zeros((p, p))
-        # print("Vertices: {np.arange(p)}")
-        # active position
-        if (k == 0):
-            success = np.random.binomial(1, proba, int(p * (p - 1) / 2))
+        if Adj is not None:
+            p = Adj.shape[0]
+            n_par = Adj.sum(axis=0)
+            n_child = Adj.sum(axis=0)
+            ind_to_tri = np.lexsort((-n_child, n_par))
+            temp = np.identity(p).take(ind_to_tri, axis=0)
+            A = temp @ Adj @ temp.T
+            ind = np.argsort(ind_to_tri)
         else:
-            ind = np.random.choice(int(p * (p - 1) / 2), k, replace=False)
-            success = np.zeros(int(p * (p - 1) / 2))
-            success[ind] = 1
-        for i in range(p):
-            for j in range(i):
-                if success[int(i * (i - 1) / 2) + j] == 1:
-                    A[j, i] = np.random.uniform(0.1, 1)
-                    # print(f"Edge: {j}->{i} [{A[j, i]:.4f}]")
+            A = np.zeros((p, p))
+            # print("Vertices: {np.arange(p)}")
+            # active position
+            if k is None:
+                success = np.random.binomial(1, proba, int(p * (p - 1) / 2))
+            else:
+                ind = np.random.choice(int(p * (p - 1) / 2), k, replace=False)
+                success = np.zeros(int(p * (p - 1) / 2))
+                success[ind] = 1
+            for i in range(p):
+                for j in range(i):
+                    if success[int(i * (i - 1) / 2) + j] == 1:
+                        A[j, i] = np.random.uniform(0.1, 1)
+                        # print(f"Edge: {j}->{i} [{A[j, i]:.4f}]")
+            ind = np.arange(p)
+            if (shuffle):
+                np.random.shuffle(ind)
+                # print(f"shuffle to: {ind}")
+
         # first node
         X = np.zeros((n, p))
         X[:, 0] = np.random.normal(size=n)
@@ -500,13 +515,9 @@ class make_dag_data:
             eps = np.random.normal(size=n)
             X[:, i] = X @ A[:, i] + eps / snr
         # shuffle
-        if (shuffle):
-            ind = np.arange(p)
-            np.random.shuffle(ind)
-            temp = np.identity(p).take(ind, axis=0)
-            A = temp @ A @ temp.T
-            X = X @ temp.T
-            # print(f"shuffle to: {ind}")
+        temp = np.identity(p).take(ind, axis=0)
+        A = temp @ A @ temp.T
+        X = X @ temp.T
         # return
         self.x = X
         self.A = A
