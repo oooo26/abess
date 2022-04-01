@@ -42,7 +42,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">abess</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.0</span>
       </span>
     </div>
 
@@ -187,7 +187,7 @@
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/abess-team/abess" class="external-link">abess</a></span><span class="op">)</span>
 <span class="va">best_pca</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/abesspca.html">abesspca</a></span><span class="op">(</span><span class="va">X</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">best_pca</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">## List of 15</span>
+<pre><code><span class="co">## List of 14</span>
 <span class="co">##  $ coef        :Formal class 'dgCMatrix' [package "Matrix"] with 6 slots</span>
 <span class="co">##   .. ..@ i       : int [1:4950] 70 10 70 11 76 83 11 76 81 83 ...</span>
 <span class="co">##   .. ..@ p       : int [1:100] 0 1 3 6 10 15 21 28 36 45 ...</span>
@@ -198,25 +198,24 @@
 <span class="co">##   .. ..@ x       : num [1:4950] 1 -0.641 -0.767 -0.899 0.31 ...</span>
 <span class="co">##   .. ..@ factors : list()</span>
 <span class="co">##  $ tune.value  : num [1:99] 0 0 0 0 0 0 0 0 0 0 ...</span>
-<span class="co">##  $ ev          : num [1:99, 1] 0.0226 0.0369 0.228 0.2487 0.2736 ...</span>
+<span class="co">##  $ ev          : num [1:99] 0.0226 0.0369 0.228 0.2487 0.2737 ...</span>
 <span class="co">##  $ kpc.num     : num 1</span>
 <span class="co">##  $ var.pc      : num [1:99] 1.065 0.752 0.33 0.284 0.184 ...</span>
 <span class="co">##  $ cum.var.pc  : num [1:99] 1.07 1.82 2.15 2.43 2.62 ...</span>
 <span class="co">##  $ var.all     : num 3.97</span>
-<span class="co">##  $ pev         : num [1:99, 1] 0.00571 0.00931 0.05748 0.0627 0.06898 ...</span>
-<span class="co">##  $ pev.pc      : num [1:99, 1] 0.0212 0.0347 0.214 0.2335 0.2568 ...</span>
+<span class="co">##  $ pev         : num [1:99] 0.00571 0.00931 0.05748 0.0627 0.06901 ...</span>
+<span class="co">##  $ pev.pc      : num [1:99] 0.0212 0.0347 0.214 0.2335 0.257 ...</span>
 <span class="co">##  $ nvars       : int 99</span>
 <span class="co">##  $ sparse.type : chr "fpc"</span>
 <span class="co">##  $ support.size: num [1:99] 1 2 3 4 5 6 7 8 9 10 ...</span>
 <span class="co">##  $ tune.type   : chr "gic"</span>
-<span class="co">##  $ tune.path   : chr "sequence"</span>
 <span class="co">##  $ call        : language abesspca(x = X)</span>
 <span class="co">##  - attr(*, "class")= chr "abesspca"</span></code></pre>
 <p>or Gram-type matrix (like covariance matrix, correlation matrix and robust covariance matrix):</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">best_pca</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/abesspca.html">abesspca</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">cov</a></span><span class="op">(</span><span class="va">X</span><span class="op">)</span>, type <span class="op">=</span> <span class="st">"gram"</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">best_pca</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">## List of 15</span>
+<pre><code><span class="co">## List of 14</span>
 <span class="co">##  $ coef        :Formal class 'dgCMatrix' [package "Matrix"] with 6 slots</span>
 <span class="co">##   .. ..@ i       : int [1:4950] 70 10 70 11 76 83 11 76 81 83 ...</span>
 <span class="co">##   .. ..@ p       : int [1:100] 0 1 3 6 10 15 21 28 36 45 ...</span>
@@ -227,18 +226,17 @@
 <span class="co">##   .. ..@ x       : num [1:4950] 1 -0.641 -0.767 -0.899 0.31 ...</span>
 <span class="co">##   .. ..@ factors : list()</span>
 <span class="co">##  $ tune.value  : num [1:99] 0 0 0 0 0 0 0 0 0 0 ...</span>
-<span class="co">##  $ ev          : num [1:99, 1] 0.0226 0.037 0.2281 0.2488 0.2739 ...</span>
+<span class="co">##  $ ev          : num [1:99] 0.0226 0.037 0.2281 0.2488 0.2739 ...</span>
 <span class="co">##  $ kpc.num     : num 1</span>
 <span class="co">##  $ var.pc      : num [1:99] 1.066 0.752 0.33 0.284 0.185 ...</span>
 <span class="co">##  $ cum.var.pc  : num [1:99] 1.07 1.82 2.15 2.43 2.62 ...</span>
 <span class="co">##  $ var.all     : num 3.97</span>
-<span class="co">##  $ pev         : num [1:99, 1] 0.00571 0.00931 0.05748 0.0627 0.06901 ...</span>
-<span class="co">##  $ pev.pc      : num [1:99, 1] 0.0212 0.0347 0.214 0.2335 0.257 ...</span>
+<span class="co">##  $ pev         : num [1:99] 0.00571 0.00931 0.05748 0.0627 0.06901 ...</span>
+<span class="co">##  $ pev.pc      : num [1:99] 0.0212 0.0347 0.214 0.2335 0.257 ...</span>
 <span class="co">##  $ nvars       : int 99</span>
 <span class="co">##  $ sparse.type : chr "fpc"</span>
 <span class="co">##  $ support.size: num [1:99] 1 2 3 4 5 6 7 8 9 10 ...</span>
 <span class="co">##  $ tune.type   : chr "gic"</span>
-<span class="co">##  $ tune.path   : chr "sequence"</span>
 <span class="co">##  $ call        : language abesspca(x = cov(X), type = "gram")</span>
 <span class="co">##  - attr(*, "class")= chr "abesspca"</span></code></pre>
 </div>
@@ -385,7 +383,7 @@ This result shows that using less than half of all 99 variables can be close to 
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">best_pca</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/abesspca.html">abesspca</a></span><span class="op">(</span><span class="va">X</span>, group.index <span class="op">=</span> <span class="va">g_info</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">best_pca</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">## List of 15</span>
+<pre><code><span class="co">## List of 14</span>
 <span class="co">##  $ coef        :Formal class 'dgCMatrix' [package "Matrix"] with 6 slots</span>
 <span class="co">##   .. ..@ i       : int [1:912] 42 43 44 45 46 47 18 19 20 21 ...</span>
 <span class="co">##   .. ..@ p       : int [1:18] 0 6 18 36 60 90 126 168 216 270 ...</span>
@@ -396,18 +394,17 @@ This result shows that using less than half of all 99 variables can be close to 
 <span class="co">##   .. ..@ x       : num [1:912] -0.503 -0.512 -0.5279 -0.4516 0.0472 ...</span>
 <span class="co">##   .. ..@ factors : list()</span>
 <span class="co">##  $ tune.value  : num [1:17] 0 0 0 0 0 0 0 0 0 0 ...</span>
-<span class="co">##  $ ev          : num [1:17, 1] 0.158 0.388 0.471 0.561 0.645 ...</span>
+<span class="co">##  $ ev          : num [1:17] 0.158 0.388 0.471 0.561 0.645 ...</span>
 <span class="co">##  $ kpc.num     : num 1</span>
 <span class="co">##  $ var.pc      : num [1:99] 1.065 0.752 0.33 0.284 0.184 ...</span>
 <span class="co">##  $ cum.var.pc  : num [1:99] 1.07 1.82 2.15 2.43 2.62 ...</span>
 <span class="co">##  $ var.all     : num 3.97</span>
-<span class="co">##  $ pev         : num [1:17, 1] 0.0399 0.0979 0.1188 0.1415 0.1625 ...</span>
-<span class="co">##  $ pev.pc      : num [1:17, 1] 0.148 0.364 0.442 0.527 0.605 ...</span>
+<span class="co">##  $ pev         : num [1:17] 0.0399 0.0979 0.1188 0.1415 0.1625 ...</span>
+<span class="co">##  $ pev.pc      : num [1:17] 0.148 0.364 0.442 0.527 0.605 ...</span>
 <span class="co">##  $ nvars       : int 99</span>
 <span class="co">##  $ sparse.type : chr "fpc"</span>
 <span class="co">##  $ support.size: num [1:17] 1 2 3 4 5 6 7 8 9 10 ...</span>
 <span class="co">##  $ tune.type   : chr "gic"</span>
-<span class="co">##  $ tune.path   : chr "sequence"</span>
 <span class="co">##  $ call        : language abesspca(x = X, group.index = g_info)</span>
 <span class="co">##  - attr(*, "class")= chr "abesspca"</span></code></pre>
 </div>
@@ -428,7 +425,7 @@ This result shows that using less than half of all 99 variables can be close to 
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">best_kpca</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/abesspca.html">abesspca</a></span><span class="op">(</span><span class="va">X</span>, support.size <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">50</span>, <span class="fl">40</span><span class="op">)</span>, sparse.type <span class="op">=</span> <span class="st">"kpc"</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">best_kpca</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">## List of 15</span>
+<pre><code><span class="co">## List of 14</span>
 <span class="co">##  $ coef        :List of 2</span>
 <span class="co">##   ..$ :Formal class 'dgCMatrix' [package "Matrix"] with 6 slots</span>
 <span class="co">##   .. .. ..@ i       : int [1:90] 2 3 11 12 13 15 17 19 20 21 ...</span>
@@ -449,7 +446,7 @@ This result shows that using less than half of all 99 variables can be close to 
 <span class="co">##   .. .. ..@ x       : num [1:90] 0.071 -0.171 0.159 0.211 0.171 ...</span>
 <span class="co">##   .. .. ..@ factors : list()</span>
 <span class="co">##  $ ev          :List of 2</span>
-<span class="co">##   ..$ : num [1:2, 1] 0.955 1.015</span>
+<span class="co">##   ..$ : num [1:2] 0.955 1.015</span>
 <span class="co">##   ..$ : num [1:2] 1.75 1.77</span>
 <span class="co">##  $ tune.value  :List of 2</span>
 <span class="co">##   ..$ : num [1:2, 1] 78.1 98</span>
@@ -459,10 +456,10 @@ This result shows that using less than half of all 99 variables can be close to 
 <span class="co">##  $ cum.var.pc  : num [1:99] 1.07 1.82 2.15 2.43 2.62 ...</span>
 <span class="co">##  $ var.all     : num 3.97</span>
 <span class="co">##  $ pev         :List of 2</span>
-<span class="co">##   ..$ : num [1:2, 1] 0.241 0.256</span>
+<span class="co">##   ..$ : num [1:2] 0.241 0.256</span>
 <span class="co">##   ..$ : num [1:2] 0.441 0.446</span>
 <span class="co">##  $ pev.pc      :List of 2</span>
-<span class="co">##   ..$ : num [1:2, 1] 0.897 0.953</span>
+<span class="co">##   ..$ : num [1:2] 0.897 0.953</span>
 <span class="co">##   ..$ : num [1:2] 0.962 0.972</span>
 <span class="co">##  $ nvars       : int 99</span>
 <span class="co">##  $ sparse.type : chr "kpc"</span>
@@ -470,7 +467,6 @@ This result shows that using less than half of all 99 variables can be close to 
 <span class="co">##   ..$ : num [1:2] 40 50</span>
 <span class="co">##   ..$ : num [1:2] 40 50</span>
 <span class="co">##  $ tune.type   : chr "gic"</span>
-<span class="co">##  $ tune.path   : chr "sequence"</span>
 <span class="co">##  $ call        : language abesspca(x = X, sparse.type = "kpc", support.size = c(50, 40))</span>
 <span class="co">##  - attr(*, "class")= chr "abesspca"</span></code></pre>
 <p>The result <code>best_kpca[["pev"]]</code> shows that two principal components raised from two loading matrix could explain 40% variance of all variables (i.e., <span class="math inline">\(\text{trace}(\Sigma)\)</span>).</p>

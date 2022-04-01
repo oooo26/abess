@@ -19,7 +19,7 @@ positive response, multi-response modeling in polynomial times."><meta property=
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">abess</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.0</span>
       </span>
     </div>
 
@@ -199,7 +199,8 @@ Only used for <code>tune.path = "sequence"</code>. Default is <code>0:min(n, rou
 <dt>gs.range</dt>
 <dd><p>A integer vector with two elements.
 The first element is the minimum model size considered by golden-section,
-the later one is the maximum one. Default is <code>gs.range = c(1, min(n, round(n/(log(log(n))log(p)))))</code>.</p></dd>
+the later one is the maximum one. Default is <code>gs.range = c(1, min(n, round(n/(log(log(n))log(p)))))</code>.
+Not available now.</p></dd>
 <dt>lambda</dt>
 <dd><p>A single lambda value for regularized best subset selection. Default is 0.</p></dd>
 <dt>always.include</dt>
@@ -503,22 +504,22 @@ Please see <a href="https://abess-team.github.io/abess/articles/v07-advancedFeat
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3             2 22.3141723  4.795585</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 4             3 17.6033381  5.453335</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 5             4 16.8661842  9.347666</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6             5 16.1567523 14.282256</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7             6 15.1607580 22.107111</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8             7 14.1855477 35.095224</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9             8 13.0670040 43.926821</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10            9 11.4615489 53.691742</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11           10 12.1851489 60.759908</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12           11 11.0784505 68.700947</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 13           12  8.7759571 77.903923</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 14           13  6.5407658 86.853208</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 15           14  3.3094079 90.817114</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 16           15  1.3027225 97.754214</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 17           16  0.9140813 98.113320</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 18           17  0.4831899 97.639211</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 19           18  0.1321514 97.451196</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 20           19  0.1790295 97.418885</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 21           20  2.0997138 97.608781</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6             5 16.1567523 14.328538</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7             6 15.2610181 24.318135</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8             7 14.1901830 35.220928</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9             8 13.0644990 39.787741</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10            9 13.9500656 41.174730</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11           10 11.2168237 49.294585</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12           11 10.7995140 52.843840</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13           12 10.1709575 58.300159</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14           13  6.6139182 62.447092</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15           14  3.7774992 71.520411</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16           15  4.3403079 75.717675</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17           16  1.8734853 82.551000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18           17  1.9380057 83.671231</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19           18  1.2931156 84.287862</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 20           19  0.1715231 84.579782</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 21           20  1.6244904 84.607282</span>
 <span class="r-in"></span>
 <span class="r-in"><span class="co">################ poisson model ################</span></span>
 <span class="r-in"><span class="va">dataset</span> <span class="op">&lt;-</span> <span class="fu"><a href="generate.data.html">generate.data</a></span><span class="op">(</span><span class="va">n</span>, <span class="va">p</span>, <span class="va">support.size</span>, family <span class="op">=</span> <span class="st">"poisson"</span><span class="op">)</span></span>
@@ -535,21 +536,21 @@ Please see <a href="https://abess-team.github.io/abess/articles/v07-advancedFeat
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2             1  -31.62397   3.28437</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3             2 -100.57515 -10.57295</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 4             3 -157.18472 -30.45472</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5             4 -160.75596 -31.01768</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6             5 -163.01916 -30.63952</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5             4 -160.75596 -30.56025</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6             5 -163.01916 -30.39910</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 7             6 -164.82977 -30.13028</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8             7 -166.39686 -26.74170</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8             7 -166.39686 -29.43400</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 9             8 -167.33059 -27.33824</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10            9 -168.30048 -27.42207</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10            9 -168.30048 -27.30205</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 11           10 -168.98526 -27.25689</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 12           11 -169.76250 -26.64814</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 13           12 -170.25995 -27.38532</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 14           13 -171.31745 -28.11082</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 15           14 -171.54370 -28.38131</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 16           15 -171.74975 -28.63372</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 17           16 -171.85325 -28.85538</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 18           17 -171.91807 -28.35201</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 19           18 -171.94049 -28.14750</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15           14 -171.54370 -28.38130</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16           15 -171.74975 -28.19080</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17           16 -171.85325 -28.42097</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18           17 -171.91807 -28.35133</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19           18 -171.94742 -28.14748</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 20           19 -171.94879 -27.96317</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 21           20 -171.95952 -27.89898</span>
 <span class="r-in"></span>
@@ -591,16 +592,16 @@ Please see <a href="https://abess-team.github.io/abess/articles/v07-advancedFeat
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $`4`</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                  1            2             </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [1,] 1.483046e-01 8.516877e-01 7.775864e-06</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [2,] 9.997506e-01 1.127507e-06 2.483045e-04</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [3,] 5.751059e-11 3.022517e-09 1.000000e+00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [4,] 3.633755e-11 1.000000e+00 7.527286e-13</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [5,] 9.911478e-01 5.630004e-10 8.852224e-03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [6,] 5.815429e-01 1.173098e-01 3.011473e-01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [7,] 3.581717e-06 2.443244e-02 9.755640e-01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [8,] 9.683075e-07 9.846617e-01 1.533729e-02</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [9,] 2.219998e-04 7.084179e-01 2.913601e-01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [10,] 2.934310e-03 1.071389e-07 9.970656e-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [1,] 1.478407e-01 8.521516e-01 7.710086e-06</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [2,] 9.997575e-01 1.067877e-06 2.413851e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [3,] 5.168388e-11 2.926191e-09 1.000000e+00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [4,] 3.159242e-11 1.000000e+00 7.198769e-13</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [5,] 9.917902e-01 5.018143e-10 8.209827e-03</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [6,] 5.817966e-01 1.168737e-01 3.013297e-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [7,] 3.310799e-06 2.422911e-02 9.757676e-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [8,] 8.736545e-07 9.847704e-01 1.522874e-02</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [9,] 2.042126e-04 7.087952e-01 2.910006e-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [10,] 2.864757e-03 1.030409e-07 9.971351e-01</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"></span>
 <span class="r-in"><span class="co">################ Ordinal regression  ################</span></span>
@@ -615,29 +616,29 @@ Please see <a href="https://abess-team.github.io/abess/articles/v07-advancedFeat
 <span class="r-in"><span class="op">)</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $`3`</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                  1            2            3             </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [1,] 4.262225e-05 1.829633e-02 9.726829e-01 8.978109e-03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [2,] 7.882173e-01 2.111701e-01 6.125573e-04 1.037531e-07</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [3,] 1.486210e-05 6.456936e-03 9.682043e-01 2.532388e-02</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [4,] 1.577722e-10 6.899165e-08 4.083410e-04 9.995916e-01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [5,] 9.999979e-01 2.067605e-06 4.727471e-09 8.002488e-13</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [6,] 9.966919e-01 3.300482e-03 7.571409e-06 1.281646e-09</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [7,] 8.368720e-10 3.659527e-07 2.162164e-03 9.978375e-01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [8,] 4.271390e-07 1.867472e-04 5.250122e-01 4.748006e-01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [9,] 8.728258e-01 1.268418e-01 3.322732e-04 5.626364e-08</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [10,] 2.426574e-02 8.916995e-01 8.401922e-02 1.552701e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [1,] 1.407801e-03 8.107198e-02 8.651273e-01 5.239288e-02</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [2,] 7.071985e-01 2.863502e-01 6.418956e-03 3.227119e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [3,] 7.335159e-04 4.398018e-02 8.592931e-01 9.599321e-02</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [4,] 3.984005e-07 2.500476e-05 5.059806e-03 9.949148e-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [5,] 9.998081e-01 1.889092e-04 2.995426e-06 1.496234e-08</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [6,] 9.765122e-01 2.311070e-02 3.751948e-04 1.874823e-06</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [7,] 1.219072e-06 7.650844e-05 1.532129e-02 9.846010e-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [8,] 7.059497e-05 4.410999e-03 4.707901e-01 5.247283e-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [9,] 7.803523e-01 2.152528e-01 4.372913e-03 2.193933e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [10,] 8.524138e-02 7.707051e-01 1.432178e-01 8.357762e-04</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $`4`</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                  1            2            3             </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [1,] 2.718879e-07 1.668930e-03 9.974270e-01 9.038274e-04</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [2,] 9.222029e-01 7.778339e-02 1.371784e-05 2.074940e-11</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [3,] 2.028760e-07 1.245842e-03 9.975430e-01 1.210908e-03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [4,] 4.080690e-15 2.509040e-11 1.659043e-05 9.999834e-01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [5,] 1.000000e+00 2.518530e-09 4.096723e-13 0.000000e+00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [6,] 9.985539e-01 1.445840e-03 2.354909e-07 3.561595e-13</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [7,] 1.450164e-14 8.916432e-11 5.895529e-05 9.999410e-01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [8,] 8.009007e-10 4.924368e-06 7.650435e-01 2.349516e-01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [9,] 8.676204e-01 1.323548e-01 2.481049e-05 3.752842e-11</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [10,] 4.631050e-03 9.615982e-01 3.377066e-02 5.286555e-08</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [1,] 1.119381e-06 3.123886e-03 9.950143e-01 1.860695e-03</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [2,] 9.008199e-01 9.914077e-02 3.931289e-05 2.297464e-10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [3,] 8.994437e-07 2.511645e-03 9.951728e-01 2.314630e-03</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [4,] 9.768489e-14 2.734665e-10 4.681039e-05 9.999532e-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [5,] 1.000000e+00 1.715134e-08 6.126655e-12 0.000000e+00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [6,] 9.971437e-01 2.855240e-03 1.022835e-06 5.977219e-12</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [7,] 2.939207e-13 8.228240e-10 1.408329e-04 9.998592e-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [8,] 6.034847e-09 1.689412e-05 7.430483e-01 2.569348e-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [9,] 8.425394e-01 1.573938e-01 6.672955e-05 3.899814e-10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [10,] 7.456097e-03 9.471667e-01 4.537696e-02 2.777796e-07</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"></span>
 <span class="r-in"><span class="co">########## Best group subset selection #############</span></span>
