@@ -28,7 +28,7 @@ class DAG(bess_base):
         "0" for decreasing by half, "1" for decresing by one.
     """
 
-    def __init__(self, max_iter=20, exchange_num=5, path_type="seq",
+    def __init__(self, max_iter=20, exchange_num=20, path_type="seq",
                  is_warm_start=True, support_size=None,
                  s_min=None, s_max=None,
                  ic_type="ebic", ic_coef=1.0, cv=1, screening_size=-1,
