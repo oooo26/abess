@@ -193,6 +193,7 @@ class Algorithm {
     void fit(T4 &train_x, T1 &train_y, Eigen::VectorXd &train_weight, Eigen::VectorXi &g_index, Eigen::VectorXi &g_size,
              int train_n, int p, int N) {
         int T0 = this->sparsity_level;
+        // cout<<"==> sparsity: "<<T0<<endl;
         this->x = &train_x;
         this->y = &train_y;
         this->beta = this->beta_init;
@@ -230,17 +231,13 @@ class Algorithm {
         Eigen::VectorXi A = this->inital_screening(train_x, train_y, this->beta, this->coef0, this->A_init,
                                                    this->I_init, this->bd, train_weight, g_index, g_size, N);
         Eigen::VectorXi I = Ac(A, N);
-        // cout << "==> sparsity = " << T0 << endl << "  --> A = ";
-        // for (int i = 0; i < A.size(); i++){
-        //     cout << "(" << A(i)%p <<", "<<int(A(i)/p)<<") ";
-        // }
-        // cout<<endl;
 
         Eigen::VectorXi A_ind = find_ind(A, g_index, g_size, (this->beta).rows(), N);
         T4 X_A = X_seg(train_x, train_n, A_ind, this->model_type);
         T2 beta_A;
         slice(this->beta, A_ind, beta_A);
 
+        // cout << "  --> init A: "<<A.transpose()<<endl;
         // if (this->algorithm_type == 6)
         // {
 
@@ -267,6 +264,8 @@ class Algorithm {
         this->update_tau(train_n, N);
         this->get_A(train_x, train_y, A, I, C_max, this->beta, this->coef0, this->bd, T0, train_weight, g_index, g_size,
                     N, this->tau, this->train_loss);
+        // cout << "  --> final A: "<<A.transpose()<<endl;
+        // cout << "  --> final loss: "<<this->train_loss<<endl;
         if (this->model_type < 7) {
             // final fit
             A_ind = find_ind(A, g_index, g_size, (this->beta).rows(), N);
@@ -380,11 +379,11 @@ class Algorithm {
                 bool exchange = this->splicing(*X_U, y, A_U, I_U, C_max, beta_U, coef0, bd_U, weights, g_index_U,
                                                g_size_U, this->U_size, tau, l0);
 
-                // cout << "  --> A = ";
-                // for (int i = 0; i < A_U.size(); i++){
-                //     cout << "(" << A_U(i)%(X.cols()) <<", "<<int(A_U(i)/(X.cols()))<<") ";
-                // }
-                // cout<<endl;
+                // cout << "  --> splicing A: "<<A_U.transpose()<<endl;
+                // int temp[10] = {2,4,6,14,19,29,35,38,76,79};
+                // for (int i=0;i<10;i++)
+                //     cout << "    ~~> bd("<<temp[i]<<") = "<<bd(temp[i])<<endl;
+                // cout << "  --> loss: "<<l0<<endl;
                 if (exchange) {
                     train_loss = l0;
                     unchanged = false;
@@ -464,6 +463,12 @@ class Algorithm {
         Eigen::VectorXi I_max_k = max_k(d_I_group, C_max, true);
         Eigen::VectorXi s1 = vector_slice(A, A_min_k);
         Eigen::VectorXi s2 = vector_slice(I, I_max_k);
+        // cout<<"    ~~> try exchange A: "<<s1.transpose()<<endl;
+        // for (int i=0;i<C_max;i++)
+        // cout<<"        "<<beta_A_group(A_min_k(i))<<endl;
+        // cout<<"    ~~> try exchange I: "<<s2.transpose()<<endl;
+        // for (int i=0;i<C_max;i++)
+        // cout<<"        "<<d_I_group(I_max_k(i))<<endl;
 
         // for (int i=0;i<C_max;i++){
         //   cout<<"try: ("<<s1(i)<<","<<bd(s1(i))<<") -> ("<<s2(i)<<","<<bd(s2(i))<<")"<<endl;///
@@ -476,8 +481,12 @@ class Algorithm {
         T3 coef0_A_exchange;
 
         double L;
+        VectorXi s1_temp = s1;
+        VectorXi s2_temp = s2;
         for (int k = C_max; k >= 1;) {
-            A_exchange = diff_union(A, s1, s2);
+            // cout<<"    ~~> try exchange A: "<<s1_temp.transpose()<<endl;
+            // cout<<"    ~~> try exchange I: "<<s2_temp.transpose()<<endl;
+            A_exchange = diff_union(A, s1_temp, s2_temp);
             A_ind_exchage = find_ind(A_exchange, g_index, g_size, (this->beta).rows(), N);
             X_A_exchage = X_seg(X, n, A_ind_exchage, this->model_type);
             slice(beta, A_ind_exchage, beta_A_exchange);
@@ -499,6 +508,7 @@ class Algorithm {
                 slice_restore(beta_A_exchange, A_ind_exchage, beta);
                 coef0 = coef0_A_exchange;
                 C_max = k;
+                // cout<<"    exchanged! k="<<k<<endl;
 
                 return true;
             } else {
@@ -506,8 +516,38 @@ class Algorithm {
                     k = k - 1;
                 else
                     k = k / 2;
-                s1 = s1.head(k).eval();
-                s2 = s2.head(k).eval();
+                s1_temp = s1.head(k).eval();
+                s2_temp = s2.head(k).eval();
+            }
+        }
+
+        for (int k = 1; k<C_max;k++) {
+            // cout<<"    ~~> try exchange A: "<<s1[k]<<endl;
+            // cout<<"    ~~> try exchange I: "<<s2[k]<<endl;
+            A_exchange = diff_union(A, s1[k], s2[k]);
+            A_ind_exchage = find_ind(A_exchange, g_index, g_size, (this->beta).rows(), N);
+            X_A_exchage = X_seg(X, n, A_ind_exchage, this->model_type);
+            slice(beta, A_ind_exchage, beta_A_exchange);
+            coef0_A_exchange = coef0;
+
+            bool success = this->primary_model_fit(X_A_exchage, y, weights, beta_A_exchange, coef0_A_exchange,
+                                                   train_loss, A_exchange, g_index, g_size);
+            if (success) {
+                L = this->loss_function(X_A_exchage, y, weights, beta_A_exchange, coef0_A_exchange, A_exchange, g_index,
+                                        g_size, this->lambda_level);
+            } else {
+                L = train_loss + 1;
+            }
+
+            if (train_loss - L > tau) {
+                train_loss = L;
+                A = A_exchange;
+                I = Ac(A_exchange, N);
+                slice_restore(beta_A_exchange, A_ind_exchage, beta);
+                coef0 = coef0_A_exchange;
+                // cout<<"    exchanged! No.k="<<k<<endl;
+
+                return true;
             }
         }
 

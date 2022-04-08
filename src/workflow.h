@@ -129,6 +129,8 @@ List abessWorkflow(T4 &x, T1 &y, int n, int p, int normalize_type, Eigen::Vector
         }
         test_loss_sum /= ((double)Kfold);
         test_loss_sum.col(0).minCoeff(&min_loss_index);
+        // cout<<"test_loss:"<<endl<<test_loss_sum.col(0)<<endl;
+        // cout<<"min loss: "<<min_loss_index<<endl;
 
         Eigen::VectorXi used_algorithm_index = Eigen::VectorXi::Zero(algorithm_list_size);
 

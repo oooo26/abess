@@ -191,6 +191,7 @@ Eigen::VectorXi vector_slice(Eigen::VectorXi &nums, Eigen::VectorXi &ind);
 Eigen::VectorXi Ac(Eigen::VectorXi &A, int N);
 // Eigen::VectorXi Ac(Eigen::VectorXi &A, Eigen::VectorXi &U);
 Eigen::VectorXi diff_union(Eigen::VectorXi A, Eigen::VectorXi &B, Eigen::VectorXi &C);
+Eigen::VectorXi diff_union(Eigen::VectorXi A, int &B, int &C);
 Eigen::VectorXi min_k(Eigen::VectorXd &nums, int k, bool sort_by_value = false);
 Eigen::VectorXi max_k(Eigen::VectorXd &nums, int k, bool sort_by_value = false);
 

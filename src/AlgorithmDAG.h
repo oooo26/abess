@@ -76,9 +76,32 @@ class abessDAG : public Algorithm<Eigen::VectorXd, Eigen::VectorXd, double, T4> 
             }
         }
 
-        // get Active-set A according to max_k bd
-        Eigen::VectorXi A_new = max_k(bd, this->sparsity_level);
+        // get Active-set A according to last A and large bd
+        Eigen::VectorXi sorted_ind = Eigen::VectorXi::LinSpaced(bd.size(), 0, bd.size() - 1);
+        auto rule = [bd](int i, int j) -> bool { return bd(i) > bd(j); };
+        std::sort(sorted_ind.data(), sorted_ind.data() + sorted_ind.size(), rule);
+        // cout<<"    ~~> sorted ind: "<<sorted_ind.transpose()<<endl;
 
+        VectorXi A_new = VectorXi::Zero(this->sparsity_level);
+
+        // ensure acyclic
+        int k = 0;
+        int p = X.cols();
+        MatrixXd Adj = MatrixXd::Zero(p, p);
+        for (int i = 0; i < this->sparsity_level; i++) {
+            int mi = sorted_ind(k) % p;
+            int mj = int(sorted_ind(k) / p);
+            Adj(mi, mj) = 1;
+            while (Adj(mj, mi) == 1 || this->is_cyclic(Adj)) {
+                Adj(mi, mj) = 0;
+                mi = sorted_ind(++k) % p;
+                mj = int(sorted_ind(k) / p);
+                Adj(mi, mj) = 1;
+            }
+            A_new(i) = sorted_ind(k++);
+        }
+
+        std::sort(A_new.data(), A_new.data() + A_new.size());
         return A_new;
     }
 
@@ -95,7 +118,7 @@ class abessDAG : public Algorithm<Eigen::VectorXd, Eigen::VectorXd, double, T4> 
             // cout << "      Cyclic!" << endl;
             return false;
         }
-        // cout << "      Pass." << endl;
+        // cout << "      Acyclic!" << endl;
 
         // update parents
         vector<VectorXi> parents = this->compute_parents(A, p);
@@ -131,7 +154,7 @@ class abessDAG : public Algorithm<Eigen::VectorXd, Eigen::VectorXd, double, T4> 
         // cout << "  --> sacrifice" << endl;
         int n = X.rows();
         int p = X.cols();
-        // vector<VectorXi> parents = this->compute_parents(A, p);
+        vector<VectorXi> parents = this->compute_parents(A, p);
 
         // backward
         for (int i = 0; i < A.size(); i++) {
@@ -184,6 +207,41 @@ class abessDAG : public Algorithm<Eigen::VectorXd, Eigen::VectorXd, double, T4> 
             // // loss change
             // bd(I(i)) = (est_old - y).squaredNorm() - (est_new - y).squaredNorm();
             bd(I(i)) = this->XTX(mi) * pow(D(mi, mj) / this->XTX(mi), 2);
+
+            // if (Adj(mj, mi) != 0) {
+            //     // add (mi, mj)
+            //     VectorXi par = VectorXi::Zero(parents[mj].size() + 1);
+            //     par.head(parents[mj].size()) = parents[mj];
+            //     par(parents[mj].size()) = mi;
+            //     T4 Xpar = X_seg(X, n, par, 0);
+            //     VectorXd y = X.col(mj);
+            //     VectorXd est_new = Xpar * this->lm(Xpar, y);
+            //     VectorXd est_old = X * Adj.col(mj);
+            //     bd(I(i)) = (est_old - y).squaredNorm() - (est_new - y).squaredNorm();
+            //     // delete (mj, mi)
+            //     par = VectorXi::Zero(parents[mi].size() - 1);
+            //     int ind = 0;
+            //     for (int k = 0; k < parents[mi].size(); k++) {
+            //         if (parents[mi](k) != mj) par(ind++) = parents[mi](k);
+            //     }
+            //     Xpar = X_seg(X, n, par, 0);
+            //     y = X.col(mi);
+            //     est_new = Xpar * this->lm(Xpar, y);
+            //     est_old = X * Adj.col(mi);
+            //     bd(I(i)) -= (est_new - y).squaredNorm() - (est_old - y).squaredNorm();
+            //     // bd(I(i)) = this->XTX(mi) * pow(D(mi, mj) / this->XTX(mi), 2) - bd(mj * p + mi);
+            // } else {
+            //     // add (mi, mj)
+            //     VectorXi par = VectorXi::Zero(parents[mj].size() + 1);
+            //     par.head(parents[mj].size()) = parents[mj];
+            //     par(parents[mj].size()) = mi;
+            //     T4 Xpar = X_seg(X, n, par, 0);
+            //     VectorXd y = X.col(mj);
+            //     VectorXd est_new = Xpar * this->lm(Xpar, y);
+            //     VectorXd est_old = X * Adj.col(mj);
+            //     bd(I(i)) = (est_old - y).squaredNorm() - (est_new - y).squaredNorm();
+            //     // bd(I(i)) = this->XTX(mi) * pow(D(mi, mj) / this->XTX(mi), 2);
+            // }
         }
     };
 

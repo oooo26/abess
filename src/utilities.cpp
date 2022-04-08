@@ -239,6 +239,18 @@ Eigen::VectorXi diff_union(Eigen::VectorXi A, Eigen::VectorXi &B, Eigen::VectorX
     return A;
 }
 
+Eigen::VectorXi diff_union(Eigen::VectorXi A, int &B, int &C) {
+    unsigned int k;
+    for (k = 0; k < A.size(); k++) {
+        if (B == A(k)) {
+            A(k) = C;
+            break;
+        }
+    }
+    sort(A.data(), A.data() + A.size());
+    return A;
+}
+
 Eigen::VectorXi min_k(Eigen::VectorXd &vec, int k, bool sort_by_value) {
     Eigen::VectorXi ind = Eigen::VectorXi::LinSpaced(vec.size(), 0, vec.size() - 1);  // [0 1 2 3 ... N-1]
     auto rule = [vec](int i, int j) -> bool { return vec(i) < vec(j); };              // sort rule
