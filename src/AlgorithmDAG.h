@@ -186,16 +186,16 @@ class abessDAG : public Algorithm<Eigen::VectorXd, Eigen::VectorXd, double, T4> 
                 bd(I(i)) = -DBL_MAX;
                 continue;
             }
-            // test acylic
-            VectorXd temp = VectorXd::Ones(A.size() + 1);
-            VectorXi A_temp(A.size() + 1);
-            A_temp.head(A.size()) = A;
-            A_temp(A.size()) = I(i);
-            MatrixXd Adj_temp = compute_Adj(temp, A_temp, p);
-            if (this->is_cyclic(Adj_temp)) {
-                bd(I(i)) = -DBL_MAX;
-                continue;
-            }
+            // // test acylic
+            // VectorXd temp = VectorXd::Ones(A.size() + 1);
+            // VectorXi A_temp(A.size() + 1);
+            // A_temp.head(A.size()) = A;
+            // A_temp(A.size()) = I(i);
+            // MatrixXd Adj_temp = compute_Adj(temp, A_temp, p);
+            // if (this->is_cyclic(Adj_temp)) {
+            //     bd(I(i)) = -DBL_MAX;
+            //     continue;
+            // }
             // // add I(i) and refit
             // VectorXi par(parents[mj].size() + 1);
             // par.head(parents[mj].size()) = parents[mj];
@@ -206,42 +206,42 @@ class abessDAG : public Algorithm<Eigen::VectorXd, Eigen::VectorXd, double, T4> 
             // VectorXd est_old = X * Adj.col(mj);
             // // loss change
             // bd(I(i)) = (est_old - y).squaredNorm() - (est_new - y).squaredNorm();
-            bd(I(i)) = this->XTX(mi) * pow(D(mi, mj) / this->XTX(mi), 2);
+            // bd(I(i)) = this->XTX(mi) * pow(D(mi, mj) / this->XTX(mi), 2);
 
-            // if (Adj(mj, mi) != 0) {
-            //     // add (mi, mj)
-            //     VectorXi par = VectorXi::Zero(parents[mj].size() + 1);
-            //     par.head(parents[mj].size()) = parents[mj];
-            //     par(parents[mj].size()) = mi;
-            //     T4 Xpar = X_seg(X, n, par, 0);
-            //     VectorXd y = X.col(mj);
-            //     VectorXd est_new = Xpar * this->lm(Xpar, y);
-            //     VectorXd est_old = X * Adj.col(mj);
-            //     bd(I(i)) = (est_old - y).squaredNorm() - (est_new - y).squaredNorm();
-            //     // delete (mj, mi)
-            //     par = VectorXi::Zero(parents[mi].size() - 1);
-            //     int ind = 0;
-            //     for (int k = 0; k < parents[mi].size(); k++) {
-            //         if (parents[mi](k) != mj) par(ind++) = parents[mi](k);
-            //     }
-            //     Xpar = X_seg(X, n, par, 0);
-            //     y = X.col(mi);
-            //     est_new = Xpar * this->lm(Xpar, y);
-            //     est_old = X * Adj.col(mi);
-            //     bd(I(i)) -= (est_new - y).squaredNorm() - (est_old - y).squaredNorm();
-            //     // bd(I(i)) = this->XTX(mi) * pow(D(mi, mj) / this->XTX(mi), 2) - bd(mj * p + mi);
-            // } else {
-            //     // add (mi, mj)
-            //     VectorXi par = VectorXi::Zero(parents[mj].size() + 1);
-            //     par.head(parents[mj].size()) = parents[mj];
-            //     par(parents[mj].size()) = mi;
-            //     T4 Xpar = X_seg(X, n, par, 0);
-            //     VectorXd y = X.col(mj);
-            //     VectorXd est_new = Xpar * this->lm(Xpar, y);
-            //     VectorXd est_old = X * Adj.col(mj);
-            //     bd(I(i)) = (est_old - y).squaredNorm() - (est_new - y).squaredNorm();
-            //     // bd(I(i)) = this->XTX(mi) * pow(D(mi, mj) / this->XTX(mi), 2);
-            // }
+            if (Adj(mj, mi) != 0) {
+                // add (mi, mj)
+                VectorXi par = VectorXi::Zero(parents[mj].size() + 1);
+                par.head(parents[mj].size()) = parents[mj];
+                par(parents[mj].size()) = mi;
+                T4 Xpar = X_seg(X, n, par, 0);
+                VectorXd y = X.col(mj);
+                VectorXd est_new = Xpar * this->lm(Xpar, y);
+                VectorXd est_old = X * Adj.col(mj);
+                bd(I(i)) = (est_old - y).squaredNorm() - (est_new - y).squaredNorm();
+                // delete (mj, mi)
+                par = VectorXi::Zero(parents[mi].size() - 1);
+                int ind = 0;
+                for (int k = 0; k < parents[mi].size(); k++) {
+                    if (parents[mi](k) != mj) par(ind++) = parents[mi](k);
+                }
+                Xpar = X_seg(X, n, par, 0);
+                y = X.col(mi);
+                est_new = Xpar * this->lm(Xpar, y);
+                est_old = X * Adj.col(mi);
+                bd(I(i)) -= (est_new - y).squaredNorm() - (est_old - y).squaredNorm();
+                // bd(I(i)) = this->XTX(mi) * pow(D(mi, mj) / this->XTX(mi), 2) - bd(mj * p + mi);
+            } else {
+                // add (mi, mj)
+                VectorXi par = VectorXi::Zero(parents[mj].size() + 1);
+                par.head(parents[mj].size()) = parents[mj];
+                par(parents[mj].size()) = mi;
+                T4 Xpar = X_seg(X, n, par, 0);
+                VectorXd y = X.col(mj);
+                VectorXd est_new = Xpar * this->lm(Xpar, y);
+                VectorXd est_old = X * Adj.col(mj);
+                bd(I(i)) = (est_old - y).squaredNorm() - (est_new - y).squaredNorm();
+                // bd(I(i)) = this->XTX(mi) * pow(D(mi, mj) / this->XTX(mi), 2);
+            }
         }
     };
 
