@@ -42,7 +42,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">abess</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.5</span>
       </span>
     </div>
 
@@ -137,7 +137,7 @@
 <div class="section level2">
 <h2 id="brief-introduction">Brief introduction<a class="anchor" aria-label="anchor" href="#brief-introduction"></a>
 </h2>
-<p>The R package <code>abess</code> implement a polynomial algorithm <a href="https://www.pnas.org/content/117/52/33117" class="external-link"></a> for solving the best-subset selection problem: <span class="math display">\[\min_{\boldsymbol{\beta} \in \mathbb{R}^p} \mathcal{L_n}({\boldsymbol\beta}), \text{ s.t. } \|\boldsymbol\beta\|_0 \leq s,\]</span> where <span class="math inline">\(\mathcal{L}_{n}(\boldsymbol \beta)=\frac{1}{2 n}\|y-X \boldsymbol{\beta}\|_{2}^{2}\)</span>, <span class="math inline">\(\|\boldsymbol{\beta}\|_0=\sum_{i=1}^pI( \boldsymbol{\beta}_i\neq 0)\)</span> is the <span class="math inline">\(\ell_0\)</span>(-pseudo) norm of <span class="math inline">\(\beta\)</span>, and the sparsity level <span class="math inline">\(s\)</span> is usually an unknown non-negative integer. Next, we present an example to show how to use the <code>abess</code> package to solve a simple problem.</p>
+<p>The R package <code>abess</code> implement a polynomial algorithm <a href="https://www.pnas.org/doi/10.1073/pnas.2014241117" class="external-link"></a> for solving the best-subset selection problem: <span class="math display">\[\min_{\boldsymbol{\beta} \in \mathbb{R}^p} \mathcal{L_n}({\boldsymbol\beta}), \text{ s.t. } \|\boldsymbol\beta\|_0 \leq s,\]</span> where <span class="math inline">\(\mathcal{L}_{n}(\boldsymbol \beta)=\frac{1}{2 n}\|y-X \boldsymbol{\beta}\|_{2}^{2}\)</span>, <span class="math inline">\(\|\boldsymbol{\beta}\|_0=\sum_{i=1}^pI( \boldsymbol{\beta}_i\neq 0)\)</span> is the <span class="math inline">\(\ell_0\)</span>(-pseudo) norm of <span class="math inline">\(\beta\)</span>, and the sparsity level <span class="math inline">\(s\)</span> is usually an unknown non-negative integer. Next, we present an example to show how to use the <code>abess</code> package to solve a simple problem.</p>
 </div>
 <div class="section level2">
 <h2 id="quick-example">Quick example<a class="anchor" aria-label="anchor" href="#quick-example"></a>
@@ -164,7 +164,7 @@
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind.data.frame</a></span><span class="op">(</span><span class="st">"y"</span> <span class="op">=</span> <span class="va">synthetic_data</span><span class="op">[[</span><span class="st">"y"</span><span class="op">]</span><span class="op">]</span>, 
                         <span class="va">synthetic_data</span><span class="op">[[</span><span class="st">"x"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></code></pre></div>
-<p>Then, we use the main function <code>abess</code> in the package to fit this dataset. By setting the arguments <code>support.size = s</code>, <code><a href="../reference/abess.html">abess()</a></code> function conducts <strong>Algorithm 1</strong> <a href="https://www.pnas.org/content/117/52/33117" class="external-link"></a> for the best-subset selection with a sparsity level <code>s</code>. In our example, we set the options: <code>support.size = 3</code>, and we run <strong>Algorithm 1</strong> with the following command:</p>
+<p>Then, we use the main function <code>abess</code> in the package to fit this dataset. By setting the arguments <code>support.size = s</code>, <code><a href="../reference/abess.html">abess()</a></code> function conducts <strong>Algorithm 1</strong> <a href="https://www.pnas.org/doi/10.1073/pnas.2014241117" class="external-link"></a> for the best-subset selection with a sparsity level <code>s</code>. In our example, we set the options: <code>support.size = 3</code>, and we run <strong>Algorithm 1</strong> with the following command:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">abess_fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/abess.html">abess</a></span><span class="op">(</span><span class="va">y</span> <span class="op">~</span> <span class="va">.</span>, data <span class="op">=</span> <span class="va">dat</span>, support.size <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></code></pre></div>
 <p>The output of <code>abess</code> comprises the selected best model:</p>
@@ -192,7 +192,7 @@
 <div class="section level3">
 <h3 id="adaptive-best-subset-selection">Adaptive best subset selection<a class="anchor" aria-label="anchor" href="#adaptive-best-subset-selection"></a>
 </h3>
-<p>Supposing we are unknown about the true sparsity level in real world data, and thus, we need to determine the most proper one. The <strong>Algorithm 3</strong> <a href="https://www.pnas.org/content/117/52/33117" class="external-link"></a> is designed for this scenario. <code>abess</code> is capable of performing this algorithm:</p>
+<p>Supposing we are unknown about the true sparsity level in real world data, and thus, we need to determine the most proper one. The <strong>Algorithm 3</strong> <a href="https://www.pnas.org/doi/10.1073/pnas.2014241117" class="external-link"></a> is designed for this scenario. <code>abess</code> is capable of performing this algorithm:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">abess_fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/abess.html">abess</a></span><span class="op">(</span><span class="va">y</span> <span class="op">~</span> <span class="va">.</span>, data <span class="op">=</span> <span class="va">dat</span><span class="op">)</span></code></pre></div>
 <p>The output of <code><a href="../reference/abess.html">abess()</a></code> also comprises the selected best model:</p>
@@ -295,75 +295,75 @@
 <span class="co">## Assists       .        .           .           .            .        </span>
 <span class="co">## Errors        .        .           .           .            .        </span>
 <span class="co">## NewLeagueN    .        .           .           .            .        </span>
-<span class="co">##                                                                           </span>
-<span class="co">## (intercept) 25.2819915   91.5117981   67.9431538  114.5067227  197.6616396</span>
-<span class="co">## AtBat       -2.0349977   -1.8685892   -1.8535176   -2.1250564   -2.0803280</span>
-<span class="co">## Hits         8.1842739    7.6043976    7.6348879    7.6482495    6.8263359</span>
-<span class="co">## HmRun        .            .            .            .            .        </span>
-<span class="co">## Runs         .            .            .            .            .        </span>
-<span class="co">## RBI          .            .            .            .            .        </span>
-<span class="co">## Walks        3.9059431    3.6976468    3.6644212    5.2391412    5.9761215</span>
-<span class="co">## Years        .            .            .            .          -15.9414459</span>
-<span class="co">## CAtBat       .            .            .            .            .        </span>
-<span class="co">## CHits        .            .            .            .            .        </span>
-<span class="co">## CHmRun       .            .            .            .            .        </span>
-<span class="co">## CRuns        .            .            .            .            0.8143029</span>
-<span class="co">## CRBI         0.6417565    0.6430169    0.6445474    0.8959228    0.6000624</span>
-<span class="co">## CWalks       .            .            .           -0.3487728   -0.7503761</span>
-<span class="co">## LeagueN      .            .           35.0926551    .            .        </span>
-<span class="co">## DivisionW    .         -122.9515338 -122.5437635 -126.8503150 -123.4936780</span>
-<span class="co">## PutOuts      0.2645828    0.2643076    0.2584749    0.2655057    0.2702288</span>
-<span class="co">## Assists      .            .            .            0.1790809    .        </span>
-<span class="co">## Errors       .            .            .            .            .        </span>
-<span class="co">## NewLeagueN   .            .            .            .            .        </span>
 <span class="co">##                                                                             </span>
-<span class="co">## (intercept)  206.5672285  218.5527334  176.6188304  187.5594787  187.9975445</span>
-<span class="co">## AtBat         -2.2556858   -2.2102483   -2.3610764   -2.3079848   -2.2853327</span>
-<span class="co">## Hits           7.0378766    6.9279436    7.4685937    7.3460228    7.7943582</span>
+<span class="co">## (intercept)   -7.6563819   91.5117981   67.9431538  114.5067227  197.6616396</span>
+<span class="co">## AtBat          .           -1.8685892   -1.8535176   -2.1250564   -2.0803280</span>
+<span class="co">## Hits           2.0467293    7.6043976    7.6348879    7.6482495    6.8263359</span>
 <span class="co">## HmRun          .            .            .            .            .        </span>
-<span class="co">## Runs           .            .            .            .           -1.1791372</span>
+<span class="co">## Runs           .            .            .            .            .        </span>
 <span class="co">## RBI            .            .            .            .            .        </span>
-<span class="co">## Walks          6.2793246    6.2243570    6.1487968    6.0861011    6.4112526</span>
-<span class="co">## Years        -16.7414858  -17.2542087  -13.0303454  -13.6050167  -14.0052858</span>
+<span class="co">## Walks          2.5574106    3.6976468    3.6644212    5.2391412    5.9761215</span>
+<span class="co">## Years          .            .            .            .          -15.9414459</span>
 <span class="co">## CAtBat         .            .            .            .            .        </span>
 <span class="co">## CHits          .            .            .            .            .        </span>
-<span class="co">## CHmRun         .            .            0.8481373    0.8363291    0.9451361</span>
-<span class="co">## CRuns          0.8132079    0.8111144    0.9131573    0.9092355    0.9482335</span>
-<span class="co">## CRBI           0.6508515    0.6594949    0.3441657    0.3573385    0.3034257</span>
-<span class="co">## CWalks        -0.7882990   -0.7934064   -0.8347926   -0.8391757   -0.8516328</span>
-<span class="co">## LeagueN        .            .           33.9909034   36.6846007   33.8956862</span>
-<span class="co">## DivisionW   -123.2261893 -123.1231837 -119.7700541 -119.6739859 -121.0074964</span>
-<span class="co">## PutOuts        0.2824819    0.2883338    0.2873983    0.2929612    0.2899486</span>
-<span class="co">## Assists        0.1872292    0.2795390    0.2181051    0.3148259    0.2944243</span>
-<span class="co">## Errors         .           -3.0198567    .           -3.2321945   -3.1258401</span>
+<span class="co">## CHmRun         .            .            .            .            .        </span>
+<span class="co">## CRuns          .            .            .            .            0.8143029</span>
+<span class="co">## CRBI           0.6492007    0.6430169    0.6445474    0.8959228    0.6000624</span>
+<span class="co">## CWalks         .            .            .           -0.3487728   -0.7503761</span>
+<span class="co">## LeagueN        .            .           35.0926551    .            .        </span>
+<span class="co">## DivisionW   -137.3676333 -122.9515338 -122.5437635 -126.8503150 -123.4936780</span>
+<span class="co">## PutOuts        0.2518721    0.2643076    0.2584749    0.2655057    0.2702288</span>
+<span class="co">## Assists        .            .            .            0.1790809    .        </span>
+<span class="co">## Errors         .            .            .            .            .        </span>
 <span class="co">## NewLeagueN     .            .            .            .            .        </span>
 <span class="co">##                                                                             </span>
-<span class="co">## (intercept)  144.9720016  163.0064063  162.9932027  163.1632541  163.1035878</span>
-<span class="co">## AtBat         -2.0689145   -2.0890552   -2.0302709   -2.0186239   -1.9798729</span>
-<span class="co">## Hits           7.8855407    7.8848050    7.7483580    7.7381465    7.5007675</span>
-<span class="co">## HmRun          3.8417244    3.8223369    4.6470956    4.6127592    4.3308829</span>
-<span class="co">## Runs          -2.5476647   -2.5377954   -2.5882384   -2.6272166   -2.3762100</span>
-<span class="co">## RBI           -0.9077480   -0.8815425   -1.1165187   -1.1190038   -1.0449620</span>
-<span class="co">## Walks          6.3040211    6.2941910    6.2778803    6.3108843    6.2312863</span>
-<span class="co">## Years          .           -4.0947594   -3.7490950   -3.8738277   -3.4890543</span>
-<span class="co">## CAtBat        -0.1492614   -0.1350897   -0.1526121   -0.1514014   -0.1713405</span>
+<span class="co">## (intercept)  206.5672285  218.5527334  198.4967427  142.9090129  144.6793182</span>
+<span class="co">## AtBat         -2.2556858   -2.2102483   -2.1783358   -2.0120568   -2.0883279</span>
+<span class="co">## Hits           7.0378766    6.9279436    6.9273744    7.3751935    7.6436454</span>
+<span class="co">## HmRun          .            .            .            .            2.3406524</span>
+<span class="co">## Runs           .            .            .           -1.7130320   -2.3580478</span>
+<span class="co">## RBI            .            .            .            .            .        </span>
+<span class="co">## Walks          6.2793246    6.2243570    6.1667822    5.9906173    6.1794713</span>
+<span class="co">## Years        -16.7414858  -17.2542087  -17.0664017    .            .        </span>
+<span class="co">## CAtBat         .            .            .           -0.1527096   -0.1488074</span>
+<span class="co">## CHits          .            .            .            .            .        </span>
+<span class="co">## CHmRun         .            .            .            .            .        </span>
+<span class="co">## CRuns          0.8132079    0.8111144    0.8082476    1.5535444    1.5931621</span>
+<span class="co">## CRBI           0.6508515    0.6594949    0.6571221    0.7850103    0.7170767</span>
+<span class="co">## CWalks        -0.7882990   -0.7934064   -0.7898841   -0.8404419   -0.8565844</span>
+<span class="co">## LeagueN        .            .           29.1474123   41.9165343   44.2352269</span>
+<span class="co">## DivisionW   -123.2261893 -123.1231837 -122.8009102 -112.3809790 -112.8079905</span>
+<span class="co">## PutOuts        0.2824819    0.2883338    0.2830813    0.2896964    0.2876182</span>
+<span class="co">## Assists        0.1872292    0.2795390    0.2732454    0.3312276    0.3677311</span>
+<span class="co">## Errors         .           -3.0198567   -3.3107203   -2.8685826   -3.1271251</span>
+<span class="co">## NewLeagueN     .            .            .            .            .        </span>
+<span class="co">##                                                                             </span>
+<span class="co">## (intercept)  163.3275824  163.0064063  162.9932027  163.1632541  163.1035878</span>
+<span class="co">## AtBat         -2.1085651   -2.0890552   -2.0302709   -2.0186239   -1.9798729</span>
+<span class="co">## Hits           7.6501026    7.8848050    7.7483580    7.7381465    7.5007675</span>
+<span class="co">## HmRun          2.3654025    3.8223369    4.6470956    4.6127592    4.3308829</span>
+<span class="co">## Runs          -2.3535049   -2.5377954   -2.5882384   -2.6272166   -2.3762100</span>
+<span class="co">## RBI            .           -0.8815425   -1.1165187   -1.1190038   -1.0449620</span>
+<span class="co">## Walks          6.1730276    6.2941910    6.2778803    6.3108843    6.2312863</span>
+<span class="co">## Years         -4.2321550   -4.0947594   -3.7490950   -3.8738277   -3.4890543</span>
+<span class="co">## CAtBat        -0.1341737   -0.1350897   -0.1526121   -0.1514014   -0.1713405</span>
 <span class="co">## CHits          .            .            .            .            0.1339910</span>
 <span class="co">## CHmRun         .            .           -0.3876922   -0.3938397   -0.1728611</span>
-<span class="co">## CRuns          1.5806921    1.5321626    1.5730263    1.5708067    1.4543049</span>
-<span class="co">## CRBI           0.7454926    0.7420886    0.8965235    0.8961782    0.8077088</span>
-<span class="co">## CWalks        -0.8677904   -0.8559654   -0.8423839   -0.8467366   -0.8115709</span>
-<span class="co">## LeagueN       44.1134918   42.2286763   41.6482699   61.3012822   62.5994230</span>
-<span class="co">## DivisionW   -114.9654523 -116.0422926 -116.4111439 -116.5862127 -116.8492456</span>
-<span class="co">## PutOuts        0.2874416    0.2858651    0.2827595    0.2829156    0.2818925</span>
-<span class="co">## Assists        0.3674135    0.3641325    0.3661464    0.3640952    0.3710692</span>
-<span class="co">## Errors        -3.0309269   -3.1409199   -3.1840695   -3.2558249   -3.3607605</span>
+<span class="co">## CRuns          1.5426322    1.5321626    1.5730263    1.5708067    1.4543049</span>
+<span class="co">## CRBI           0.7144063    0.7420886    0.8965235    0.8961782    0.8077088</span>
+<span class="co">## CWalks        -0.8446970   -0.8559654   -0.8423839   -0.8467366   -0.8115709</span>
+<span class="co">## LeagueN       42.2835360   42.2286763   41.6482699   61.3012822   62.5994230</span>
+<span class="co">## DivisionW   -113.9853363 -116.0422926 -116.4111439 -116.5862127 -116.8492456</span>
+<span class="co">## PutOuts        0.2859836    0.2858651    0.2827595    0.2829156    0.2818925</span>
+<span class="co">## Assists        0.3643305    0.3641325    0.3661464    0.3640952    0.3710692</span>
+<span class="co">## Errors        -3.2379385   -3.1409199   -3.1840695   -3.2558249   -3.3607605</span>
 <span class="co">## NewLeagueN     .            .            .          -22.9788245  -24.7623251</span></code></pre>
 <div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># get the deviance of the estimated model on all candidate support size</span>
 <span class="fu"><a href="https://rdrr.io/r/stats/deviance.html" class="external-link">deviance</a></span><span class="op">(</span><span class="va">abess_fit</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">##  [1] 101367.13  68782.66  58263.42  55607.03  53176.52  51654.80  49800.20</span>
-<span class="co">##  [8]  49651.96  49079.30  47327.31  47040.89  46947.37  46771.41  46665.25</span>
-<span class="co">## [15]  46621.02  46074.59  46053.29  46032.63  46016.41  46008.93</span></code></pre>
+<pre><code><span class="co">##  [1] 101367.13  68782.66  58263.42  55607.03  53176.52  52241.95  49800.20</span>
+<span class="co">##  [8]  49651.96  49079.30  47327.31  47040.89  46947.37  46847.92  46177.09</span>
+<span class="co">## [15]  46100.11  46077.34  46053.29  46032.63  46016.41  46008.93</span></code></pre>
 <div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># print the fitted model</span>
 <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">abess_fit</span><span class="op">)</span></code></pre></div>
@@ -377,17 +377,17 @@
 <span class="co">## 3             2  58263.42 2895.944</span>
 <span class="co">## 4             3  55607.03 2888.729</span>
 <span class="co">## 5             4  53176.52 2882.033</span>
-<span class="co">## 6             5  51654.80 2879.455</span>
+<span class="co">## 6             5  52241.95 2882.427</span>
 <span class="co">## 7             6  49800.20 2874.896</span>
 <span class="co">## 8             7  49651.96 2879.170</span>
 <span class="co">## 9             8  49079.30 2881.177</span>
 <span class="co">## 10            9  47327.31 2876.675</span>
 <span class="co">## 11           10  47040.89 2880.136</span>
 <span class="co">## 12           11  46947.37 2884.671</span>
-<span class="co">## 13           12  46771.41 2888.741</span>
-<span class="co">## 14           13  46665.25 2893.201</span>
-<span class="co">## 15           14  46621.02 2898.010</span>
-<span class="co">## 16           15  46074.59 2899.967</span>
+<span class="co">## 13           12  46847.92 2889.171</span>
+<span class="co">## 14           13  46177.09 2890.436</span>
+<span class="co">## 15           14  46100.11 2895.055</span>
+<span class="co">## 16           15  46077.34 2899.983</span>
 <span class="co">## 17           16  46053.29 2904.903</span>
 <span class="co">## 18           17  46032.63 2909.843</span>
 <span class="co">## 19           18  46016.41 2914.808</span>
@@ -557,7 +557,7 @@ The pre-processed dataset can be freely downloaded by running:</p>
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
 </div>
 
       </footer>
