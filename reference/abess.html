@@ -147,6 +147,8 @@ positive response, multi-response modeling in polynomial times.</p>
 <dd><p>Input matrix, of dimension \(n \times p\); each row is an observation
 vector and each column is a predictor/feature/variable.
 Can be in sparse matrix format (inherit from class <code>"dgCMatrix"</code> in package <code>Matrix</code>).</p></dd>
+
+
 <dt>y</dt>
 <dd><p>The response variable, of <code>n</code> observations.
 For <code>family = "binomial"</code> should have two levels.
@@ -158,6 +160,8 @@ For <code>family = "mgaussian"</code>, <code>y</code> should be a matrix of quan
 For <code>family = "multinomial"</code> or <code>"ordinal"</code>, <code>y</code> should be a factor of at least three levels.
 Note that, for either <code>"binomial"</code>, <code>"ordinal"</code> or <code>"multinomial"</code>,
 if y is presented as a numerical vector, it will be coerced into a factor.</p></dd>
+
+
 <dt>family</dt>
 <dd><p>One of the following models:
 <code>"gaussian"</code> (continuous response),
@@ -169,18 +173,26 @@ if y is presented as a numerical vector, it will be coerced into a factor.</p></
 <code>"ordinal"</code> (multi-class ordinal response),
 <code>"gamma"</code> (positive continuous response).
 Depending on the response. Any unambiguous substring can be given.</p></dd>
+
+
 <dt>tune.path</dt>
 <dd><p>The method to be used to select the optimal support size. For
 <code>tune.path = "sequence"</code>, we solve the best subset selection problem for each size in <code>support.size</code>.
 For <code>tune.path = "gsection"</code>, we solve the best subset selection problem with support size ranged in <code>gs.range</code>,
 where the specific support size to be considered is determined by golden section.</p></dd>
+
+
 <dt>tune.type</dt>
 <dd><p>The type of criterion for choosing the support size.
 Available options are <code>"gic"</code>, <code>"ebic"</code>, <code>"bic"</code>, <code>"aic"</code> and <code>"cv"</code>.
 Default is <code>"gic"</code>.</p></dd>
+
+
 <dt>weight</dt>
 <dd><p>Observation weights. When <code>weight = NULL</code>,
 we set <code>weight = 1</code> for each observation as default.</p></dd>
+
+
 <dt>normalize</dt>
 <dd><p>Options for normalization.
 <code>normalize = 0</code> for no normalization.
@@ -191,19 +203,31 @@ scaling the columns of <code>x</code> to have \(\sqrt n\) norm.
 <code>normalize = 3</code> for scaling the columns of <code>x</code> to have \(\sqrt n\) norm.
 If <code>normalize = NULL</code>, <code>normalize</code> will be set <code>1</code> for <code>"gaussian"</code> and <code>"mgaussian"</code>,
 <code>3</code> for <code>"cox"</code>. Default is <code>normalize = NULL</code>.</p></dd>
+
+
 <dt>c.max</dt>
 <dd><p>an integer splicing size. Default is: <code>c.max = 2</code>.</p></dd>
+
+
 <dt>support.size</dt>
 <dd><p>An integer vector representing the alternative support sizes.
 Only used for <code>tune.path = "sequence"</code>. Default is <code>0:min(n, round(n/(log(log(n))log(p))))</code>.</p></dd>
+
+
 <dt>gs.range</dt>
 <dd><p>A integer vector with two elements.
 The first element is the minimum model size considered by golden-section,
 the later one is the maximum one. Default is <code>gs.range = c(1, min(n, round(n/(log(log(n))log(p)))))</code>.</p></dd>
+
+
 <dt>lambda</dt>
 <dd><p>A single lambda value for regularized best subset selection. Default is 0.</p></dd>
+
+
 <dt>always.include</dt>
 <dd><p>An integer vector containing the indexes of variables that should always be included in the model.</p></dd>
+
+
 <dt>group.index</dt>
 <dd><p>A vector of integers indicating the which group each variable is in.
 For variables in the same group, they should be located in adjacent columns of <code>x</code>
@@ -211,121 +235,181 @@ and their corresponding index in <code>group.index</code> should be the same.
 Denote the first group as <code>1</code>, the second <code>2</code>, etc.
 If you do not fit a model with a group structure,
 please set <code>group.index = NULL</code> (the default).</p></dd>
+
+
 <dt>init.active.set</dt>
 <dd><p>A vector of integers indicating the initial active set.
 Default: <code>init.active.set = NULL</code>.</p></dd>
+
+
 <dt>splicing.type</dt>
 <dd><p>Optional type for splicing.
 If <code>splicing.type = 1</code>, the number of variables to be spliced is
 <code>c.max</code>, ..., <code>1</code>; if <code>splicing.type = 2</code>,
 the number of variables to be spliced is <code>c.max</code>, <code>c.max/2</code>, ..., <code>1</code>.
 (Default: <code>splicing.type = 2</code>.)</p></dd>
+
+
 <dt>max.splicing.iter</dt>
 <dd><p>The maximum number of performing splicing algorithm.
 In most of the case, only a few times of splicing iteration can guarantee the convergence.
 Default is <code>max.splicing.iter = 20</code>.</p></dd>
+
+
 <dt>screening.num</dt>
 <dd><p>An integer number. Preserve <code>screening.num</code> number of predictors with the largest
 marginal maximum likelihood estimator before running algorithm.</p></dd>
+
+
 <dt>important.search</dt>
 <dd><p>An integer number indicating the number of
 important variables to be splicing.
 When <code>important.search</code> \(\ll\) <code>p</code> variables,
 it would greatly reduce runtimes. Default: <code>important.search = 128</code>.</p></dd>
+
+
 <dt>warm.start</dt>
 <dd><p>Whether to use the last solution as a warm start. Default is <code>warm.start = TRUE</code>.</p></dd>
+
+
 <dt>nfolds</dt>
 <dd><p>The number of folds in cross-validation. Default is <code>nfolds = 5</code>.</p></dd>
+
+
 <dt>foldid</dt>
 <dd><p>an optional integer vector of values between 1, ..., nfolds identifying what fold each observation is in.
 The default <code>foldid = NULL</code> would generate a random foldid.</p></dd>
+
+
 <dt>cov.update</dt>
 <dd><p>A logical value only used for <code>family = "gaussian"</code>. If <code>cov.update = TRUE</code>,
 use a covariance-based implementation; otherwise, a naive implementation.
 The naive method is more computational efficient than covariance-based method when \(p &gt;&gt; n\) and <code>important.search</code> is much large than its default value.
 Default: <code>cov.update = FALSE</code>.</p></dd>
+
+
 <dt>newton</dt>
 <dd><p>A character specify the Newton's method for fitting generalized linear models,
 it should be either <code>newton = "exact"</code> or <code>newton = "approx"</code>.
 If <code>newton = "exact"</code>, then the exact hessian is used,
 while <code>newton = "approx"</code> uses diagonal entry of the hessian,
 and can be faster (especially when <code>family = "cox"</code>).</p></dd>
+
+
 <dt>newton.thresh</dt>
 <dd><p>a numeric value for controlling positive convergence tolerance.
 The Newton's iterations converge when \(|dev - dev_{old}|/(|dev| + 0.1)&lt;\) <code>newton.thresh</code>.</p></dd>
+
+
 <dt>max.newton.iter</dt>
 <dd><p>a integer giving the maximal number of Newton's iteration iterations.
 Default is <code>max.newton.iter = 10</code> if <code>newton = "exact"</code>, and <code>max.newton.iter = 60</code> if <code>newton = "approx"</code>.</p></dd>
+
+
 <dt>early.stop</dt>
 <dd><p>A boolean value decide whether early stopping.
 If <code>early.stop = TRUE</code>, algorithm will stop if the last tuning value less than the existing one.
 Default: <code>early.stop = FALSE</code>.</p></dd>
+
+
 <dt>ic.scale</dt>
 <dd><p>A non-negative value used for multiplying the penalty term
 in information criterion. Default: <code>ic.scale = 1</code>.</p></dd>
+
+
 <dt>num.threads</dt>
 <dd><p>An integer decide the number of threads to be
 concurrently used for cross-validation (i.e., <code>tune.type = "cv"</code>).
 If <code>num.threads = 0</code>, then all of available cores will be used.
 Default: <code>num.threads = 0</code>.</p></dd>
+
+
 <dt>seed</dt>
 <dd><p>Seed to be used to divide the sample into cross-validation folds.
 Default is <code>seed = 1</code>.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>further arguments to be passed to or from methods.</p></dd>
+
+
 <dt>formula</dt>
 <dd><p>an object of class "<code>formula</code>":
 a symbolic description of the model to be fitted.
 The details of model specification are given in the "Details" section of "<code><a href="https://rdrr.io/r/stats/formula.html" class="external-link">formula</a></code>".</p></dd>
+
+
 <dt>data</dt>
 <dd><p>a data frame containing the variables in the <code>formula</code>.</p></dd>
+
+
 <dt>subset</dt>
 <dd><p>an optional vector specifying a subset of observations to be used.</p></dd>
+
+
 <dt>na.action</dt>
 <dd><p>a function which indicates
 what should happen when the data contain <code>NA</code>s.
 Defaults to <code>getOption("na.action")</code>.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A S3 <code>abess</code> class object, which is a <code>list</code> with the following components:</p>
+    
+
+<p>A S3 <code>abess</code> class object, which is a <code>list</code> with the following components:</p>
 <dl><dt>beta</dt>
 <dd><p>A \(p\)-by-<code>length(support.size)</code> matrix of coefficients for univariate family, stored in column format;
 while a list of <code>length(support.size)</code> coefficients matrix (with size \(p\)-by-<code>ncol(y)</code>) for multivariate family.</p></dd>
+
 <dt>intercept</dt>
 <dd><p>An intercept vector of length <code>length(support.size)</code> for univariate family;
 while a list of <code>length(support.size)</code> intercept vector (with size <code>ncol(y)</code>) for multivariate family.</p></dd>
+
 <dt>dev</dt>
 <dd><p>the deviance of length <code>length(support.size)</code>.</p></dd>
+
 <dt>tune.value</dt>
 <dd><p>A value of tuning criterion of length <code>length(support.size)</code>.</p></dd>
+
 <dt>nobs</dt>
 <dd><p>The number of sample used for training.</p></dd>
+
 <dt>nvars</dt>
 <dd><p>The number of variables used for training.</p></dd>
+
 <dt>family</dt>
 <dd><p>Type of the model.</p></dd>
+
 <dt>tune.path</dt>
 <dd><p>The path type for tuning parameters.</p></dd>
+
 <dt>support.size</dt>
 <dd><p>The actual <code>support.size</code> values used.
 Note that it is not necessary the same as the input
 if the later have non-integer values or duplicated values.</p></dd>
+
 <dt>edf</dt>
 <dd><p>The effective degree of freedom.
 It is the same as <code>support.size</code> when <code>lambda = 0</code>.</p></dd>
+
 <dt>best.size</dt>
 <dd><p>The best support size selected by the tuning value.</p></dd>
+
 <dt>tune.type</dt>
 <dd><p>The criterion type for tuning parameters.</p></dd>
+
 <dt>tune.path</dt>
 <dd><p>The strategy for tuning parameters.</p></dd>
+
 <dt>screening.vars</dt>
 <dd><p>The character vector specify the feature
 selected by feature screening.
 It would be an empty character vector if <code>screening.num = 0</code>.</p></dd>
+
 <dt>call</dt>
 <dd><p>The original call to <code>abess</code>.</p></dd>
+
 </dl></div>
     <div id="details">
     <h2>Details</h2>
@@ -764,7 +848,7 @@ Please see <a href="https://abess-team.github.io/abess/articles/v07-advancedFeat
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>
