@@ -186,16 +186,16 @@ class abessDAG : public Algorithm<Eigen::VectorXd, Eigen::VectorXd, double, T4> 
                 bd(I(i)) = -DBL_MAX;
                 continue;
             }
-            // // test acylic
-            // VectorXd temp = VectorXd::Ones(A.size() + 1);
-            // VectorXi A_temp(A.size() + 1);
-            // A_temp.head(A.size()) = A;
-            // A_temp(A.size()) = I(i);
-            // MatrixXd Adj_temp = compute_Adj(temp, A_temp, p);
-            // if (this->is_cyclic(Adj_temp)) {
-            //     bd(I(i)) = -DBL_MAX;
-            //     continue;
-            // }
+            // test acylic
+            VectorXd temp = VectorXd::Ones(A.size() + 1);
+            VectorXi A_temp(A.size() + 1);
+            A_temp.head(A.size()) = A;
+            A_temp(A.size()) = I(i);
+            MatrixXd Adj_temp = compute_Adj(temp, A_temp, p);
+            if (this->is_cyclic(Adj_temp)) {
+                bd(I(i)) = -DBL_MAX;
+                continue;
+            }
             // // add I(i) and refit
             // VectorXi par(parents[mj].size() + 1);
             // par.head(parents[mj].size()) = parents[mj];
