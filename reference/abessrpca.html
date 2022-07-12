@@ -100,28 +100,28 @@ low-rank matrix and sparse matrix via the best subset selection approach</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">abessrpca</span><span class="op">(</span>
-  <span class="va">x</span>,
-  <span class="va">rank</span>,
-  support.size <span class="op">=</span> <span class="cn">NULL</span>,
-  tune.path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sequence"</span>, <span class="st">"gsection"</span><span class="op">)</span>,
-  gs.range <span class="op">=</span> <span class="cn">NULL</span>,
-  tune.type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"gic"</span>, <span class="st">"aic"</span>, <span class="st">"bic"</span>, <span class="st">"ebic"</span><span class="op">)</span>,
-  ic.scale <span class="op">=</span> <span class="fl">1</span>,
-  lambda <span class="op">=</span> <span class="fl">0</span>,
-  always.include <span class="op">=</span> <span class="cn">NULL</span>,
-  group.index <span class="op">=</span> <span class="cn">NULL</span>,
-  c.max <span class="op">=</span> <span class="cn">NULL</span>,
-  splicing.type <span class="op">=</span> <span class="fl">2</span>,
-  max.splicing.iter <span class="op">=</span> <span class="fl">1</span>,
-  warm.start <span class="op">=</span> <span class="cn">TRUE</span>,
-  important.search <span class="op">=</span> <span class="cn">NULL</span>,
-  max.newton.iter <span class="op">=</span> <span class="fl">1</span>,
-  newton.thresh <span class="op">=</span> <span class="fl">0.001</span>,
-  num.threads <span class="op">=</span> <span class="fl">0</span>,
-  seed <span class="op">=</span> <span class="fl">1</span>,
-  <span class="va">...</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">abessrpca</span><span class="op">(</span></span>
+<span>  <span class="va">x</span>,</span>
+<span>  <span class="va">rank</span>,</span>
+<span>  support.size <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  tune.path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sequence"</span>, <span class="st">"gsection"</span><span class="op">)</span>,</span>
+<span>  gs.range <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  tune.type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"gic"</span>, <span class="st">"aic"</span>, <span class="st">"bic"</span>, <span class="st">"ebic"</span><span class="op">)</span>,</span>
+<span>  ic.scale <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  lambda <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  always.include <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  group.index <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  c.max <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  splicing.type <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>  max.splicing.iter <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  warm.start <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  important.search <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  max.newton.iter <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  newton.thresh <span class="op">=</span> <span class="fl">0.001</span>,</span>
+<span>  num.threads <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -307,15 +307,15 @@ This feature will coming soon.</p>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co"># \donttest{</span></span>
-<span class="r-in"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/abess-team/abess" class="external-link">abess</a></span><span class="op">)</span></span>
-<span class="r-in"><span class="va">n</span> <span class="op">&lt;-</span> <span class="fl">30</span></span>
-<span class="r-in"><span class="va">p</span> <span class="op">&lt;-</span> <span class="fl">30</span></span>
-<span class="r-in"><span class="va">true_S_size</span> <span class="op">&lt;-</span> <span class="fl">60</span></span>
-<span class="r-in"><span class="va">true_L_rank</span> <span class="op">&lt;-</span> <span class="fl">2</span></span>
-<span class="r-in"><span class="va">dataset</span> <span class="op">&lt;-</span> <span class="fu"><a href="generate.matrix.html">generate.matrix</a></span><span class="op">(</span><span class="va">n</span>, <span class="va">p</span>, support.size <span class="op">=</span> <span class="va">true_S_size</span>, rank <span class="op">=</span> <span class="va">true_L_rank</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu">abessrpca</span><span class="op">(</span><span class="va">dataset</span><span class="op">[[</span><span class="st">"x"</span><span class="op">]</span><span class="op">]</span>, rank <span class="op">=</span> <span class="va">true_L_rank</span>, support.size <span class="op">=</span> <span class="fl">50</span><span class="op">:</span><span class="fl">70</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># \donttest{</span></span></span>
+<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/abess-team/abess" class="external-link">abess</a></span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">n</span> <span class="op">&lt;-</span> <span class="fl">30</span></span></span>
+<span class="r-in"><span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fl">30</span></span></span>
+<span class="r-in"><span><span class="va">true_S_size</span> <span class="op">&lt;-</span> <span class="fl">60</span></span></span>
+<span class="r-in"><span><span class="va">true_L_rank</span> <span class="op">&lt;-</span> <span class="fl">2</span></span></span>
+<span class="r-in"><span><span class="va">dataset</span> <span class="op">&lt;-</span> <span class="fu"><a href="generate.matrix.html">generate.matrix</a></span><span class="op">(</span><span class="va">n</span>, <span class="va">p</span>, support.size <span class="op">=</span> <span class="va">true_S_size</span>, rank <span class="op">=</span> <span class="va">true_L_rank</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu">abessrpca</span><span class="op">(</span><span class="va">dataset</span><span class="op">[[</span><span class="st">"x"</span><span class="op">]</span><span class="op">]</span>, rank <span class="op">=</span> <span class="va">true_L_rank</span>, support.size <span class="op">=</span> <span class="fl">50</span><span class="op">:</span><span class="fl">70</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Call:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> abessrpca(x = dataset[["x"]], rank = true_L_rank, support.size = 50:70)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -341,7 +341,7 @@ This feature will coming soon.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 19           68 0.0009796508 -53.63124</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 20           69 0.0009796518 -51.63064</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 21           70 0.0009796469 -49.59384</span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 30 x 30 sparse Matrix of class "dgCMatrix"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                                                                         </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [1,]  .          .         .  .          .          .          .       </span>
@@ -498,13 +498,13 @@ This feature will coming soon.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [28,]  1.009848</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [29,]  .       </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [30,]  .       </span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">res</span>, type <span class="op">=</span> <span class="st">"tune"</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">res</span>, type <span class="op">=</span> <span class="st">"tune"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="abessrpca-1.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">res</span>, type <span class="op">=</span> <span class="st">"loss"</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">res</span>, type <span class="op">=</span> <span class="st">"loss"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="abessrpca-2.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">res</span>, type <span class="op">=</span> <span class="st">"S"</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">res</span>, type <span class="op">=</span> <span class="st">"S"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="abessrpca-3.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span class="co"># }</span></span>
+<span class="r-in"><span><span class="co"># }</span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -519,7 +519,7 @@ This feature will coming soon.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.5.</p>
 </div>
 
       </footer></div>

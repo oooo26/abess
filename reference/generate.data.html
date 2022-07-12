@@ -100,23 +100,23 @@ generalized linear model and Cox proportional hazard model.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">generate.data</span><span class="op">(</span>
-  <span class="va">n</span>,
-  <span class="va">p</span>,
-  support.size <span class="op">=</span> <span class="cn">NULL</span>,
-  rho <span class="op">=</span> <span class="fl">0</span>,
-  family <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"gaussian"</span>, <span class="st">"binomial"</span>, <span class="st">"poisson"</span>, <span class="st">"cox"</span>, <span class="st">"mgaussian"</span>, <span class="st">"multinomial"</span>,
-    <span class="st">"gamma"</span>, <span class="st">"ordinal"</span><span class="op">)</span>,
-  beta <span class="op">=</span> <span class="cn">NULL</span>,
-  cortype <span class="op">=</span> <span class="fl">1</span>,
-  snr <span class="op">=</span> <span class="fl">10</span>,
-  sigma <span class="op">=</span> <span class="cn">NULL</span>,
-  weibull.shape <span class="op">=</span> <span class="fl">1</span>,
-  uniform.max <span class="op">=</span> <span class="fl">1</span>,
-  y.dim <span class="op">=</span> <span class="fl">3</span>,
-  class.num <span class="op">=</span> <span class="fl">3</span>,
-  seed <span class="op">=</span> <span class="fl">1</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">generate.data</span><span class="op">(</span></span>
+<span>  <span class="va">n</span>,</span>
+<span>  <span class="va">p</span>,</span>
+<span>  support.size <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  rho <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  family <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"gaussian"</span>, <span class="st">"binomial"</span>, <span class="st">"poisson"</span>, <span class="st">"cox"</span>, <span class="st">"mgaussian"</span>, <span class="st">"multinomial"</span>,</span>
+<span>    <span class="st">"gamma"</span>, <span class="st">"ordinal"</span><span class="op">)</span>,</span>
+<span>  beta <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  cortype <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  snr <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>  sigma <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  weibull.shape <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  uniform.max <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  y.dim <span class="op">=</span> <span class="fl">3</span>,</span>
+<span>  class.num <span class="op">=</span> <span class="fl">3</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">1</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -268,13 +268,13 @@ where \(\sigma^2\) is determined by the <code>snr</code> and q is <code>y.dim</c
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"></span>
-<span class="r-in"><span class="co"># Generate simulated data</span></span>
-<span class="r-in"><span class="va">n</span> <span class="op">&lt;-</span> <span class="fl">200</span></span>
-<span class="r-in"><span class="va">p</span> <span class="op">&lt;-</span> <span class="fl">20</span></span>
-<span class="r-in"><span class="va">support.size</span> <span class="op">&lt;-</span> <span class="fl">5</span></span>
-<span class="r-in"><span class="va">dataset</span> <span class="op">&lt;-</span> <span class="fu">generate.data</span><span class="op">(</span><span class="va">n</span>, <span class="va">p</span>, <span class="va">support.size</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">dataset</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Generate simulated data</span></span></span>
+<span class="r-in"><span><span class="va">n</span> <span class="op">&lt;-</span> <span class="fl">200</span></span></span>
+<span class="r-in"><span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fl">20</span></span></span>
+<span class="r-in"><span><span class="va">support.size</span> <span class="op">&lt;-</span> <span class="fl">5</span></span></span>
+<span class="r-in"><span><span class="va">dataset</span> <span class="op">&lt;-</span> <span class="fu">generate.data</span><span class="op">(</span><span class="va">n</span>, <span class="va">p</span>, <span class="va">support.size</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">dataset</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> List of 3</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  $ x   : num [1:200, 1:20] -0.626 0.184 -0.836 1.595 0.33 ...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   ..- attr(*, "dimnames")=List of 2</span>
@@ -296,7 +296,7 @@ where \(\sigma^2\) is determined by the <code>snr</code> and q is <code>y.dim</c
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.5.</p>
 </div>
 
       </footer></div>
