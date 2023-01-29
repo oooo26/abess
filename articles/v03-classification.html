@@ -219,16 +219,16 @@ i. print the fitted model:</p>
 <span><span class="co">## abess.default(x = train[, -1], y = train$Survived, family = "binomial", </span></span>
 <span><span class="co">##     tune.type = "cv")</span></span>
 <span><span class="co">## </span></span>
-<span><span class="co">##   support.size      dev       cv</span></span>
-<span><span class="co">## 1            0 321.9560 64.59866</span></span>
-<span><span class="co">## 2            1 246.5820 49.99585</span></span>
-<span><span class="co">## 3            2 229.6078 46.65819</span></span>
-<span><span class="co">## 4            3 229.5308 46.99849</span></span>
-<span><span class="co">## 5            4 228.9702 45.95916</span></span>
-<span><span class="co">## 6            5 220.1834 45.34507</span></span>
-<span><span class="co">## 7            6 220.0022 46.33645</span></span>
-<span><span class="co">## 8            7 219.9659 46.31131</span></span>
-<span><span class="co">## 9            8 219.9210 46.44845</span></span></code></pre>
+<span><span class="co">##   support.size      dev         cv</span></span>
+<span><span class="co">## 1            0 321.9560 -0.5000000</span></span>
+<span><span class="co">## 2            1 246.5820 -0.7715022</span></span>
+<span><span class="co">## 3            2 229.6078 -0.8222514</span></span>
+<span><span class="co">## 4            3 229.5308 -0.8213548</span></span>
+<span><span class="co">## 5            4 228.9702 -0.8314907</span></span>
+<span><span class="co">## 6            5 220.1834 -0.8411194</span></span>
+<span><span class="co">## 7            6 220.0022 -0.8320615</span></span>
+<span><span class="co">## 8            7 219.9659 -0.8324363</span></span>
+<span><span class="co">## 9            8 219.9210 -0.8313003</span></span></code></pre>
 <ol start="2" style="list-style-type: lower-roman">
 <li>draw the estimated coefficients on all candidate support size by <code><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef()</a></code> function:</li>
 </ol>
@@ -292,7 +292,7 @@ i. print the fitted model:</p>
 <span><span class="co">##  $ support.vars: chr [1:4] "Pclass" "Sexmale" "Fare" "EmbarkedS"</span></span>
 <span><span class="co">##  $ support.beta: num [1:4] -0.81463 -2.59016 -0.00168 -0.30526</span></span>
 <span><span class="co">##  $ dev         : num 229</span></span>
-<span><span class="co">##  $ tune.value  : num 46</span></span></code></pre>
+<span><span class="co">##  $ tune.value  : num -0.831</span></span></code></pre>
 <p>The return is a list containing the basic information of the estimated model.</p>
 </div>
 <div class="section level3">
@@ -389,12 +389,12 @@ i. print the fitted model:</p>
 
       <footer><div class="copyright">
   <p></p>
-<p>Developed by Jin Zhu, Liyuan Hu, Junhao Huang, Kangkang Jiang, Yanhang Zhang, Zezhi Wang, Borui Tang, Shiyun Lin, Junxian Zhu, Canhong Wen, Heping Zhang, Xueqin Wang.</p>
+<p>Developed by Jin Zhu, Zezhi Wang, Liyuan Hu, Junhao Huang, Kangkang Jiang, Yanhang Zhang, Borui Tang, Shiyun Lin, Junxian Zhu, Canhong Wen, Heping Zhang, Xueqin Wang.</p>
 </div>
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer>
