@@ -330,14 +330,14 @@ y_i \sim Gamma(\mu_i, \alpha),
 <span><span class="co">## abess.formula(formula = count ~ ., data = complain, family = "gamma", </span></span>
 <span><span class="co">##     tune.type = "cv")</span></span>
 <span><span class="co">## </span></span>
-<span><span class="co">##   support.size           dev cv</span></span>
-<span><span class="co">## 1            0  4.835917e+02  0</span></span>
-<span><span class="co">## 2            1 -8.645388e+13  0</span></span>
-<span><span class="co">## 3            2 -1.104040e+14  0</span></span>
-<span><span class="co">## 4            3 -1.104040e+14  0</span></span>
-<span><span class="co">## 5            4 -1.104040e+14  0</span></span>
-<span><span class="co">## 6            5 -1.104040e+14  0</span></span>
-<span><span class="co">## 7            6 -1.104040e+14  0</span></span></code></pre>
+<span><span class="co">##   support.size           dev            cv</span></span>
+<span><span class="co">## 1            0  4.835917e+02  9.564499e+01</span></span>
+<span><span class="co">## 2            1 -8.645388e+13 -1.398192e+13</span></span>
+<span><span class="co">## 3            2 -1.104040e+14 -2.090066e+13</span></span>
+<span><span class="co">## 4            3 -1.104040e+14 -2.251801e+13</span></span>
+<span><span class="co">## 5            4 -1.104040e+14 -2.251801e+13</span></span>
+<span><span class="co">## 6            5 -1.104040e+14 -2.251801e+13</span></span>
+<span><span class="co">## 7            6 -1.104040e+14 -2.251801e+13</span></span></code></pre>
 <div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># predict results for given support sizes</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">abess_fit</span>, newx <span class="op">=</span> <span class="va">dat</span><span class="op">$</span><span class="va">x</span>, support.size <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
@@ -374,7 +374,7 @@ y_i \sim Gamma(\mu_i, \alpha),
 <span><span class="co">##  $ support.vars: chr(0) </span></span>
 <span><span class="co">##  $ support.beta: num(0) </span></span>
 <span><span class="co">##  $ dev         : num -1.1e+14</span></span>
-<span><span class="co">##  $ tune.value  : num 0</span></span></code></pre>
+<span><span class="co">##  $ tune.value  : num -2.25e+13</span></span></code></pre>
 <div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># estimated coefficients</span></span>
 <span><span class="va">best.model</span><span class="op">$</span><span class="va">beta</span></span></code></pre></div>
